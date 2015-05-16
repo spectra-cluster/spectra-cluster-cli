@@ -12,25 +12,19 @@ import java.util.*;
 /**
  * Created by jg on 13.05.15.
  */
-public class PeakListFileScanner implements IFileScanner {
-    private final int nMajorPeaks;
-
-    public PeakListFileScanner(int nMajorPeaks) {
-        this.nMajorPeaks = nMajorPeaks;
-    }
-
+public class PeakListFileScanner implements IPeaklistScanner {
     @Override
     public Map<Integer, List<SpectrumReference>> getSpectraPerMajorPeaks(String[] filenames, int nMajorPeaks) throws Exception {
         // map each file
         Map<Integer, List<SpectrumReference>> spectraPerMajorPeak = new HashMap<Integer, List<SpectrumReference>>();
 
         for (int i = 0; i < filenames.length; i++)
-            scanFile(filenames[i], i, spectraPerMajorPeak);
+            scanFile(filenames[i], i, spectraPerMajorPeak, nMajorPeaks);
 
         return spectraPerMajorPeak;
     }
 
-    private void scanFile(String filename, int fileIndex, Map<Integer, List<SpectrumReference>> spectraPerMajorPeak) throws Exception {
+    private void scanFile(String filename, int fileIndex, Map<Integer, List<SpectrumReference>> spectraPerMajorPeak, int nMajorPeaks) throws Exception {
         JMzReader reader = openFile(filename);
 
         Iterator<Spectrum> spectrumIterator = reader.getSpectrumIterator();
@@ -41,7 +35,8 @@ public class PeakListFileScanner implements IFileScanner {
             Spectrum readSpectrum = spectrumIterator.next();
             ISpectrum spectrum = SpectrumConverter.convertJmzReaderSpectrum(readSpectrum);
 
-            SpectrumReference spectrumReference = new SpectrumReference(fileIndex, spectrumIndex, spectrum.getPrecursorMz());
+            // spectrum index is 1-based
+            SpectrumReference spectrumReference = new SpectrumReference(fileIndex, spectrumIndex + 1, spectrum.getPrecursorMz());
 
             int[] majorPeaks = spectrum.asMajorPeakMZs(nMajorPeaks);
 
