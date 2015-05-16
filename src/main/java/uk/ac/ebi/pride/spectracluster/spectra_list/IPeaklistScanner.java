@@ -6,6 +6,6 @@ import java.util.Map;
 /**
  * Created by jg on 13.05.15.
  */
-public interface IFileScanner {
+public interface IPeaklistScanner {
     public Map<Integer, List<SpectrumReference>> getSpectraPerMajorPeaks(String[] filenames, int nMajorPeaks) throws Exception;
 }
