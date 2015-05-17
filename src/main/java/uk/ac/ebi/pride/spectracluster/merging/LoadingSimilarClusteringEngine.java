@@ -47,6 +47,9 @@ public class LoadingSimilarClusteringEngine extends SimilarClusterMergingEngine 
                         throw new IllegalStateException("Cannot add greedy cluster to non-greedy cluster");
                     }
 
+                    // TODO: throw an exeception for now
+                    if (true)
+                        throw new UnsupportedOperationException("Loading peak lists not implemented yet.");
                     GreedySpectralCluster greedySpectralCluster = (GreedySpectralCluster) existingCluster;
                     greedySpectralCluster.addCluster(clusterToAdd);
                 }
