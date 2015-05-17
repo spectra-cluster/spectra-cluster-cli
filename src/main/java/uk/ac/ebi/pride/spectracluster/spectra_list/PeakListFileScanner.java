@@ -46,6 +46,8 @@ public class PeakListFileScanner implements IPeaklistScanner {
 
                 spectraPerMajorPeak.get(majorPeak).add(spectrumReference);
             }
+
+            spectrumIndex++;
         }
     }
 
