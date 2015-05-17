@@ -19,7 +19,7 @@ public class BinaryClusterFileScanner implements IClusterScanner {
 
         List<ClusterReference> clusterReferences = new ArrayList<ClusterReference>();
 
-        long offset = 0;
+        long offset = inputStream.getChannel().position();
         String lastLine = (String) objectInputStream.readObject();
 
         while (!lastLine.equals("END")) {
@@ -34,6 +34,8 @@ public class BinaryClusterFileScanner implements IClusterScanner {
             offset = inputStream.getChannel().position();
             lastLine = (String) objectInputStream.readObject();
         }
+
+        inputStream.close();
 
         return clusterReferences;
     }
