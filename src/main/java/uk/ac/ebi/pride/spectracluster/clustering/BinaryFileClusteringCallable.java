@@ -24,7 +24,7 @@ public class BinaryFileClusteringCallable implements Callable<File> {
     public static final float FRAGMENT_TOLERANCE = 0.5F;
     public static final ISimilarityChecker SIMILARITY_CHECKER = new CombinedFisherIntensityTest(FRAGMENT_TOLERANCE);
     public static final float WINDOW_SIZE = 4.0F;
-    public static final double[] CLUSTERING_PRECISION = {0.999F, 0.998F, 0.996F, 0.994F, 0.992F, 0.99F};
+    public static final double[] CLUSTERING_PRECISION = {0.9999F, 0.9998F, 0.9996F, 0.9994F, 0.9992F, 0.999F};
     public static final IFunction<List<IPeak>, List<IPeak>> peakFilterFunction = new FractionTICPeakFunction(0.5f, 20);
     public static final boolean ONLY_COMPARE_KNOWN_MATCHES = true;
 
