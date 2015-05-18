@@ -8,12 +8,14 @@ public final class ClusterReference implements Comparable<ClusterReference> {
     private final long offset;
     private final float precursorMz;
     private final int size;
+    private final String id;
 
-    public ClusterReference(int fileId, long offset, float precursorMz, int size) {
+    public ClusterReference(int fileId, long offset, float precursorMz, int size, String id) {
         this.fileId = fileId;
         this.offset = offset;
         this.precursorMz = precursorMz;
         this.size = size;
+        this.id = id;
     }
 
     public int getFileId() {
@@ -30,6 +32,10 @@ public final class ClusterReference implements Comparable<ClusterReference> {
 
     public int getSize() {
         return size;
+    }
+
+    public String getId() {
+        return id;
     }
 
     /**
