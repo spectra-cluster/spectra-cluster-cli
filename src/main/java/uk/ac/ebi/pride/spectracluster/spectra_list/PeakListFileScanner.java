@@ -3,6 +3,7 @@ package uk.ac.ebi.pride.spectracluster.spectra_list;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
+import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
 import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
 import uk.ac.ebi.pride.tools.mgf_parser.MgfFile;
 
@@ -13,20 +14,23 @@ import java.util.*;
  * Created by jg on 13.05.15.
  */
 public class PeakListFileScanner implements IPeaklistScanner {
+    private List<List<IndexElement>> fileIndices = new ArrayList<List<IndexElement>>();
+
     @Override
     public Map<Integer, List<SpectrumReference>> getSpectraPerMajorPeaks(String[] filenames, int nMajorPeaks) throws Exception {
         // map each file
         Map<Integer, List<SpectrumReference>> spectraPerMajorPeak = new HashMap<Integer, List<SpectrumReference>>();
 
         for (int i = 0; i < filenames.length; i++) {
-            scanFile(filenames[i], i, spectraPerMajorPeak, nMajorPeaks);
+            List<IndexElement> fileIndex = scanFile(filenames[i], i, spectraPerMajorPeak, nMajorPeaks);
+            fileIndices.add(fileIndex);
         }
 
         return spectraPerMajorPeak;
     }
 
-    private void scanFile(String filename, int fileIndex, Map<Integer, List<SpectrumReference>> spectraPerMajorPeak, int nMajorPeaks) throws Exception {
-        JMzReader reader = openFile(filename);
+    private List<IndexElement> scanFile(String filename, int fileIndex, Map<Integer, List<SpectrumReference>> spectraPerMajorPeak, int nMajorPeaks) throws Exception {
+        MgfFile reader = openFile(filename);
 
         Iterator<Spectrum> spectrumIterator = reader.getSpectrumIterator();
 
@@ -50,12 +54,18 @@ public class PeakListFileScanner implements IPeaklistScanner {
 
             spectrumIndex++;
         }
+
+        return reader.getIndex();
     }
 
-    private JMzReader openFile(String filename) throws Exception {
+    private MgfFile openFile(String filename) throws Exception {
         if (filename.toLowerCase().endsWith(".mgf"))
             return new MgfFile(new File(filename));
 
         throw new Exception("Unsupported filetype encountered: " + filename);
+    }
+
+    public List<List<IndexElement>> getFileIndices() {
+        return Collections.unmodifiableList(fileIndices);
     }
 }
