@@ -26,7 +26,7 @@ public class BinaryClusterFileScanner implements IClusterScanner {
             ICluster currentCluster = BinaryClusterParser.INSTANCE.parseNextCluster(objectInputStream, lastLine);
             ClusterReference clusterReference =
                     new ClusterReference(fileId, offset, currentCluster.getPrecursorMz(),
-                            currentCluster.getClusteredSpectraCount());
+                            currentCluster.getClusteredSpectraCount(), currentCluster.getId());
 
             clusterReferences.add(clusterReference);
 
