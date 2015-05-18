@@ -23,17 +23,15 @@ import java.util.Map;
  * Created by jg on 13.05.15.
  */
 public class SpectrumWriter {
-    private final File outputFile;
-    protected static final IFunction<ISpectrum, ISpectrum> filterFunction = Defaults.getDefaultPeakFilter();
+    public static final IFunction<ISpectrum, ISpectrum> filterFunction = Defaults.getDefaultPeakFilter();
+    private Map<Integer, JMzReader> readerPerFileIndex = new HashMap<Integer, JMzReader>();
+    private final String[] peakListFilenames;
 
-    public SpectrumWriter(File outputFile) {
-        this.outputFile = outputFile;
+    public SpectrumWriter(String[] peakListFilenames) {
+        this.peakListFilenames = peakListFilenames;
     }
 
-    public void writeSpectra(List<SpectrumReference> spectrumReferences, String[] peakListFilenames) throws Exception {
-        // initialize storage for various readers
-        Map<Integer, JMzReader> readerPerFileIndex = new HashMap<Integer, JMzReader>();
-
+    public void writeSpectra(List<SpectrumReference> spectrumReferences, File outputFile) throws Exception {
         // sort the references
         Collections.sort(spectrumReferences);
 
@@ -56,7 +54,7 @@ public class SpectrumWriter {
             Spectrum spectrum = fileReader.getSpectrumByIndex(spectrumReference.getSpectrumIndex());
 
             // pre-process the spectrum
-            ISpectrum processedSpectrum = filterFunction.apply(SpectrumConverter.convertJmzReaderSpectrum(spectrum));
+            ISpectrum processedSpectrum = filterFunction.apply(SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId()));
 
             // write it to the file
             BinaryClusterAppender.INSTANCE.appendCluster(objectOutputStream, ClusterUtilities.asCluster(processedSpectrum));
