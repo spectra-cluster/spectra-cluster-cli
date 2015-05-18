@@ -18,8 +18,9 @@ public class PeakListFileScanner implements IPeaklistScanner {
         // map each file
         Map<Integer, List<SpectrumReference>> spectraPerMajorPeak = new HashMap<Integer, List<SpectrumReference>>();
 
-        for (int i = 0; i < filenames.length; i++)
+        for (int i = 0; i < filenames.length; i++) {
             scanFile(filenames[i], i, spectraPerMajorPeak, nMajorPeaks);
+        }
 
         return spectraPerMajorPeak;
     }
@@ -33,7 +34,7 @@ public class PeakListFileScanner implements IPeaklistScanner {
 
         while(spectrumIterator.hasNext()) {
             Spectrum readSpectrum = spectrumIterator.next();
-            ISpectrum spectrum = SpectrumConverter.convertJmzReaderSpectrum(readSpectrum);
+            ISpectrum spectrum = SpectrumConverter.convertJmzReaderSpectrum(readSpectrum, readSpectrum.getId()); // id is not used
 
             // spectrum index is 1-based
             SpectrumReference spectrumReference = new SpectrumReference(fileIndex, spectrumIndex + 1, spectrum.getPrecursorMz());
