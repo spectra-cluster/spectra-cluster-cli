@@ -13,6 +13,8 @@ import org.apache.commons.cli.Options;
  */
 public class CliOptions {
     public enum OPTIONS {
+       OUTPUT_PATH("output_path"),
+       MAJOR_PEAK_JOBS("major_peak_jobs"),
        HELP("help");
 
         private String value;
@@ -34,6 +36,18 @@ public class CliOptions {
     private static final Options options = new Options();
 
     static {
+        Option outputPath = OptionBuilder
+                .hasArg()
+                .withDescription("path to the outputfile. Outputfile must not exist.")
+                .create(OPTIONS.OUTPUT_PATH.getValue());
+        options.addOption(outputPath);
+
+        Option majorPeakJobs = OptionBuilder
+                .hasArg()
+                .withDescription("number of threads to use for major peak clustering.")
+                .create(OPTIONS.MAJOR_PEAK_JOBS.getValue());
+        options.addOption(majorPeakJobs);
+
         Option help = new Option(
                 OPTIONS.HELP.toString(),
                 "print this message.");
