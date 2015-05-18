@@ -20,7 +20,7 @@ public final class SpectrumConverter {
 
     }
 
-    public static ISpectrum convertJmzReaderSpectrum(Spectrum jmzReaderSpectrum) {
+    public static ISpectrum convertJmzReaderSpectrum(Spectrum jmzReaderSpectrum, String spectrumId) {
         // create the peak list first
         List<IPeak> peaks = new ArrayList<IPeak>();
 
@@ -30,14 +30,41 @@ public final class SpectrumConverter {
         }
 
         // create the spectrum
-        String uniqueId = UUID.randomUUID().toString();
-        ISpectrum convertedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(uniqueId, jmzReaderSpectrum.getPrecursorCharge(), (float) jmzReaderSpectrum.getPrecursorMZ().doubleValue(), Defaults.getDefaultQualityScorer(), peaks);
+        ISpectrum convertedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(spectrumId, jmzReaderSpectrum.getPrecursorCharge(), (float) jmzReaderSpectrum.getPrecursorMZ().doubleValue(), Defaults.getDefaultQualityScorer(), peaks);
 
         // set the original title if available
+        String spectrumTitle = null;
+
         for (CvParam param : jmzReaderSpectrum.getAdditional().getCvParams()) {
             if ("MS:1000796".equals(param.getAccession())) {
-                convertedSpectrum.setProperty(KnownProperties.SPECTRUM_TITLE, param.getValue());
+                spectrumTitle = param.getValue();
+                convertedSpectrum.setProperty(KnownProperties.SPECTRUM_TITLE, spectrumTitle);
                 break;
+            }
+        }
+
+        // if a spectrum title was found, try to extract the id
+        if (spectrumTitle != null) {
+            int index = spectrumTitle.indexOf("sequence=");
+            if (index >= 0) {
+                int end = spectrumTitle.indexOf(",", index);
+                if (end < 0)
+                    end = spectrumTitle.length();
+
+                String sequence = spectrumTitle.substring(index + "sequence=".length(), end);
+                convertedSpectrum.setProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY, sequence);
+            }
+            else {
+                index = spectrumTitle.indexOf("splib_sequence=");
+
+                if (index >= 0) {
+                    int end = spectrumTitle.indexOf(",", index);
+                    if (end < 0)
+                        end = spectrumTitle.length();
+
+                    String sequence = spectrumTitle.substring(index + "splib_sequence=".length(), end);
+                    convertedSpectrum.setProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY, sequence);
+                }
             }
         }
 
