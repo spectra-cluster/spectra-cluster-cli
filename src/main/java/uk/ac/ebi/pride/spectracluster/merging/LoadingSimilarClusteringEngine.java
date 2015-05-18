@@ -3,21 +3,32 @@ package uk.ac.ebi.pride.spectracluster.merging;
 import uk.ac.ebi.pride.spectracluster.cluster.GreedySpectralCluster;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.engine.SimilarClusterMergingEngine;
+import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
+import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
+import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
+import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
+import uk.ac.ebi.pride.tools.mgf_parser.MgfFile;
 
-import java.util.Comparator;
-import java.util.Set;
+import java.io.File;
+import java.util.*;
 
 /**
  * This clustering engine also merges clusters if their share
  * a certain proportion of spectra. But if this is the case,
  * the peak lists are loaded again from the source file.
- *
+ * <p/>
  * Created by jg on 17.05.15.
  */
 public class LoadingSimilarClusteringEngine extends SimilarClusterMergingEngine {
-    public LoadingSimilarClusteringEngine(Comparator<ICluster> scm, float windowSize, double requiredSharedSpectra) {
+    private final Map<String, SpectrumReference> spectrumReferencesPerId;
+    private final String[] peakListFiles;
+    private Map<Integer, JMzReader> readersPerFileid = new HashMap<Integer, JMzReader>();
+
+    public LoadingSimilarClusteringEngine(Comparator<ICluster> scm, float windowSize, double requiredSharedSpectra, Map<String, SpectrumReference> spectrumReferencesPerId, String[] peakListFiles) {
         super(scm, windowSize, requiredSharedSpectra);
+        this.spectrumReferencesPerId = spectrumReferencesPerId;
+        this.peakListFiles = peakListFiles;
     }
 
     /**
@@ -37,26 +48,63 @@ public class LoadingSimilarClusteringEngine extends SimilarClusterMergingEngine 
             }
 
             if (sharedSpectra >= requiredSharedSpectra) {
-                if (clusterToAdd.storesPeakLists()) {
-                    ISpectrum[] buffer = new ISpectrum[clusterToAdd.getClusteredSpectra().size()];
-                    existingCluster.addSpectra(clusterToAdd.getClusteredSpectra().toArray(buffer));
-                }
-                else {
-                    // it must be a greedy cluster
-                    if (!GreedySpectralCluster.class.isInstance(existingCluster)) {
-                        throw new IllegalStateException("Cannot add greedy cluster to non-greedy cluster");
-                    }
+                ISpectrum[] spectraToAdd = null;
 
-                    // TODO: throw an exeception for now
-                    if (true)
-                        throw new UnsupportedOperationException("Loading peak lists not implemented yet.");
-                    GreedySpectralCluster greedySpectralCluster = (GreedySpectralCluster) existingCluster;
-                    greedySpectralCluster.addCluster(clusterToAdd);
+                if (clusterToAdd.storesPeakLists()) {
+                    spectraToAdd = new ISpectrum[clusterToAdd.getClusteredSpectra().size()];
+                    spectraToAdd = clusterToAdd.getClusteredSpectra().toArray(spectraToAdd);
+                } else {
+                    // identify the actual spectra to load
+                    Set<String> spectraToLoad = new HashSet<String>(clusterToAdd.getSpectralIds());
+                    spectraToLoad.removeAll(existingSpectraIds);
+                    // load the spectra from file
+                    spectraToAdd = loadSpectraFromFile(spectraToLoad);
                 }
+
+                existingCluster.addSpectra(spectraToAdd);
+
+                // keep the larger id
+                if (clusterToAdd.getClusteredSpectraCount() > existingCluster.getClusteredSpectraCount())
+                    existingCluster.setId(clusterToAdd.getId());
+
+                return;
             }
         }
 
         // since the cluster wasn't merged, add it as new
         clusters.add(clusterToAdd);
+    }
+
+    private ISpectrum[] loadSpectraFromFile(Set<String> spectraToLoad) {
+        try {
+            List<ISpectrum> loadedSpectra = new ArrayList<ISpectrum>();
+
+            for (String specId : spectraToLoad) {
+                // get the spectrum reference
+                SpectrumReference reference = spectrumReferencesPerId.get(specId);
+
+                if (reference == null)
+                    throw new IllegalStateException("Missing SpecrumReference for spectrum " + specId);
+
+                // read the spectrum
+                JMzReader reader;
+                if (readersPerFileid.containsKey(reference.getFileId())) {
+                    reader = readersPerFileid.get(reference.getFileId());
+                } else {
+                    // TODO: support multiple file types
+                    reader = new MgfFile(new File(peakListFiles[reference.getFileId()]));
+                    readersPerFileid.put(reference.getFileId(), reader);
+                }
+
+                ISpectrum loadedSpectrum = SpectrumConverter.convertJmzReaderSpectrum(reader.getSpectrumByIndex(reference.getSpectrumIndex()), reference.getSpectrumId());
+                loadedSpectra.add(loadedSpectrum);
+            }
+
+            // convert to array and return
+            ISpectrum[] returnValue = new ISpectrum[loadedSpectra.size()];
+            return loadedSpectra.toArray(returnValue);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 }
