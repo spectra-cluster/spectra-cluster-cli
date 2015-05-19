@@ -58,6 +58,9 @@ public class SpectrumWriter {
 
             // pre-process the spectrum
             ISpectrum processedSpectrum = filterFunction.apply(SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId()));
+            // normalize the spectrum
+            processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(
+                    processedSpectrum, Defaults.getDefaultIntensityNormalizer().normalizePeaks(processedSpectrum.getPeaks()));
 
             // write it to the file
             BinaryClusterAppender.INSTANCE.appendCluster(objectOutputStream, ClusterUtilities.asCluster(processedSpectrum));
