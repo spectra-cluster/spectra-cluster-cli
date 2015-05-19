@@ -39,11 +39,12 @@ public class PeakListFileScanner implements IPeaklistScanner {
         while(spectrumIterator.hasNext()) {
             Spectrum readSpectrum = spectrumIterator.next();
             ISpectrum spectrum = SpectrumConverter.convertJmzReaderSpectrum(readSpectrum, readSpectrum.getId()); // id is not used
+            ISpectrum processedSpectrum = SpectrumWriter.filterFunction.apply(spectrum);
 
             // spectrum index is 1-based
-            SpectrumReference spectrumReference = new SpectrumReference(fileIndex, spectrumIndex + 1, spectrum.getPrecursorMz());
+            SpectrumReference spectrumReference = new SpectrumReference(fileIndex, spectrumIndex + 1, processedSpectrum.getPrecursorMz());
 
-            int[] majorPeaks = spectrum.asMajorPeakMZs(nMajorPeaks);
+            int[] majorPeaks = processedSpectrum.asMajorPeakMZs(nMajorPeaks);
 
             for (int majorPeak : majorPeaks) {
                 if (!spectraPerMajorPeak.containsKey(majorPeak))
