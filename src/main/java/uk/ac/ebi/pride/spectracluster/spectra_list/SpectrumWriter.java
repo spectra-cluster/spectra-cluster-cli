@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.spectracluster.spectra_list;
 
+import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.util.ClusterUtilities;
@@ -8,14 +9,12 @@ import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumUtilities;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
+import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
 import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
 import uk.ac.ebi.pride.tools.mgf_parser.MgfFile;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Writes spectra stored as SpectrumReferences to a file.
@@ -26,9 +25,13 @@ public class SpectrumWriter {
     public static final IFunction<ISpectrum, ISpectrum> filterFunction = Defaults.getDefaultPeakFilter();
     private Map<Integer, JMzReader> readerPerFileIndex = new HashMap<Integer, JMzReader>();
     private final String[] peakListFilenames;
+    private final List<List<IndexElement>> fileIndices;
+    private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
 
-    public SpectrumWriter(String[] peakListFilenames) {
+
+    public SpectrumWriter(String[] peakListFilenames, List<List<IndexElement>> fileIndices) {
         this.peakListFilenames = peakListFilenames;
+        this.fileIndices = fileIndices;
     }
 
     public void writeSpectra(List<SpectrumReference> spectrumReferences, File outputFile) throws Exception {
@@ -46,7 +49,7 @@ public class SpectrumWriter {
                 throw new Exception("Invalid file id for spectrum reference");
 
             if (!readerPerFileIndex.containsKey(fileIndex))
-                readerPerFileIndex.put(fileIndex, openFile(peakListFilenames[fileIndex]));
+                readerPerFileIndex.put(fileIndex, openFile(peakListFilenames[fileIndex], fileIndices.get(fileIndex)));
 
             JMzReader fileReader = readerPerFileIndex.get(fileIndex);
 
@@ -64,12 +67,20 @@ public class SpectrumWriter {
         BinaryClusterAppender.INSTANCE.appendEnd(objectOutputStream);
         objectOutputStream.close();
         outputStream.close();
+
+        // notify the listeners
+        for (IBinaryClusteringResultListener listener : listeners)
+            listener.onNewResultFile(outputFile);
     }
 
-    private JMzReader openFile(String peakListFilename) throws Exception {
+    private JMzReader openFile(String peakListFilename, List<IndexElement> fileIndex) throws Exception {
         if (peakListFilename.toLowerCase().endsWith(".mgf"))
-            return new MgfFile(new File(peakListFilename));
+            return new MgfFile(new File(peakListFilename), fileIndex);
 
         throw new Exception("Unknown file extension encountered: " + peakListFilename);
+    }
+
+    public void addListener(IBinaryClusteringResultListener listener) {
+        listeners.add(listener);
     }
 }
