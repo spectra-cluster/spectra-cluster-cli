@@ -4,6 +4,7 @@ import uk.ac.ebi.pride.spectracluster.cluster.GreedySpectralCluster;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.engine.SimilarClusterMergingEngine;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
+import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumWriter;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
@@ -97,7 +98,8 @@ public class LoadingSimilarClusteringEngine extends SimilarClusterMergingEngine 
                 }
 
                 ISpectrum loadedSpectrum = SpectrumConverter.convertJmzReaderSpectrum(reader.getSpectrumByIndex(reference.getSpectrumIndex()), reference.getSpectrumId());
-                loadedSpectra.add(loadedSpectrum);
+                ISpectrum processedSpectrum = SpectrumWriter.filterFunction.apply(loadedSpectrum);
+                loadedSpectra.add(processedSpectrum);
             }
 
             // convert to array and return
