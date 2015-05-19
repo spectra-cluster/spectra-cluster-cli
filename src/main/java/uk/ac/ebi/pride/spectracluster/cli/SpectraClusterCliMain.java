@@ -203,7 +203,7 @@ public class SpectraClusterCliMain {
         System.out.print("Merging duplicate clusters...");
         long start = System.currentTimeMillis();
 
-        IIncrementalClusteringEngine clusteringEngine = new LoadingSimilarClusteringEngine(Defaults.getDefaultSpectrumComparator(), WINDOW_SIZE, MIN_SHARED_SPECTRA, spectrumReferencesPerId, peaklistFilenames);
+        IIncrementalClusteringEngine clusteringEngine = new LoadingSimilarClusteringEngine(Defaults.getDefaultSpectrumComparator(), WINDOW_SIZE, MIN_SHARED_SPECTRA, spectrumReferencesPerId, peaklistFilenames, fileIndices);
         DotClusterClusterAppender.INSTANCE.appendStart(writer, "GreedyClustering"); // TODO: add better name
 
         for (ClusterReference clusterReference : clusterReferences) {

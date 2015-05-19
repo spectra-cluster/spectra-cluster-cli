@@ -8,6 +8,7 @@ import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumWriter;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
+import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
 import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
 import uk.ac.ebi.pride.tools.mgf_parser.MgfFile;
 
@@ -25,11 +26,13 @@ public class LoadingSimilarClusteringEngine extends SimilarClusterMergingEngine 
     private final Map<String, SpectrumReference> spectrumReferencesPerId;
     private final String[] peakListFiles;
     private Map<Integer, JMzReader> readersPerFileid = new HashMap<Integer, JMzReader>();
+    private final List<List<IndexElement>> peakListIndices;
 
-    public LoadingSimilarClusteringEngine(Comparator<ICluster> scm, float windowSize, double requiredSharedSpectra, Map<String, SpectrumReference> spectrumReferencesPerId, String[] peakListFiles) {
+    public LoadingSimilarClusteringEngine(Comparator<ICluster> scm, float windowSize, double requiredSharedSpectra, Map<String, SpectrumReference> spectrumReferencesPerId, String[] peakListFiles, List<List<IndexElement>> peakListIndices) {
         super(scm, windowSize, requiredSharedSpectra);
         this.spectrumReferencesPerId = spectrumReferencesPerId;
         this.peakListFiles = peakListFiles;
+        this.peakListIndices = peakListIndices;
     }
 
     /**
@@ -93,7 +96,7 @@ public class LoadingSimilarClusteringEngine extends SimilarClusterMergingEngine 
                     reader = readersPerFileid.get(reference.getFileId());
                 } else {
                     // TODO: support multiple file types
-                    reader = new MgfFile(new File(peakListFiles[reference.getFileId()]));
+                    reader = new MgfFile(new File(peakListFiles[reference.getFileId()]), peakListIndices.get(reference.getFileId()));
                     readersPerFileid.put(reference.getFileId(), reader);
                 }
 
