@@ -15,6 +15,9 @@ public class CliOptions {
     public enum OPTIONS {
        OUTPUT_PATH("output_path"),
        MAJOR_PEAK_JOBS("major_peak_jobs"),
+       START_THRESHOLD("threshold_start"),
+       END_THRESHOLD("threshold_end"),
+       ROUNDS("rounds"),
        HELP("help");
 
         private String value;
@@ -41,6 +44,24 @@ public class CliOptions {
                 .withDescription("path to the outputfile. Outputfile must not exist.")
                 .create(OPTIONS.OUTPUT_PATH.getValue());
         options.addOption(outputPath);
+
+        Option startThreshold = OptionBuilder
+                .hasArg()
+                .withDescription("(highest) starting threshold")
+                .create(OPTIONS.START_THRESHOLD.getValue());
+        options.addOption(startThreshold);
+
+        Option endThreshold = OptionBuilder
+                .hasArg()
+                .withDescription("(lowest) final clustering threshold")
+                .create(OPTIONS.END_THRESHOLD.getValue());
+        options.addOption(endThreshold);
+
+        Option rounds = OptionBuilder
+                .hasArg()
+                .withDescription("number of clustering rounds to use.")
+                .create(OPTIONS.ROUNDS.getValue());
+        options.addOption(rounds);
 
         Option majorPeakJobs = OptionBuilder
                 .hasArg()

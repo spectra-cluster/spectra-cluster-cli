@@ -24,16 +24,17 @@ public class BinaryFileClusteringCallable implements Callable<File> {
     public static final float FRAGMENT_TOLERANCE = 0.5F;
     public static final ISimilarityChecker SIMILARITY_CHECKER = new CombinedFisherIntensityTest(FRAGMENT_TOLERANCE);
     public static final float WINDOW_SIZE = 4.0F;
-    public static final double[] CLUSTERING_PRECISION = {0.9999F, 0.9998F, 0.9996F, 0.9994F, 0.9992F, 0.999F};
     public static final IFunction<List<IPeak>, List<IPeak>> peakFilterFunction = new FractionTICPeakFunction(0.5f, 20);
     public static final boolean ONLY_COMPARE_KNOWN_MATCHES = true;
 
     private final File outputFile;
     private final File inputFile;
+    private final List<Float> thresholds;
 
-    public BinaryFileClusteringCallable(File outputFile, File inputFile) {
+    public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds) {
         this.outputFile = outputFile;
         this.inputFile = inputFile;
+        this.thresholds = thresholds;
     }
 
     @Override
@@ -41,9 +42,9 @@ public class BinaryFileClusteringCallable implements Callable<File> {
         File currentInputFile = inputFile;
         long start = System.currentTimeMillis();
 
-        for (double clusteringPrecision : CLUSTERING_PRECISION) {
+        for (float threshold : thresholds) {
             IIncrementalClusteringEngine incrementalClusteringEngine =
-                    createIncrementalClusteringEngine(clusteringPrecision);
+                    createIncrementalClusteringEngine(threshold);
 
             // create the result file
             File tmpOutputfile = File.createTempFile("clustering_tmp", ".cls");

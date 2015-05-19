@@ -50,6 +50,25 @@ public class SpectraClusterCliMain {
                 nMajorPeakJobs = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.MAJOR_PEAK_JOBS.getValue()));
             }
 
+            int rounds = 4;
+            if (commandLine.hasOption(CliOptions.OPTIONS.ROUNDS.getValue()))
+                rounds = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ROUNDS.getValue()));
+
+            float startThreshold = 0.9999F;
+            if (commandLine.hasOption(CliOptions.OPTIONS.START_THRESHOLD.getValue()))
+                startThreshold = Float.parseFloat(CliOptions.OPTIONS.START_THRESHOLD.getValue());
+
+            float endThreshold = 0.999F;
+            if (commandLine.hasOption(CliOptions.OPTIONS.END_THRESHOLD.getValue()))
+                endThreshold = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.END_THRESHOLD.getValue()));
+
+            List<Float> thresholds = new ArrayList<Float>(rounds);
+            float stepSize = (startThreshold - endThreshold) / (rounds - 1);
+
+            for (int i = 0; i < rounds; i++) {
+                thresholds.add(startThreshold - (stepSize * i));
+            }
+
             // 1.) Pre-process spectra and store in list per highest peak
             /**
              * pre-scan all files and create list of SpectrumReferences for all spectra
@@ -72,7 +91,7 @@ public class SpectraClusterCliMain {
             // thereby, as soon as a file is written, the clustering job is launched
             SpectrumWriter spectrumWriter = new SpectrumWriter(peaklistFilenames, fileIndices);
             ExecutorService executorService = Executors.newFixedThreadPool(nMajorPeakJobs);
-            ClusteringProcessLauncher clusteringProcessLauncher = new ClusteringProcessLauncher(executorService, tmpClusteredPeakDir);
+            ClusteringProcessLauncher clusteringProcessLauncher = new ClusteringProcessLauncher(executorService, tmpClusteredPeakDir, thresholds);
             spectrumWriter.addListener(clusteringProcessLauncher);
 
             // write the major peak files

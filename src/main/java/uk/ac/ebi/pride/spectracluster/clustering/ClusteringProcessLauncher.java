@@ -14,17 +14,19 @@ public class ClusteringProcessLauncher implements  IBinaryClusteringResultListen
     private final ExecutorService executorService;
     private final File outputDirectory;
     private List<Future<File>> fileFutures = new ArrayList<Future<File>>();
+    private final List<Float> thresholds;
 
 
-    public ClusteringProcessLauncher(ExecutorService executorService, File outputDirectory) {
+    public ClusteringProcessLauncher(ExecutorService executorService, File outputDirectory, List<Float> thresholds) {
         this.executorService = executorService;
         this.outputDirectory = outputDirectory;
+        this.thresholds = thresholds;
     }
 
     @Override
     public void onNewResultFile(File binaryClusteringResultFile) {
         File outputFile = new File(outputDirectory, binaryClusteringResultFile.getName());
-        BinaryFileClusteringCallable clusteringCallable = new BinaryFileClusteringCallable(outputFile, binaryClusteringResultFile);
+        BinaryFileClusteringCallable clusteringCallable = new BinaryFileClusteringCallable(outputFile, binaryClusteringResultFile, thresholds);
         Future<File> fileFuture = executorService.submit(clusteringCallable);
 
         fileFutures.add(fileFuture);
