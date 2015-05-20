@@ -44,6 +44,7 @@ public class BinaryFileClusteringCallable implements Callable<File> {
     public File call() throws Exception {
         File currentInputFile = inputFile;
         long start = System.currentTimeMillis();
+        int nSpectra = 0;
 
         for (int nRound = 0; nRound < thresholds.size(); nRound++) {
             float threshold = thresholds.get(nRound);
@@ -72,6 +73,9 @@ public class BinaryFileClusteringCallable implements Callable<File> {
 
             // do the actual clustering
             for (ICluster clusterToAdd : clusterIterable) {
+                if (nRound == 0)
+                    nSpectra++;
+
                 Collection<ICluster> removedClusters = incrementalClusteringEngine.addClusterIncremental(clusterToAdd);
 
                 // write out the removed clusters
@@ -108,7 +112,7 @@ public class BinaryFileClusteringCallable implements Callable<File> {
         }
 
         System.out.println("Processed " + inputFile.getName() + " in " +
-                String.format("%.2f", (double) (System.currentTimeMillis() - start) / 1000 / 60) + " min");
+                String.format("%.2f", (double) (System.currentTimeMillis() - start) / 1000 / 60) + " min (" + nSpectra + " spectra)");
 
         return outputFile;
     }

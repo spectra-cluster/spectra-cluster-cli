@@ -37,6 +37,12 @@ public class SpectraClusterCliMain {
         try {
             CommandLine commandLine = parser.parse(CliOptions.getOptions(), args);
 
+            // HELP
+            if (commandLine.hasOption(CliOptions.OPTIONS.HELP.getValue())) {
+                printUsage();
+                return;
+            }
+
             if (!commandLine.hasOption(CliOptions.OPTIONS.OUTPUT_PATH.getValue()))
                 throw new Exception("Missing required option " + CliOptions.OPTIONS.OUTPUT_PATH.getValue());
             File finalResultFile = new File(commandLine.getOptionValue(CliOptions.OPTIONS.OUTPUT_PATH.getValue()));
@@ -105,6 +111,7 @@ public class SpectraClusterCliMain {
             // group the spectrum references and write each group to a file
             ReferenceMzBinner binner = new ReferenceMzBinner();
             List<List<SpectrumReference>> groupedSpectrumReferences = binner.groupSpectrumReferences(spectrumReferences);
+            System.out.println("Split " + spectrumReferences.size() + " spectra in " + groupedSpectrumReferences.size() + " bins.");
             int outputIndex = 0;
             for (List<SpectrumReference> spectrumReferenceList : groupedSpectrumReferences) {
                 File outputFile = getMajorPeakSourceFile(outputIndex, tmpSpectraPerPeakDir);
@@ -179,12 +186,6 @@ public class SpectraClusterCliMain {
                 System.out.println("Warning: Failed to delete " + combinedResultFile);
 
             System.out.println("Clustering completed. Results written to " + finalResultFile);
-
-            // HELP
-            if (commandLine.hasOption(CliOptions.OPTIONS.HELP.getValue())) {
-                printUsage();
-                return;
-            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error: " + e.getMessage());
@@ -365,7 +366,7 @@ public class SpectraClusterCliMain {
     }
 
     private static File getMajorPeakSourceFile(int majorPeak, File dir) {
-        File outputFile = new File(dir, "peak_" + majorPeak + ".cls");
+        File outputFile = new File(dir, "bin_" + majorPeak + ".cls");
 
         return outputFile;
     }

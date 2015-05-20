@@ -21,8 +21,15 @@ public class ReferenceMzBinner {
         List<List<SpectrumReference>> groupedSpectrumReferences = new ArrayList<List<SpectrumReference>>();
         groupedSpectrumReferences.add(spectrumReferences);
 
-        for (int windowSize : WINDOW_SIZES) {
-            groupedSpectrumReferences = groupReferences(groupedSpectrumReferences, windowSize, MAXIMAL_SPECTRA);
+        for (int i = 0; i < WINDOW_SIZES.length; i++) {
+            int windowSize = WINDOW_SIZES[i];
+            int maximalSpectra = MAXIMAL_SPECTRA;
+
+            // force a re-distribution in the first round
+            if (i == 0)
+                maximalSpectra = 1;
+
+            groupedSpectrumReferences = groupReferences(groupedSpectrumReferences, windowSize, maximalSpectra);
         }
 
         return groupedSpectrumReferences;
