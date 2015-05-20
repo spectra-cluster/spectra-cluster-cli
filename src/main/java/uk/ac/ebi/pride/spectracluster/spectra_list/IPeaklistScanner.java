@@ -8,4 +8,6 @@ import java.util.Map;
  */
 public interface IPeaklistScanner {
     public Map<Integer, List<SpectrumReference>> getSpectraPerMajorPeaks(String[] filenames, int nMajorPeaks) throws Exception;
+
+    public List<SpectrumReference> getSpectrumReferences(String[] filenames) throws Exception;
 }

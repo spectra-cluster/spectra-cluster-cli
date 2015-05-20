@@ -5,7 +5,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
-import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
 import uk.ac.ebi.pride.spectracluster.clustering.ClusteringProcessLauncher;
 import uk.ac.ebi.pride.spectracluster.engine.IIncrementalClusteringEngine;
 import uk.ac.ebi.pride.spectracluster.io.*;
@@ -81,8 +80,8 @@ public class SpectraClusterCliMain {
             File tmpSpectraPerPeakDir = createTemporaryDirectory("spectra_per_peak");
             File tmpClusteredPeakDir = createTemporaryDirectory("clustering_results");
 
-            Map<Integer, List<SpectrumReference>> spectrumReferencesPerMajorPeak = prescanPeaklistFiles(tmpSpectraPerPeakDir, peaklistFilenames);
-            Map<String, SpectrumReference> spectrumReferencesPerId = getSpectrumReferencesPerId(spectrumReferencesPerMajorPeak);
+            List<SpectrumReference> spectrumReferences = prescanPeaklistFiles(peaklistFilenames);
+            Map<String, SpectrumReference> spectrumReferencesPerId = getSpectrumReferencesPerId(spectrumReferences);
 
             // write out the spectra, one file per major peak and start the clustering job right away
             System.out.println("Converting spectra to binary format per major peak");
@@ -95,10 +94,23 @@ public class SpectraClusterCliMain {
             spectrumWriter.addListener(clusteringProcessLauncher);
 
             // write the major peak files
+            /**
             for (int majorPeak : spectrumReferencesPerMajorPeak.keySet()) {
                 File outputFile = getMajorPeakSourceFile(majorPeak, tmpSpectraPerPeakDir);
 
                 spectrumWriter.writeSpectra(spectrumReferencesPerMajorPeak.get(majorPeak), outputFile);
+            }
+             */
+
+            // group the spectrum references and write each group to a file
+            ReferenceMzBinner binner = new ReferenceMzBinner();
+            List<List<SpectrumReference>> groupedSpectrumReferences = binner.groupSpectrumReferences(spectrumReferences);
+            int outputIndex = 0;
+            for (List<SpectrumReference> spectrumReferenceList : groupedSpectrumReferences) {
+                File outputFile = getMajorPeakSourceFile(outputIndex, tmpSpectraPerPeakDir);
+
+                spectrumWriter.writeSpectra(spectrumReferenceList, outputFile);
+                outputIndex++;
             }
 
             // wait until all clustering jobs are done - since all files were written, all
@@ -294,7 +306,7 @@ public class SpectraClusterCliMain {
         objectOutputStream.close();
     }
 
-    private static Map<Integer, List<SpectrumReference>> prescanPeaklistFiles(File tmpSpectraPerPeakDir, String[] peaklistFilenames) throws Exception {
+    private static Map<Integer, List<SpectrumReference>> prescanPeaklistFilesPerMajorPeak(String[] peaklistFilenames) throws Exception {
         // pre-scan all files
         System.out.print("Pre-scanning " + peaklistFilenames.length + " input files...");
         long start = System.currentTimeMillis();
@@ -308,6 +320,20 @@ public class SpectraClusterCliMain {
         return loadedSpectrumReferenceMap;
     }
 
+    private static List<SpectrumReference> prescanPeaklistFiles(String[] peaklistFilenames) throws Exception {
+        // pre-scan all files
+        System.out.print("Pre-scanning " + peaklistFilenames.length + " input files...");
+        long start = System.currentTimeMillis();
+
+        PeakListFileScanner fileScanner = new PeakListFileScanner();
+        List<SpectrumReference> spectrumReferences = fileScanner.getSpectrumReferences(peaklistFilenames);
+        fileIndices = fileScanner.getFileIndices();
+
+        printDone(start);
+
+        return spectrumReferences;
+    }
+
     private static Map<String, SpectrumReference> getSpectrumReferencesPerId(Map<Integer, List<SpectrumReference>> spectrumReferencesPerMajorPeak) {
         Map<String, SpectrumReference> spectrumReferencePerId = new HashMap<String, SpectrumReference>();
 
@@ -319,6 +345,20 @@ public class SpectraClusterCliMain {
 
                 spectrumReferencePerId.put(spectrumReference.getSpectrumId(), spectrumReference);
             }
+        }
+
+        return spectrumReferencePerId;
+    }
+
+    private static Map<String, SpectrumReference> getSpectrumReferencesPerId(List<SpectrumReference> spectrumReferences) {
+        Map<String, SpectrumReference> spectrumReferencePerId = new HashMap<String, SpectrumReference>();
+
+        // save the spectrum references per id
+       for (SpectrumReference spectrumReference : spectrumReferences) {
+            if (spectrumReferencePerId.containsKey(spectrumReference.getSpectrumId()))
+                continue;
+
+            spectrumReferencePerId.put(spectrumReference.getSpectrumId(), spectrumReference);
         }
 
         return spectrumReferencePerId;

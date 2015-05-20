@@ -12,6 +12,9 @@ import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.FractionTICPeakFunction;
+import uk.ac.ebi.pride.spectracluster.util.predicate.IComparisonPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.ClusterShareMajorPeakPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.IsKnownComparisonsPredicate;
 
 import java.io.*;
 import java.util.*;
@@ -42,9 +45,22 @@ public class BinaryFileClusteringCallable implements Callable<File> {
         File currentInputFile = inputFile;
         long start = System.currentTimeMillis();
 
-        for (float threshold : thresholds) {
+        for (int nRound = 0; nRound < thresholds.size(); nRound++) {
+            float threshold = thresholds.get(nRound);
+
+            IComparisonPredicate<ICluster> comparisonPredicate;
+
+            if (nRound == 0) {
+                // first round only compare spectra that share a major peak
+                comparisonPredicate = new ClusterShareMajorPeakPredicate(5);
+            }
+            else {
+                // subsequent rounds only compare known matches
+                comparisonPredicate = new IsKnownComparisonsPredicate();
+            }
+
             IIncrementalClusteringEngine incrementalClusteringEngine =
-                    createIncrementalClusteringEngine(threshold);
+                    createIncrementalClusteringEngine(threshold, comparisonPredicate);
 
             // create the result file
             File tmpOutputfile = File.createTempFile("clustering_tmp", ".cls");
@@ -97,14 +113,14 @@ public class BinaryFileClusteringCallable implements Callable<File> {
         return outputFile;
     }
 
-    private IIncrementalClusteringEngine createIncrementalClusteringEngine(double clusteringPrecision) {
+    private IIncrementalClusteringEngine createIncrementalClusteringEngine(double clusteringPrecision, IComparisonPredicate<ICluster> comparisonPredicate) {
         IIncrementalClusteringEngine clusteringEngine = new GreedyIncrementalClusteringEngine(
                 SIMILARITY_CHECKER,
                 Defaults.getDefaultSpectrumComparator(),
                 WINDOW_SIZE,
                 clusteringPrecision,
                 peakFilterFunction,
-                ONLY_COMPARE_KNOWN_MATCHES);
+                comparisonPredicate);
 
         return clusteringEngine;
     }
