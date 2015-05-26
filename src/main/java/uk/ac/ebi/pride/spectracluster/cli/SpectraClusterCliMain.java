@@ -4,6 +4,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.io.FileUtils;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.ClusteringProcessLauncher;
 import uk.ac.ebi.pride.spectracluster.engine.IIncrementalClusteringEngine;
@@ -59,7 +60,7 @@ public class SpectraClusterCliMain {
             if (commandLine.hasOption(CliOptions.OPTIONS.ROUNDS.getValue()))
                 rounds = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ROUNDS.getValue()));
 
-            float startThreshold = 0.9999F;
+            float startThreshold = 0.999F;
             if (commandLine.hasOption(CliOptions.OPTIONS.START_THRESHOLD.getValue()))
                 startThreshold = Float.parseFloat(CliOptions.OPTIONS.START_THRESHOLD.getValue());
 
@@ -73,6 +74,8 @@ public class SpectraClusterCliMain {
             for (int i = 0; i < rounds; i++) {
                 thresholds.add(startThreshold - (stepSize * i));
             }
+
+            boolean mergeDuplicate = commandLine.hasOption(CliOptions.OPTIONS.MERGE_DUPLICATE.getValue());
 
             // 1.) Pre-process spectra and store in list per highest peak
             /**
@@ -180,7 +183,10 @@ public class SpectraClusterCliMain {
             /**
              * Merge all clusters that share more than 40% of their spectra
              */
-            mergeDuplicateClusters(combinedResultFile, clusterReferences, finalResultFile, spectrumReferencesPerId, peaklistFilenames);
+            if (mergeDuplicate)
+                mergeDuplicateClusters(combinedResultFile, clusterReferences, finalResultFile, spectrumReferencesPerId, peaklistFilenames, endThreshold);
+            else
+                convertClusters(combinedResultFile, finalResultFile, endThreshold);
 
             if (!combinedResultFile.delete())
                 System.out.println("Warning: Failed to delete " + combinedResultFile);
@@ -219,7 +225,31 @@ public class SpectraClusterCliMain {
         return clusterReferences;
     }
 
-    private static void mergeDuplicateClusters(File combinedResultFile, List<ClusterReference> clusterReferences, File finalResultFile, Map<String, SpectrumReference> spectrumReferencesPerId, String[] peaklistFilenames) throws Exception {
+    private static void convertClusters(File combinedResultFile, File finalResultFile, float endThreshold) throws Exception {
+        FileInputStream fileInputStream = new FileInputStream(combinedResultFile);
+        FileWriter writer = new FileWriter(finalResultFile);
+
+        int nClusterWritten = 0;
+        System.out.print("Converting results to .clustering...");
+        long start = System.currentTimeMillis();
+
+        DotClusterClusterAppender.INSTANCE.appendStart(writer, "GreedyClustering_" + String.valueOf(endThreshold));
+        CGFSpectrumIterable iterable = new CGFSpectrumIterable(fileInputStream);
+
+        for (ICluster cluster : iterable) {
+            DotClusterClusterAppender.INSTANCE.appendCluster(writer, cluster);
+        }
+
+        writer.close();
+
+        System.out.println("Done. (Took " + String.format("%.2f", (float) (System.currentTimeMillis() - start) / 1000 / 60) + " min. " + nClusterWritten + " final clusters)");
+
+        // copy the final CGF file as well
+        FileUtils.copyFile(combinedResultFile, new File(finalResultFile.getAbsolutePath() + ".cgf"));
+        System.out.println("Copied CGF result to " + finalResultFile.getAbsolutePath() + ".cgf");
+    }
+
+    private static void mergeDuplicateClusters(File combinedResultFile, List<ClusterReference> clusterReferences, File finalResultFile, Map<String, SpectrumReference> spectrumReferencesPerId, String[] peaklistFilenames, float finalThreshold) throws Exception {
         FileInputStream fileInputStream = new FileInputStream(combinedResultFile);
 
         FileWriter writer = new FileWriter(finalResultFile);
@@ -236,7 +266,7 @@ public class SpectraClusterCliMain {
         long start = System.currentTimeMillis();
 
         IIncrementalClusteringEngine clusteringEngine = new LoadingSimilarClusteringEngine(Defaults.getDefaultSpectrumComparator(), WINDOW_SIZE, MIN_SHARED_SPECTRA, spectrumReferencesPerId, peaklistFilenames, fileIndices);
-        DotClusterClusterAppender.INSTANCE.appendStart(writer, "GreedyClustering"); // TODO: add better name
+        DotClusterClusterAppender.INSTANCE.appendStart(writer, "GreedyClustering_" + String.valueOf(finalThreshold)); // TODO: add better name
 
         for (ClusterReference clusterReference : clusterReferences) {
             nClusterRead++;
@@ -249,7 +279,6 @@ public class SpectraClusterCliMain {
             if (!clusterReference.getId().equals(cluster.getId()))
                 throw new IllegalStateException("Wrong cluster read");
 
-            // TODO: Greedy clusters can't really be merged like that..
             // if a cluster is merged, load its spectra from the binary file first
             Collection<ICluster> removedCluster = clusteringEngine.addClusterIncremental(cluster);
 

@@ -18,6 +18,7 @@ public class CliOptions {
        START_THRESHOLD("threshold_start"),
        END_THRESHOLD("threshold_end"),
        ROUNDS("rounds"),
+       MERGE_DUPLICATE("merge_duplicate"),
        HELP("help");
 
         private String value;
@@ -68,6 +69,11 @@ public class CliOptions {
                 .withDescription("number of threads to use for major peak clustering.")
                 .create(OPTIONS.MAJOR_PEAK_JOBS.getValue());
         options.addOption(majorPeakJobs);
+
+        Option mergeDuplicate = OptionBuilder
+                .withDescription("if this option is set duplicate clusters are merged based on the proportion of shared spectra.")
+                .create(OPTIONS.MERGE_DUPLICATE.getValue());
+        options.addOption(mergeDuplicate);
 
         Option help = new Option(
                 OPTIONS.HELP.toString(),

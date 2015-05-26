@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class ReferenceMzBinner {
     public static final int[] WINDOW_SIZES = {25, 10, 4};
-    public static final int MAXIMAL_SPECTRA = 500000;
+    public static final int MAXIMAL_SPECTRA = 50000;
 
     public List<List<SpectrumReference>> groupSpectrumReferences(List<SpectrumReference> spectrumReferences) {
         // sort according to m/z
