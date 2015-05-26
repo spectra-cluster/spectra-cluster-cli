@@ -64,7 +64,7 @@ public class SpectraClusterCliMain {
             if (commandLine.hasOption(CliOptions.OPTIONS.START_THRESHOLD.getValue()))
                 startThreshold = Float.parseFloat(CliOptions.OPTIONS.START_THRESHOLD.getValue());
 
-            float endThreshold = 0.999F;
+            float endThreshold = 0.99F;
             if (commandLine.hasOption(CliOptions.OPTIONS.END_THRESHOLD.getValue()))
                 endThreshold = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.END_THRESHOLD.getValue()));
 
