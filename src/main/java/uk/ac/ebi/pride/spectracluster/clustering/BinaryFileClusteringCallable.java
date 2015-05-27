@@ -66,10 +66,10 @@ public class BinaryFileClusteringCallable implements Callable<File> {
 
             // create the result file
             File tmpOutputfile = File.createTempFile("clustering_tmp", ".cls");
-            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(tmpOutputfile));
+            ObjectOutputStream outputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(tmpOutputfile)));
 
             // read the clusters
-            ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(currentInputFile));
+            ObjectInputStream inputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(currentInputFile)));
             BinaryClusterIterable clusterIterable = new BinaryClusterIterable(inputStream);
 
             // do the actual clustering
