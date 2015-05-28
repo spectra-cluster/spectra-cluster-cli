@@ -97,10 +97,11 @@ public class SpectraClusterCliMain {
 
             // create the spectrum writer and add the executor service as listener,
             // thereby, as soon as a file is written, the clustering job is launched
-            SpectrumWriter spectrumWriter = new SpectrumWriter(peaklistFilenames, fileIndices);
-            ExecutorService executorService = Executors.newFixedThreadPool(nMajorPeakJobs);
-            ClusteringProcessLauncher clusteringProcessLauncher = new ClusteringProcessLauncher(executorService, tmpClusteredPeakDir, thresholds);
-            spectrumWriter.addListener(clusteringProcessLauncher);
+            //SpectrumWriter spectrumWriter = new SpectrumWriter(peaklistFilenames, fileIndices);
+            ExecutorService writingExecutorService = Executors.newFixedThreadPool(nMajorPeakJobs * 2);
+            ExecutorService clusteringExecuteService = Executors.newFixedThreadPool(nMajorPeakJobs);
+            ClusteringProcessLauncher clusteringProcessLauncher = new ClusteringProcessLauncher(clusteringExecuteService, tmpClusteredPeakDir, thresholds);
+            //spectrumWriter.addListener(clusteringProcessLauncher);
 
             // write the major peak files
             /**
@@ -115,21 +116,52 @@ public class SpectraClusterCliMain {
             ReferenceMzBinner binner = new ReferenceMzBinner();
             List<List<SpectrumReference>> groupedSpectrumReferences = binner.groupSpectrumReferences(spectrumReferences);
             System.out.println("Split " + spectrumReferences.size() + " spectra in " + groupedSpectrumReferences.size() + " bins.");
+
+            List<Future<File>> writtenBinaryFileFutures = new ArrayList<Future<File>>();
             int outputIndex = 0;
             for (List<SpectrumReference> spectrumReferenceList : groupedSpectrumReferences) {
                 File outputFile = getMajorPeakSourceFile(outputIndex, tmpSpectraPerPeakDir);
 
-                spectrumWriter.writeSpectra(spectrumReferenceList, outputFile);
+                BinaryFileWriterCallable callable = new BinaryFileWriterCallable(peaklistFilenames, fileIndices, spectrumReferenceList, outputFile);
+                Future future = writingExecutorService.submit(callable);
+                writtenBinaryFileFutures.add(future);
+
                 outputIndex++;
             }
+
+            writingExecutorService.shutdown();
+
+            boolean allDone = false;
+            Set<Integer> completedWritingJobs = new HashSet<Integer>();
+
+            while (!allDone) {
+                allDone = true;
+
+                for (int i = 0; i < writtenBinaryFileFutures.size(); i++) {
+                    if (completedWritingJobs.contains(i))
+                        continue;
+
+                    Future<File> fileFuture = writtenBinaryFileFutures.get(i);
+
+                    if (!fileFuture.isDone()) {
+                        allDone = false;
+                    }
+                    else {
+                        clusteringProcessLauncher.onNewResultFile(fileFuture.get());
+                        completedWritingJobs.add(i);
+                    }
+                }
+            }
+
+            writingExecutorService.awaitTermination(1, TimeUnit.MINUTES);
 
             System.out.println("Completed writing binary files.");
 
             // wait until all clustering jobs are done - since all files were written, all
             // jobs have been submitted
             // start the termination process and merge the results into one file
-            executorService.shutdown();
-            boolean allDone = false;
+            clusteringExecuteService.shutdown();
+            allDone = false;
 
             // write all clusters into on cgf and save each cluster's position
             File combinedResultFile = File.createTempFile("combined_clustering_results", ".cgf");
@@ -167,7 +199,7 @@ public class SpectraClusterCliMain {
                 }
             }
 
-            executorService.awaitTermination(1, TimeUnit.MINUTES);
+            clusteringExecuteService.awaitTermination(1, TimeUnit.MINUTES);
 
             if (!tmpSpectraPerPeakDir.delete())
                 System.out.println("Warning: Failed to delete " + tmpSpectraPerPeakDir);
@@ -212,7 +244,7 @@ public class SpectraClusterCliMain {
 
         for (ICluster cluster : binaryClusterIterable) {
             long offset = outputStream.getChannel().position();
-            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
             CGFClusterAppender.INSTANCE.appendCluster(writer, cluster);
             writer.flush();
 
