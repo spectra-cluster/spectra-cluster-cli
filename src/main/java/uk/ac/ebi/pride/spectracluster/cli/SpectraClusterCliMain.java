@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * To change this template use File | Settings | File Templates.
  */
 public class SpectraClusterCliMain {
-    public final static int MAJOR_PEAK_CLUSTERING_JOBS = 2;
+    public final static int MAJOR_PEAK_CLUSTERING_JOBS = 4;
     private static List<List<IndexElement>> fileIndices;
 
     public static void main(String[] args) {
@@ -122,6 +122,8 @@ public class SpectraClusterCliMain {
                 spectrumWriter.writeSpectra(spectrumReferenceList, outputFile);
                 outputIndex++;
             }
+
+            System.out.println("Completed writing binary files.");
 
             // wait until all clustering jobs are done - since all files were written, all
             // jobs have been submitted
@@ -238,6 +240,7 @@ public class SpectraClusterCliMain {
 
         for (ICluster cluster : iterable) {
             DotClusterClusterAppender.INSTANCE.appendCluster(writer, cluster);
+            nClusterWritten++;
         }
 
         writer.close();
