@@ -87,7 +87,7 @@ public class SpectrumWriter {
             MgfFile mgfFile = new MgfFile(new File(peakListFilename), fileIndex);
             mgfFile.setDisableCommentSupport(true);
 
-
+            return mgfFile;
         }
 
         throw new Exception("Unknown file extension encountered: " + peakListFilename);
