@@ -83,8 +83,12 @@ public class SpectrumWriter {
     }
 
     private JMzReader openFile(String peakListFilename, List<IndexElement> fileIndex) throws Exception {
-        if (peakListFilename.toLowerCase().endsWith(".mgf"))
-            return new MgfFile(new File(peakListFilename), fileIndex);
+        if (peakListFilename.toLowerCase().endsWith(".mgf")) {
+            MgfFile mgfFile = new MgfFile(new File(peakListFilename), fileIndex);
+            mgfFile.setDisableCommentSupport(true);
+
+
+        }
 
         throw new Exception("Unknown file extension encountered: " + peakListFilename);
     }
