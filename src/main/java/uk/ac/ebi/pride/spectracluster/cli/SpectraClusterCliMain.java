@@ -355,7 +355,8 @@ public class SpectraClusterCliMain {
         System.out.print("Pre-scanning " + peaklistFilenames.length + " input files...");
         long start = System.currentTimeMillis();
 
-        PeakListFileScanner fileScanner = new PeakListFileScanner();
+        //IPeaklistScanner fileScanner = new PeakListFileScanner();
+        IPeaklistScanner fileScanner = new ParsingMgfScanner();
         List<SpectrumReference> spectrumReferences = fileScanner.getSpectrumReferences(peaklistFilenames);
         fileIndices = fileScanner.getFileIndices();
 
