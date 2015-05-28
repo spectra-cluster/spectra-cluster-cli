@@ -28,7 +28,6 @@ public class BinaryFileClusteringCallable implements Callable<File> {
     public static final float WINDOW_SIZE = 4.0F;
     //public static final IFunction<List<IPeak>, List<IPeak>> peakFilterFunction = new FractionTICPeakFunction(0.5f, 20);
     public static final IFunction<List<IPeak>, List<IPeak>> peakFilterFunction = null;
-    public static final boolean ONLY_COMPARE_KNOWN_MATCHES = true;
 
     private final File outputFile;
     private final File inputFile;
@@ -48,83 +47,88 @@ public class BinaryFileClusteringCallable implements Callable<File> {
             int nSpectra = 0;
             float minMz = Float.MAX_VALUE, maxMz = 0;
 
-        for (int nRound = 0; nRound < thresholds.size(); nRound++) {
-            float threshold = thresholds.get(nRound);
+            for (int nRound = 0; nRound < thresholds.size(); nRound++) {
+                float threshold = thresholds.get(nRound);
 
-            IComparisonPredicate<ICluster> comparisonPredicate;
+                IComparisonPredicate<ICluster> comparisonPredicate;
 
-            if (nRound == 0) {
-                // first round only compare spectra that share a major peak
-                comparisonPredicate = new ClusterShareMajorPeakPredicate(5);
-            }
-            else {
-                // subsequent rounds only compare known matches
-                comparisonPredicate = new IsKnownComparisonsPredicate();
-            }
-
-            IIncrementalClusteringEngine incrementalClusteringEngine =
-                    createIncrementalClusteringEngine(threshold, comparisonPredicate);
-
-            // create the result file
-            File tmpOutputfile = File.createTempFile("clustering_tmp", ".cls");
-            ObjectOutputStream outputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(tmpOutputfile)));
-
-            // read the clusters
-            ObjectInputStream inputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(currentInputFile)));
-            BinaryClusterIterable clusterIterable = new BinaryClusterIterable(inputStream);
-
-            // do the actual clustering
-            for (ICluster clusterToAdd : clusterIterable) {
                 if (nRound == 0) {
-                    nSpectra++;
-                    if (clusterToAdd.getPrecursorMz() < minMz)
-                        minMz = clusterToAdd.getPrecursorMz();
-                    if (clusterToAdd.getPrecursorMz() > maxMz)
-                        maxMz = clusterToAdd.getPrecursorMz();
+                    // first round only compare spectra that share a major peak
+                    comparisonPredicate = new ClusterShareMajorPeakPredicate(5);
+                } else {
+                    // subsequent rounds only compare known matches
+                    comparisonPredicate = new IsKnownComparisonsPredicate();
                 }
 
-                Collection<ICluster> removedClusters = incrementalClusteringEngine.addClusterIncremental(clusterToAdd);
+                IIncrementalClusteringEngine incrementalClusteringEngine =
+                        createIncrementalClusteringEngine(threshold, comparisonPredicate);
 
-                // write out the removed clusters
-                if (!removedClusters.isEmpty()) {
-                    writeOutClusters(removedClusters, outputStream);
+                // create the result file
+                File tmpOutputfile = File.createTempFile("clustering_tmp", ".cls");
+                ObjectOutputStream outputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(tmpOutputfile)));
+
+                // read the clusters
+                ObjectInputStream inputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(currentInputFile)));
+                BinaryClusterIterable clusterIterable = new BinaryClusterIterable(inputStream);
+
+                // do the actual clustering
+                for (ICluster clusterToAdd : clusterIterable) {
+                    if (nRound == 0) {
+                        nSpectra++;
+                        if (clusterToAdd.getPrecursorMz() < minMz)
+                            minMz = clusterToAdd.getPrecursorMz();
+                        if (clusterToAdd.getPrecursorMz() > maxMz)
+                            maxMz = clusterToAdd.getPrecursorMz();
+                    }
+
+                    Collection<ICluster> removedClusters = incrementalClusteringEngine.addClusterIncremental(clusterToAdd);
+
+                    // write out the removed clusters
+                    if (!removedClusters.isEmpty()) {
+                        writeOutClusters(removedClusters, outputStream);
+                    }
                 }
+
+                // write out the final clusters
+                Collection<ICluster> clusters = incrementalClusteringEngine.getClusters();
+                writeOutClusters(clusters, outputStream);
+
+                // close the output file
+                BinaryClusterAppender.INSTANCE.appendEnd(outputStream);
+                outputStream.close();
+
+                // close the input file
+                inputStream.close();
+
+                // copy the output file
+                if (outputFile.exists()) {
+                    if (!outputFile.delete())
+                        throw new Exception("Failed to delete file " + outputFile.toString());
+                }
+
+                FileUtils.copyFile(tmpOutputfile, outputFile);
+
+                if (!tmpOutputfile.delete()) {
+                    throw new Exception("Failed to delete temporary file");
+                }
+
+                // read from the last output the next time
+                currentInputFile = outputFile;
             }
 
-            // write out the final clusters
-            Collection<ICluster> clusters = incrementalClusteringEngine.getClusters();
-            writeOutClusters(clusters, outputStream);
-
-            // close the output file
-            BinaryClusterAppender.INSTANCE.appendEnd(outputStream);
-            outputStream.close();
-
-            // close the input file
-            inputStream.close();
-
-            // copy the output file
-            if (outputFile.exists()) {
-                if (!outputFile.delete())
-                    throw new Exception("Failed to delete file " + outputFile.toString());
-            }
-
-            FileUtils.copyFile(tmpOutputfile, outputFile);
-
-            if (!tmpOutputfile.delete()) {
-                throw new Exception("Failed to delete temporary file");
-            }
-
-            // read from the last output the next time
-            currentInputFile = outputFile;
-        }
+            printCompletion(inputFile.getName(), start, nSpectra, minMz, maxMz);
 
             return outputFile;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
-            throw(e);
+            throw (e);
         }
+    }
+
+    private void printCompletion(String filename, long start, int nSpectra, float minMz, float maxMz) {
+        System.out.println(String.format("Processed %s in %.2f min (%d spectra, %.2f m/z - %.2f m/z)",
+                filename, (float) (System.currentTimeMillis() - start) / 1000 / 60, nSpectra, minMz, maxMz));
     }
 
     private IIncrementalClusteringEngine createIncrementalClusteringEngine(double clusteringPrecision, IComparisonPredicate<ICluster> comparisonPredicate) {
