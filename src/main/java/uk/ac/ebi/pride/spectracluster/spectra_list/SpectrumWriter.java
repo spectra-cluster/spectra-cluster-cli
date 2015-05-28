@@ -2,12 +2,14 @@ package uk.ac.ebi.pride.spectracluster.spectra_list;
 
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
+import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.util.ClusterUtilities;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumUtilities;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
+import uk.ac.ebi.pride.spectracluster.util.function.peak.FractionTICPeakFunction;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
 import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
 import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
@@ -23,6 +25,7 @@ import java.util.*;
  */
 public class SpectrumWriter {
     public static final IFunction<ISpectrum, ISpectrum> filterFunction = Defaults.getDefaultPeakFilter();
+    public static final IFunction<List<IPeak>, List<IPeak>> comparisonFilterFunction = new FractionTICPeakFunction(0.5f, 20);
     private Map<Integer, JMzReader> readerPerFileIndex = new HashMap<Integer, JMzReader>();
     private final String[] peakListFilenames;
     private final List<List<IndexElement>> fileIndices;
@@ -62,6 +65,9 @@ public class SpectrumWriter {
             processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(
                     processedSpectrum, Defaults.getDefaultIntensityNormalizer().normalizePeaks(processedSpectrum.getPeaks()));
 
+            // do the radical peak filtering already now
+            processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, comparisonFilterFunction.apply(processedSpectrum.getPeaks()));
+
             // write it to the file
             BinaryClusterAppender.INSTANCE.appendCluster(objectOutputStream, ClusterUtilities.asCluster(processedSpectrum));
         }
@@ -70,6 +76,8 @@ public class SpectrumWriter {
         BinaryClusterAppender.INSTANCE.appendEnd(objectOutputStream);
         objectOutputStream.close();
         outputStream.close();
+
+        System.out.println("Wrote " + outputFile.getName());
 
         // notify the listeners
         for (IBinaryClusteringResultListener listener : listeners)
