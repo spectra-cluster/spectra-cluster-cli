@@ -77,8 +77,6 @@ public class SpectrumWriter {
         objectOutputStream.close();
         outputStream.close();
 
-        System.out.println("Wrote " + outputFile.getName());
-
         // notify the listeners
         for (IBinaryClusteringResultListener listener : listeners)
             listener.onNewResultFile(outputFile);
