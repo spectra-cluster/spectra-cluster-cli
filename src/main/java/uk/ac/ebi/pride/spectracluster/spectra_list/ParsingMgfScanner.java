@@ -84,6 +84,8 @@ public class ParsingMgfScanner implements IPeaklistScanner {
             }
         }
 
+        randomAccessFile.close();
+
         return spectrumReferences;
     }
 
