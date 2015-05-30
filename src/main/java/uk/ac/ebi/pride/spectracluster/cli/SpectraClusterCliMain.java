@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class SpectraClusterCliMain {
     public final static int MAJOR_PEAK_CLUSTERING_JOBS = 4;
-    private static List<List<IndexElement>> fileIndices;
     public static final boolean DELETE_TEMPORARY_CLUSTERING_RESULTS = true;
 
     public static void main(String[] args) {
@@ -140,7 +139,7 @@ public class SpectraClusterCliMain {
 
             // create the output file
             if (mergeDuplicate)
-                mergeDuplicateClusters(combinedResultFile, mergingCGFConverter.getClusterReferences(), finalResultFile, getSpectrumReferencesPerId(binningSpectrumConverter.getSpectrumReferences()), peaklistFilenames, endThreshold);
+                mergeDuplicateClusters(combinedResultFile, mergingCGFConverter.getClusterReferences(), finalResultFile, getSpectrumReferencesPerId(binningSpectrumConverter.getSpectrumReferences()), peaklistFilenames, endThreshold, binningSpectrumConverter.getFileIndices());
             else
                 convertClusters(combinedResultFile, finalResultFile, endThreshold);
 
@@ -178,9 +177,9 @@ public class SpectraClusterCliMain {
      * to perform. The result is sorted from highest to
      * lowest threshold.
      *
-     * @param startThreshold
-     * @param endThreshold
-     * @param rounds
+     * @param startThreshold Starting threshold (highest threshold)
+     * @param endThreshold Final threshold
+     * @param rounds Number of rounds of clustering to perform
      * @return
      */
     private static List<Float> generateThreshold(float startThreshold, float endThreshold, int rounds) {
@@ -219,7 +218,7 @@ public class SpectraClusterCliMain {
         System.out.println("Copied CGF result to " + finalResultFile.getAbsolutePath() + ".cgf");
     }
 
-    private static void mergeDuplicateClusters(File combinedResultFile, List<ClusterReference> clusterReferences, File finalResultFile, Map<String, SpectrumReference> spectrumReferencesPerId, String[] peaklistFilenames, float finalThreshold) throws Exception {
+    private static void mergeDuplicateClusters(File combinedResultFile, List<ClusterReference> clusterReferences, File finalResultFile, Map<String, SpectrumReference> spectrumReferencesPerId, String[] peaklistFilenames, float finalThreshold, List<List<IndexElement>> fileIndices) throws Exception {
         FileInputStream fileInputStream = new FileInputStream(combinedResultFile);
 
         FileWriter writer = new FileWriter(finalResultFile);
