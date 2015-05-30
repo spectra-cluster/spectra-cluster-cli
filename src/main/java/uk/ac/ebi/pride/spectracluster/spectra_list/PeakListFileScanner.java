@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.spectracluster.spectra_list;
 
+import uk.ac.ebi.pride.spectracluster.binning.BinarySpectrumReferenceWriter;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
@@ -12,6 +13,7 @@ import java.util.*;
 /**
  * Created by jg on 13.05.15.
  */
+@Deprecated // this class was replaced by ParsingMgfScanner
 public class PeakListFileScanner implements IPeaklistScanner {
     private List<List<IndexElement>> fileIndices = new ArrayList<List<IndexElement>>();
 
@@ -39,7 +41,7 @@ public class PeakListFileScanner implements IPeaklistScanner {
         while(spectrumIterator.hasNext()) {
             Spectrum readSpectrum = spectrumIterator.next();
             ISpectrum spectrum = SpectrumConverter.convertJmzReaderSpectrum(readSpectrum, readSpectrum.getId()); // id is not used
-            ISpectrum processedSpectrum = SpectrumWriter.filterFunction.apply(spectrum);
+            ISpectrum processedSpectrum = BinarySpectrumReferenceWriter.filterFunction.apply(spectrum);
 
             // spectrum index is 1-based
             SpectrumReference spectrumReference = new SpectrumReference(fileIndex, spectrumIndex + 1, processedSpectrum.getPrecursorMz());
@@ -77,7 +79,7 @@ public class PeakListFileScanner implements IPeaklistScanner {
         while(spectrumIterator.hasNext()) {
             Spectrum readSpectrum = spectrumIterator.next();
             ISpectrum spectrum = SpectrumConverter.convertJmzReaderSpectrum(readSpectrum, readSpectrum.getId()); // id is not used
-            ISpectrum processedSpectrum = SpectrumWriter.filterFunction.apply(spectrum);
+            ISpectrum processedSpectrum = BinarySpectrumReferenceWriter.filterFunction.apply(spectrum);
 
             // spectrum index is 1-based
             SpectrumReference spectrumReference = new SpectrumReference(fileIndex, spectrumIndex + 1, processedSpectrum.getPrecursorMz());

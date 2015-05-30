@@ -1,7 +1,8 @@
-package uk.ac.ebi.pride.spectracluster.spectra_list;
+package uk.ac.ebi.pride.spectracluster.binning;
 
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
+import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.util.ClusterUtilities;
@@ -23,7 +24,7 @@ import java.util.*;
  *
  * Created by jg on 13.05.15.
  */
-public class SpectrumWriter {
+public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
     public static final IFunction<ISpectrum, ISpectrum> filterFunction = Defaults.getDefaultPeakFilter();
     public static final IFunction<List<IPeak>, List<IPeak>> comparisonFilterFunction = new FractionTICPeakFunction(0.5f, 20);
     private Map<Integer, JMzReader> readerPerFileIndex = new HashMap<Integer, JMzReader>();
@@ -32,11 +33,12 @@ public class SpectrumWriter {
     private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
 
 
-    public SpectrumWriter(String[] peakListFilenames, List<List<IndexElement>> fileIndices) {
+    public BinarySpectrumReferenceWriter(String[] peakListFilenames, List<List<IndexElement>> fileIndices) {
         this.peakListFilenames = peakListFilenames;
         this.fileIndices = fileIndices;
     }
 
+    @Override
     public void writeSpectra(List<SpectrumReference> spectrumReferences, File outputFile) throws Exception {
         // sort the references
         Collections.sort(spectrumReferences);

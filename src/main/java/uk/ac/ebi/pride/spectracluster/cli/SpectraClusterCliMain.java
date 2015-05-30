@@ -5,8 +5,12 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.io.FileUtils;
+import uk.ac.ebi.pride.spectracluster.binning.BinarySpectrumReferenceWriterCallable;
+import uk.ac.ebi.pride.spectracluster.binning.ISpectrumReferenceBinner;
+import uk.ac.ebi.pride.spectracluster.binning.ReferenceMzBinner;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.ClusteringProcessLauncher;
+import uk.ac.ebi.pride.spectracluster.conversion.MergingCGFConverter;
 import uk.ac.ebi.pride.spectracluster.engine.IIncrementalClusteringEngine;
 import uk.ac.ebi.pride.spectracluster.io.*;
 import uk.ac.ebi.pride.spectracluster.merging.LoadingSimilarClusteringEngine;
@@ -31,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class SpectraClusterCliMain {
     public final static int MAJOR_PEAK_CLUSTERING_JOBS = 4;
     private static List<List<IndexElement>> fileIndices;
+    public static final boolean DELETE_TEMPORARY_CLUSTERING_RESULTS = true;
 
     public static void main(String[] args) {
         CommandLineParser parser = new GnuParser();
@@ -44,6 +49,7 @@ public class SpectraClusterCliMain {
                 return;
             }
 
+            // RESULT FILE PATH
             if (!commandLine.hasOption(CliOptions.OPTIONS.OUTPUT_PATH.getValue()))
                 throw new Exception("Missing required option " + CliOptions.OPTIONS.OUTPUT_PATH.getValue());
             File finalResultFile = new File(commandLine.getOptionValue(CliOptions.OPTIONS.OUTPUT_PATH.getValue()));
@@ -51,174 +57,90 @@ public class SpectraClusterCliMain {
             if (finalResultFile.exists())
                 throw new Exception("Result file " + finalResultFile + " already exists");
 
+            // NUMBER OF JOBS
             int nMajorPeakJobs = MAJOR_PEAK_CLUSTERING_JOBS;
             if (commandLine.hasOption(CliOptions.OPTIONS.MAJOR_PEAK_JOBS.getValue())) {
                 nMajorPeakJobs = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.MAJOR_PEAK_JOBS.getValue()));
             }
 
+            // NUMBER OF ROUNDS
             int rounds = 4;
             if (commandLine.hasOption(CliOptions.OPTIONS.ROUNDS.getValue()))
                 rounds = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ROUNDS.getValue()));
 
+            // START THRESHOLD
             float startThreshold = 0.999F;
             if (commandLine.hasOption(CliOptions.OPTIONS.START_THRESHOLD.getValue()))
                 startThreshold = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.START_THRESHOLD.getValue()));
 
+            // END THRESHOLD
             float endThreshold = 0.99F;
             if (commandLine.hasOption(CliOptions.OPTIONS.END_THRESHOLD.getValue()))
                 endThreshold = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.END_THRESHOLD.getValue()));
 
-            List<Float> thresholds = new ArrayList<Float>(rounds);
-            float stepSize = (startThreshold - endThreshold) / (rounds - 1);
+            List<Float> thresholds = generateThreshold(startThreshold, endThreshold, rounds);
 
-            for (int i = 0; i < rounds; i++) {
-                thresholds.add(startThreshold - (stepSize * i));
-            }
-
+            // MERGE DUPLICATE
             boolean mergeDuplicate = commandLine.hasOption(CliOptions.OPTIONS.MERGE_DUPLICATE.getValue());
 
-            // 1.) Pre-process spectra and store in list per highest peak
-            /**
-             * pre-scan all files and create list of SpectrumReferences for all spectra
-             * > already store each spectrum N times for each highest peak
-             *   > NOTE: this already requires the precursor filter to be applied
-             * sort each list according to precursor m/z
-             * write spectra to files in this specific order (use ObjectOutputStream)
-             */
+            // BINARY TMP DIR
+            File binaryTmpDirectory;
+
+            if (commandLine.hasOption(CliOptions.OPTIONS.BINARY_TMP_DIR.getValue()))
+                binaryTmpDirectory = new File(commandLine.getOptionValue(CliOptions.OPTIONS.BINARY_TMP_DIR.getValue()));
+            else
+                binaryTmpDirectory = createTemporaryDirectory("binary_converted_spectra");
+
+            // KEEP BINARY FILES
+            boolean keepBinaryFiles = commandLine.hasOption(CliOptions.OPTIONS.KEEP_BINARY_FILE.getValue());
+
+            // FILES TO PROCESS
             String[] peaklistFilenames = commandLine.getArgs();
-            File tmpSpectraPerPeakDir = createTemporaryDirectory("spectra_per_peak");
-            File tmpClusteredPeakDir = createTemporaryDirectory("clustering_results");
 
-            List<SpectrumReference> spectrumReferences = prescanPeaklistFiles(peaklistFilenames);
-            Map<String, SpectrumReference> spectrumReferencesPerId = getSpectrumReferencesPerId(spectrumReferences);
-
-            // write out the spectra, one file per major peak and start the clustering job right away
-            System.out.println("Converting spectra to binary format per major peak");
-
-            // create the spectrum writer and add the executor service as listener,
-            // thereby, as soon as a file is written, the clustering job is launched
-            //SpectrumWriter spectrumWriter = new SpectrumWriter(peaklistFilenames, fileIndices);
-            ExecutorService writingExecutorService = Executors.newFixedThreadPool(nMajorPeakJobs * 2);
-            ExecutorService clusteringExecuteService = Executors.newFixedThreadPool(nMajorPeakJobs);
-            ClusteringProcessLauncher clusteringProcessLauncher = new ClusteringProcessLauncher(clusteringExecuteService, tmpClusteredPeakDir, thresholds);
-            //spectrumWriter.addListener(clusteringProcessLauncher);
-
-            // write the major peak files
             /**
-            for (int majorPeak : spectrumReferencesPerMajorPeak.keySet()) {
-                File outputFile = getMajorPeakSourceFile(majorPeak, tmpSpectraPerPeakDir);
-
-                spectrumWriter.writeSpectra(spectrumReferencesPerMajorPeak.get(majorPeak), outputFile);
-            }
+             * ------- THE ACTUAL LOGIC STARTS HERE -----------
              */
+            printSettings(finalResultFile, nMajorPeakJobs, startThreshold, endThreshold, rounds, mergeDuplicate, keepBinaryFiles, binaryTmpDirectory, peaklistFilenames);
 
-            // group the spectrum references and write each group to a file
-            ReferenceMzBinner binner = new ReferenceMzBinner();
-            List<List<SpectrumReference>> groupedSpectrumReferences = binner.groupSpectrumReferences(spectrumReferences);
-            System.out.println("Split " + spectrumReferences.size() + " spectra in " + groupedSpectrumReferences.size() + " bins.");
+            System.out.print("Writing binary files...");
+            long start = System.currentTimeMillis();
 
-            List<Future<File>> writtenBinaryFileFutures = new ArrayList<Future<File>>();
-            int outputIndex = 0;
-            for (List<SpectrumReference> spectrumReferenceList : groupedSpectrumReferences) {
-                File outputFile = getMajorPeakSourceFile(outputIndex, tmpSpectraPerPeakDir);
+            BinningSpectrumConverter binningSpectrumConverter = new BinningSpectrumConverter(binaryTmpDirectory, nMajorPeakJobs);
+            binningSpectrumConverter.processPeaklistFiles(peaklistFilenames);
 
-                BinaryFileWriterCallable callable = new BinaryFileWriterCallable(peaklistFilenames, fileIndices, spectrumReferenceList, outputFile);
-                Future future = writingExecutorService.submit(callable);
-                writtenBinaryFileFutures.add(future);
+            printDone(start);
 
-                outputIndex++;
-            }
+            // create a temporary directory for the clustering results
+            File tmpClusteringResults = createTemporaryDirectory("clustering_results");
 
-            writingExecutorService.shutdown();
+            // cluster the binary files and immediately convert the results
+            BinaryFileClusterer binaryFileClusterer = new BinaryFileClusterer(nMajorPeakJobs, tmpClusteringResults, thresholds);
 
-            boolean allDone = false;
-            Set<Integer> completedWritingJobs = new HashSet<Integer>();
-
-            while (!allDone) {
-                allDone = true;
-
-                for (int i = 0; i < writtenBinaryFileFutures.size(); i++) {
-                    if (completedWritingJobs.contains(i))
-                        continue;
-
-                    Future<File> fileFuture = writtenBinaryFileFutures.get(i);
-
-                    if (!fileFuture.isDone()) {
-                        allDone = false;
-                    }
-                    else {
-                        clusteringProcessLauncher.onNewResultFile(fileFuture.get());
-                        completedWritingJobs.add(i);
-                    }
-                }
-            }
-
-            writingExecutorService.awaitTermination(1, TimeUnit.MINUTES);
-
-            System.out.println("Completed writing binary files.");
-
-            // wait until all clustering jobs are done - since all files were written, all
-            // jobs have been submitted
-            // start the termination process and merge the results into one file
-            clusteringExecuteService.shutdown();
-            allDone = false;
-
-            // write all clusters into on cgf and save each cluster's position
             File combinedResultFile = File.createTempFile("combined_clustering_results", ".cgf");
-            List<ClusterReference> clusterReferences = new ArrayList<ClusterReference>();
-            List<Future<File>> resultFileFutures = clusteringProcessLauncher.getFileFutures();
+            MergingCGFConverter mergingCGFConverter = new MergingCGFConverter(combinedResultFile, DELETE_TEMPORARY_CLUSTERING_RESULTS, !keepBinaryFiles, binaryTmpDirectory);
+            binaryFileClusterer.addListener(mergingCGFConverter);
 
-            // wait until all jobs are done
-            Set<Integer> completedJobs = new HashSet<Integer>();
+            System.out.println("Clustering " + binningSpectrumConverter.getWrittenFiles().size() + " binary files...");
+            start = System.currentTimeMillis();
 
-            while (!allDone) {
-                allDone = true;
+            binaryFileClusterer.clusterFiles(binningSpectrumConverter.getWrittenFiles());
 
-                for (int i = 0; i < resultFileFutures.size(); i++) {
-                    if (completedJobs.contains(i))
-                        continue;
+            printDone(start, "Completed clustering.");
 
-                    Future<File> fileFuture = resultFileFutures.get(i);
-
-                    if (fileFuture.isDone()) {
-                        // scan the result file - this is done in the main thread to make sure that only one scanning process is running at a time
-                        List<ClusterReference> completedClusterReferences = mergeClusteringResults(fileFuture.get(), combinedResultFile);
-                        clusterReferences.addAll(completedClusterReferences);
-
-                        // remove the result file
-                        fileFuture.get().delete();
-                        // remove major peak file
-                        File majorPeakFile = new File(tmpSpectraPerPeakDir, fileFuture.get().getName());
-                        majorPeakFile.delete();
-
-                        completedJobs.add(i);
-                    }
-                    else {
-                        allDone = false;
-                    }
-                }
+            // delete the temporary directories if set
+            if (!keepBinaryFiles) {
+                if (!binaryTmpDirectory.delete())
+                    System.out.println("Warning: Failed to delete " + binaryTmpDirectory);
             }
 
-            clusteringExecuteService.awaitTermination(1, TimeUnit.MINUTES);
+            if (DELETE_TEMPORARY_CLUSTERING_RESULTS) {
+                if (!tmpClusteringResults.delete())
+                    System.out.println("Warning: Failed to delete " + tmpClusteringResults);
+            }
 
-            if (!tmpSpectraPerPeakDir.delete())
-                System.out.println("Warning: Failed to delete " + tmpSpectraPerPeakDir);
-
-            if (!tmpClusteredPeakDir.delete())
-                System.out.println("Warning: Failed to delete " + tmpClusteredPeakDir);
-
-            // 3.) merge duplicated clusters
-            /**
-             * pre-scan all generated clusters
-             *  > store in one big list, sort according to m/z
-             * run incremental clustering directly on this list / big file
-             */
-
-            /**
-             * Merge all clusters that share more than 40% of their spectra
-             */
+            // create the output file
             if (mergeDuplicate)
-                mergeDuplicateClusters(combinedResultFile, clusterReferences, finalResultFile, spectrumReferencesPerId, peaklistFilenames, endThreshold);
+                mergeDuplicateClusters(combinedResultFile, mergingCGFConverter.getClusterReferences(), finalResultFile, getSpectrumReferencesPerId(binningSpectrumConverter.getSpectrumReferences()), peaklistFilenames, endThreshold);
             else
                 convertClusters(combinedResultFile, finalResultFile, endThreshold);
 
@@ -234,29 +156,42 @@ public class SpectraClusterCliMain {
         }
     }
 
-    private static List<ClusterReference> mergeClusteringResults(File binaryResultFile, File combinedResultFile) throws Exception {
-        FileOutputStream outputStream = new FileOutputStream(combinedResultFile, true);
+    private static void printSettings(File finalResultFile, int nMajorPeakJobs, float startThreshold, float endThreshold, int rounds, boolean mergeDuplicate, boolean keepBinaryFiles, File binaryTmpDirectory, String[] peaklistFilenames) {
+        System.out.println("spectra-cluster API Version 1.0");
+        System.out.println("Created by Rui Wang & Johannes Griss\n");
 
-        ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(binaryResultFile));
-        BinaryClusterIterable binaryClusterIterable = new BinaryClusterIterable(objectInputStream);
+        System.out.println("-- Settings --");
+        System.out.println("Number of threads: " + String.valueOf(nMajorPeakJobs));
+        System.out.println("Thresholds: " + String.valueOf(startThreshold) + " - " + String.valueOf(endThreshold) + " in " + rounds + " rounds");
+        System.out.println("Merging duplicate: " + (mergeDuplicate ? "true" : "false"));
+        System.out.println("Keeping binary files: " + (keepBinaryFiles ? "true" : "false"));
+        System.out.println("Binary file directory: " + binaryTmpDirectory);
+        System.out.println("Result file: " + finalResultFile);
+        System.out.println("Input files: " + peaklistFilenames.length);
 
-        List<ClusterReference> clusterReferences = new ArrayList<ClusterReference>();
+        System.out.println();
+    }
 
-        for (ICluster cluster : binaryClusterIterable) {
-            long offset = outputStream.getChannel().position();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-            CGFClusterAppender.INSTANCE.appendCluster(writer, cluster);
-            writer.flush();
+    /**
+     * Generates the actual thresholds to use based on the
+     * start and end threshold and the number of iterations
+     * to perform. The result is sorted from highest to
+     * lowest threshold.
+     *
+     * @param startThreshold
+     * @param endThreshold
+     * @param rounds
+     * @return
+     */
+    private static List<Float> generateThreshold(float startThreshold, float endThreshold, int rounds) {
+        List<Float> thresholds = new ArrayList<Float>(rounds);
+        float stepSize = (startThreshold - endThreshold) / (rounds - 1);
 
-            // save the position of the cluster
-            ClusterReference clusterReference = new ClusterReference(
-                    0, offset, cluster.getPrecursorMz(), cluster.getClusteredSpectraCount(), cluster.getId());
-            clusterReferences.add(clusterReference);
+        for (int i = 0; i < rounds; i++) {
+            thresholds.add(startThreshold - (stepSize * i));
         }
 
-        outputStream.close();
-
-        return clusterReferences;
+        return thresholds;
     }
 
     private static void convertClusters(File combinedResultFile, File finalResultFile, float endThreshold) throws Exception {
@@ -336,86 +271,6 @@ public class SpectraClusterCliMain {
         System.out.println("Done. (Took " + String.format("%.2f", (float) (System.currentTimeMillis() - start) / 1000 / 60) + " min. Reduced " + nClusterRead + " to " + nClusterWritten + " final clusters)");
     }
 
-    @Deprecated // random access doesn't work on a binary file
-    private static void mergeClusteringResults(List<ClusterReference> clusterReferences, List<File> clusteringResultFiles, File combinedResultFile) throws Exception {
-        // open the result file
-        FileOutputStream outputStream = new FileOutputStream(combinedResultFile);
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-
-        // sort the cluster references, thereby clusters are written in ascending precursor m/z
-        Collections.sort(clusterReferences);
-
-        for (ClusterReference clusterReference : clusterReferences) {
-            int fileId = clusterReference.getFileId();
-
-            if (fileId < 0 || fileId >= clusteringResultFiles.size())
-                throw new Exception("Invalid file id encountered: " + fileId);
-
-            // open the result file
-            FileInputStream inputStream = new FileInputStream(clusteringResultFiles.get(fileId));
-            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-
-            // move to the beginning of the current cluster
-            inputStream.getChannel().position(clusterReference.getOffset());
-
-            // read the cluster at that position
-            ICluster loadedCluster = BinaryClusterParser.INSTANCE.parseNextCluster(objectInputStream, null);
-
-            inputStream.close();
-
-            // write the cluster to the output file
-            BinaryClusterAppender.INSTANCE.appendCluster(objectOutputStream, loadedCluster);
-        }
-
-        BinaryClusterAppender.INSTANCE.appendEnd(objectOutputStream);
-        objectOutputStream.close();
-    }
-
-    private static Map<Integer, List<SpectrumReference>> prescanPeaklistFilesPerMajorPeak(String[] peaklistFilenames) throws Exception {
-        // pre-scan all files
-        System.out.print("Pre-scanning " + peaklistFilenames.length + " input files...");
-        long start = System.currentTimeMillis();
-
-        PeakListFileScanner fileScanner = new PeakListFileScanner();
-        Map<Integer, List<SpectrumReference>> loadedSpectrumReferenceMap = fileScanner.getSpectraPerMajorPeaks(peaklistFilenames, 5);
-        fileIndices = fileScanner.getFileIndices();
-
-        printDone(start);
-
-        return loadedSpectrumReferenceMap;
-    }
-
-    private static List<SpectrumReference> prescanPeaklistFiles(String[] peaklistFilenames) throws Exception {
-        // pre-scan all files
-        System.out.print("Pre-scanning " + peaklistFilenames.length + " input files...");
-        long start = System.currentTimeMillis();
-
-        //IPeaklistScanner fileScanner = new PeakListFileScanner();
-        IPeaklistScanner fileScanner = new ParsingMgfScanner();
-        List<SpectrumReference> spectrumReferences = fileScanner.getSpectrumReferences(peaklistFilenames);
-        fileIndices = fileScanner.getFileIndices();
-
-        printDone(start);
-
-        return spectrumReferences;
-    }
-
-    private static Map<String, SpectrumReference> getSpectrumReferencesPerId(Map<Integer, List<SpectrumReference>> spectrumReferencesPerMajorPeak) {
-        Map<String, SpectrumReference> spectrumReferencePerId = new HashMap<String, SpectrumReference>();
-
-        // save the spectrum references per id
-        for (List<SpectrumReference> spectrumReferences : spectrumReferencesPerMajorPeak.values()) {
-            for (SpectrumReference spectrumReference : spectrumReferences) {
-                if (spectrumReferencePerId.containsKey(spectrumReference.getSpectrumId()))
-                    continue;
-
-                spectrumReferencePerId.put(spectrumReference.getSpectrumId(), spectrumReference);
-            }
-        }
-
-        return spectrumReferencePerId;
-    }
-
     private static Map<String, SpectrumReference> getSpectrumReferencesPerId(List<SpectrumReference> spectrumReferences) {
         Map<String, SpectrumReference> spectrumReferencePerId = new HashMap<String, SpectrumReference>();
 
@@ -430,15 +285,13 @@ public class SpectraClusterCliMain {
         return spectrumReferencePerId;
     }
 
-    private static File getMajorPeakSourceFile(int majorPeak, File dir) {
-        File outputFile = new File(dir, "bin_" + majorPeak + ".cls");
-
-        return outputFile;
+    private static void printDone(long start) {
+        printDone(start, "Done");
     }
 
-    private static void printDone(long start) {
+    private static void printDone(long start, String message) {
         long duration = System.currentTimeMillis() - start;
-        System.out.println("Done (" + String.format("%.2f", (double) duration / 1000 / 60) + " min.)");
+        System.out.println(message + " (" + String.format("%.2f", (double) duration / 1000 / 60) + " min)");
     }
 
     private static File createTemporaryDirectory(String prefix) throws Exception {

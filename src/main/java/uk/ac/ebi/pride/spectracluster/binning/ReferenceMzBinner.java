@@ -1,4 +1,6 @@
-package uk.ac.ebi.pride.spectracluster.spectra_list;
+package uk.ac.ebi.pride.spectracluster.binning;
+
+import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,11 +11,12 @@ import java.util.List;
  *
  * Created by jg on 20.05.15.
  */
-public class ReferenceMzBinner {
+public class ReferenceMzBinner implements ISpectrumReferenceBinner {
     public static final int[] WINDOW_SIZES = {25, 10, 4};
     public static final int MAXIMAL_SPECTRA = 50000;
 
-    public List<List<SpectrumReference>> groupSpectrumReferences(List<SpectrumReference> spectrumReferences) {
+    @Override
+    public List<List<SpectrumReference>> binSpectrumReferences(List<SpectrumReference> spectrumReferences) {
         // sort according to m/z
         Collections.sort(spectrumReferences);
 

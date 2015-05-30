@@ -1,16 +1,14 @@
 package uk.ac.ebi.pride.spectracluster.merging;
 
-import uk.ac.ebi.pride.spectracluster.cluster.GreedySpectralCluster;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.engine.SimilarClusterMergingEngine;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
-import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumWriter;
+import uk.ac.ebi.pride.spectracluster.binning.BinarySpectrumReferenceWriter;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
 import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
-import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
 import uk.ac.ebi.pride.tools.mgf_parser.MgfFile;
 
 import java.io.File;
@@ -102,7 +100,7 @@ public class LoadingSimilarClusteringEngine extends SimilarClusterMergingEngine 
                 }
 
                 ISpectrum loadedSpectrum = SpectrumConverter.convertJmzReaderSpectrum(reader.getSpectrumByIndex(reference.getSpectrumIndex()), reference.getSpectrumId());
-                ISpectrum processedSpectrum = SpectrumWriter.filterFunction.apply(loadedSpectrum);
+                ISpectrum processedSpectrum = BinarySpectrumReferenceWriter.filterFunction.apply(loadedSpectrum);
                 // normalize the spectrum
                 processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(
                         processedSpectrum, Defaults.getDefaultIntensityNormalizer().normalizePeaks(processedSpectrum.getPeaks()));
