@@ -21,6 +21,7 @@ public class CliOptions {
        MERGE_DUPLICATE("merge_duplicate"),
        BINARY_TMP_DIR("binary_directory"),
        KEEP_BINARY_FILE("keep_binary_files"),
+       REUSE_BINARY_FILES("reuse_binary_files"),
        HELP("help");
 
         private String value;
@@ -87,6 +88,11 @@ public class CliOptions {
                 .withDescription("if this options is set, the binary files are not deleted after clustering.")
                 .create(OPTIONS.KEEP_BINARY_FILE.getValue());
         options.addOption(keepBinary);
+
+        Option reuseBinaryFiles = OptionBuilder
+                .withDescription("if this option is set, the binary files found in the binary file directory will be used for clustering.")
+                .create(OPTIONS.REUSE_BINARY_FILES.getValue());
+        options.addOption(reuseBinaryFiles);
 
         Option help = new Option(
                 OPTIONS.HELP.toString(),
