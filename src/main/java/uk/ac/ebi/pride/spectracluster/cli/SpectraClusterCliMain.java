@@ -5,6 +5,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import uk.ac.ebi.pride.spectracluster.binning.BinarySpectrumReferenceWriterCallable;
 import uk.ac.ebi.pride.spectracluster.binning.ISpectrumReferenceBinner;
 import uk.ac.ebi.pride.spectracluster.binning.ReferenceMzBinner;
@@ -93,21 +94,49 @@ public class SpectraClusterCliMain {
             // KEEP BINARY FILES
             boolean keepBinaryFiles = commandLine.hasOption(CliOptions.OPTIONS.KEEP_BINARY_FILE.getValue());
 
+            // RE-USE BINARY FILES
+            boolean reUseBinaryFiles = commandLine.hasOption(CliOptions.OPTIONS.REUSE_BINARY_FILES.getValue());
+
             // FILES TO PROCESS
             String[] peaklistFilenames = commandLine.getArgs();
+
+            // if re-use is set, binaryTmpDirectory is required and merging is impossible
+            if (reUseBinaryFiles && !commandLine.hasOption(CliOptions.OPTIONS.BINARY_TMP_DIR.getValue()))
+                throw new Exception("Missing required option '" + CliOptions.OPTIONS.BINARY_TMP_DIR.getValue() + "' with " + CliOptions.OPTIONS.REUSE_BINARY_FILES.getValue());
+
+            if (reUseBinaryFiles && mergeDuplicate)
+                throw new Exception("Merging of results is not possible if binary files are being re-used");
+
+            if (reUseBinaryFiles && peaklistFilenames.length > 0)
+                System.out.println("WARNING: " + CliOptions.OPTIONS.REUSE_BINARY_FILES.getValue() + " set, input files will be ignored");
 
             /**
              * ------- THE ACTUAL LOGIC STARTS HERE -----------
              */
-            printSettings(finalResultFile, nMajorPeakJobs, startThreshold, endThreshold, rounds, mergeDuplicate, keepBinaryFiles, binaryTmpDirectory, peaklistFilenames);
+            printSettings(finalResultFile, nMajorPeakJobs, startThreshold, endThreshold, rounds, mergeDuplicate, keepBinaryFiles, binaryTmpDirectory, peaklistFilenames, reUseBinaryFiles);
 
-            System.out.print("Writing binary files...");
-            long start = System.currentTimeMillis();
+            List<File> binaryFiles = null;
+            BinningSpectrumConverter binningSpectrumConverter = null;
 
-            BinningSpectrumConverter binningSpectrumConverter = new BinningSpectrumConverter(binaryTmpDirectory, nMajorPeakJobs);
-            binningSpectrumConverter.processPeaklistFiles(peaklistFilenames);
+            if (!reUseBinaryFiles) {
+                System.out.print("Writing binary files...");
+                long start = System.currentTimeMillis();
 
-            printDone(start);
+                binningSpectrumConverter = new BinningSpectrumConverter(binaryTmpDirectory, nMajorPeakJobs);
+                binningSpectrumConverter.processPeaklistFiles(peaklistFilenames);
+
+                String message = String.format("Done. Found %d spectra", binningSpectrumConverter.getSpectrumReferences().size());
+                printDone(start, message);
+            }
+            else {
+                // get the list of files
+                File[] existingBinaryFiles = binaryTmpDirectory.listFiles((FilenameFilter) FileFilterUtils.suffixFileFilter(".cls"));
+                binaryFiles = new ArrayList<File>(existingBinaryFiles.length);
+                for (File file : existingBinaryFiles)
+                    binaryFiles.add(file);
+
+                System.out.println("Found " + binaryFiles.size() + " existing binary files.");
+            }
 
             // create a temporary directory for the clustering results
             File tmpClusteringResults = createTemporaryDirectory("clustering_results");
@@ -119,10 +148,10 @@ public class SpectraClusterCliMain {
             MergingCGFConverter mergingCGFConverter = new MergingCGFConverter(combinedResultFile, DELETE_TEMPORARY_CLUSTERING_RESULTS, !keepBinaryFiles, binaryTmpDirectory);
             binaryFileClusterer.addListener(mergingCGFConverter);
 
-            System.out.println("Clustering " + binningSpectrumConverter.getWrittenFiles().size() + " binary files with " + binningSpectrumConverter.getSpectrumReferences().size() + " spectra...");
-            start = System.currentTimeMillis();
+            System.out.println("Clustering " + binaryFiles.size() + " binary files...");
+            long start = System.currentTimeMillis();
 
-            binaryFileClusterer.clusterFiles(binningSpectrumConverter.getWrittenFiles());
+            binaryFileClusterer.clusterFiles(binaryFiles);
 
             printDone(start, "Completed clustering.");
 
@@ -155,7 +184,7 @@ public class SpectraClusterCliMain {
         }
     }
 
-    private static void printSettings(File finalResultFile, int nMajorPeakJobs, float startThreshold, float endThreshold, int rounds, boolean mergeDuplicate, boolean keepBinaryFiles, File binaryTmpDirectory, String[] peaklistFilenames) {
+    private static void printSettings(File finalResultFile, int nMajorPeakJobs, float startThreshold, float endThreshold, int rounds, boolean mergeDuplicate, boolean keepBinaryFiles, File binaryTmpDirectory, String[] peaklistFilenames, boolean reUseBinaryFiles) {
         System.out.println("spectra-cluster API Version 1.0");
         System.out.println("Created by Rui Wang & Johannes Griss\n");
 
@@ -166,6 +195,7 @@ public class SpectraClusterCliMain {
         System.out.println("Keeping binary files: " + (keepBinaryFiles ? "true" : "false"));
         System.out.println("Binary file directory: " + binaryTmpDirectory);
         System.out.println("Result file: " + finalResultFile);
+        System.out.println("Reuse binary files: " + (reUseBinaryFiles ? "true" : "false"));
         System.out.println("Input files: " + peaklistFilenames.length);
 
         System.out.println();
