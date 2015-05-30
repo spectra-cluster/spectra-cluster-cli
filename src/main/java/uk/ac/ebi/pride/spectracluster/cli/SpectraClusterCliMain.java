@@ -119,7 +119,7 @@ public class SpectraClusterCliMain {
             MergingCGFConverter mergingCGFConverter = new MergingCGFConverter(combinedResultFile, DELETE_TEMPORARY_CLUSTERING_RESULTS, !keepBinaryFiles, binaryTmpDirectory);
             binaryFileClusterer.addListener(mergingCGFConverter);
 
-            System.out.println("Clustering " + binningSpectrumConverter.getWrittenFiles().size() + " binary files...");
+            System.out.println("Clustering " + binningSpectrumConverter.getWrittenFiles().size() + " binary files with " + binningSpectrumConverter.getSpectrumReferences().size() + " spectra...");
             start = System.currentTimeMillis();
 
             binaryFileClusterer.clusterFiles(binningSpectrumConverter.getWrittenFiles());
