@@ -124,6 +124,7 @@ public class SpectraClusterCliMain {
 
                 binningSpectrumConverter = new BinningSpectrumConverter(binaryTmpDirectory, nMajorPeakJobs);
                 binningSpectrumConverter.processPeaklistFiles(peaklistFilenames);
+                binaryFiles = binningSpectrumConverter.getWrittenFiles();
 
                 String message = String.format("Done. Found %d spectra", binningSpectrumConverter.getSpectrumReferences().size());
                 printDone(start, message);
