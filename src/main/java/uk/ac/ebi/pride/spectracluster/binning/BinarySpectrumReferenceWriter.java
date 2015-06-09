@@ -48,30 +48,35 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 
         for (SpectrumReference spectrumReference : spectrumReferences) {
-            int fileIndex = spectrumReference.getFileId();
+            try {
+                int fileIndex = spectrumReference.getFileId();
 
-            if (fileIndex >= peakListFilenames.length)
-                throw new Exception("Invalid file id for spectrum reference");
+                if (fileIndex >= peakListFilenames.length)
+                    throw new Exception("Invalid file id for spectrum reference");
 
-            if (!readerPerFileIndex.containsKey(fileIndex))
-                readerPerFileIndex.put(fileIndex, openFile(peakListFilenames[fileIndex], fileIndices.get(fileIndex)));
+                if (!readerPerFileIndex.containsKey(fileIndex))
+                    readerPerFileIndex.put(fileIndex, openFile(peakListFilenames[fileIndex], fileIndices.get(fileIndex)));
 
-            JMzReader fileReader = readerPerFileIndex.get(fileIndex);
+                JMzReader fileReader = readerPerFileIndex.get(fileIndex);
 
-            // load the spectrum
-            Spectrum spectrum = fileReader.getSpectrumByIndex(spectrumReference.getSpectrumIndex());
+                // load the spectrum
+                Spectrum spectrum = fileReader.getSpectrumByIndex(spectrumReference.getSpectrumIndex());
 
-            // pre-process the spectrum
-            ISpectrum processedSpectrum = filterFunction.apply(SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId()));
-            // normalize the spectrum
-            processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(
-                    processedSpectrum, Defaults.getDefaultIntensityNormalizer().normalizePeaks(processedSpectrum.getPeaks()));
+                // pre-process the spectrum
+                ISpectrum processedSpectrum = filterFunction.apply(SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId()));
+                // normalize the spectrum
+                processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(
+                        processedSpectrum, Defaults.getDefaultIntensityNormalizer().normalizePeaks(processedSpectrum.getPeaks()));
 
-            // do the radical peak filtering already now
-            processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, comparisonFilterFunction.apply(processedSpectrum.getPeaks()));
+                // do the radical peak filtering already now
+                processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, comparisonFilterFunction.apply(processedSpectrum.getPeaks()));
 
-            // write it to the file
-            BinaryClusterAppender.INSTANCE.appendCluster(objectOutputStream, ClusterUtilities.asCluster(processedSpectrum));
+                // write it to the file
+                BinaryClusterAppender.INSTANCE.appendCluster(objectOutputStream, ClusterUtilities.asCluster(processedSpectrum));
+            }
+            catch (Exception e) {
+                throw new Exception("Error while processing spectrum reference (file id = " + spectrumReference.getFileId() + " > " + peakListFilenames[spectrumReference.getFileId()] + ", spec index = " + spectrumReference.getSpectrumIndex() + ", m/z = " + spectrumReference.getPrecursorMz() + ")", e);
+            }
         }
 
         // close the file
