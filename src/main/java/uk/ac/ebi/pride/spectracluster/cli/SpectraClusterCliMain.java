@@ -10,6 +10,7 @@ import uk.ac.ebi.pride.spectracluster.binning.BinarySpectrumReferenceWriterCalla
 import uk.ac.ebi.pride.spectracluster.binning.ISpectrumReferenceBinner;
 import uk.ac.ebi.pride.spectracluster.binning.ReferenceMzBinner;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
+import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
 import uk.ac.ebi.pride.spectracluster.clustering.ClusteringProcessLauncher;
 import uk.ac.ebi.pride.spectracluster.conversion.MergingCGFConverter;
 import uk.ac.ebi.pride.spectracluster.engine.IIncrementalClusteringEngine;
@@ -111,6 +112,15 @@ public class SpectraClusterCliMain {
                 System.out.println("WARNING: " + CliOptions.OPTIONS.REUSE_BINARY_FILES.getValue() + " set, input files will be ignored");
 
             /**
+             * SPECIAL MODES
+             */
+            // cluster binary file
+            if (commandLine.hasOption(CliOptions.OPTIONS.CLUSTER_BINARY_FILE.getValue())) {
+                clusterBinaryFile(commandLine.getOptionValue(CliOptions.OPTIONS.CLUSTER_BINARY_FILE.getValue()), finalResultFile, thresholds);
+                return;
+            }
+
+            /**
              * ------- THE ACTUAL LOGIC STARTS HERE -----------
              */
             printSettings(finalResultFile, nMajorPeakJobs, startThreshold, endThreshold, rounds, mergeDuplicate, keepBinaryFiles, binaryTmpDirectory, peaklistFilenames, reUseBinaryFiles);
@@ -183,6 +193,35 @@ public class SpectraClusterCliMain {
 
             System.exit(1);
         }
+    }
+
+    /**
+     * Clusters the passed binary file in a single thread and writes the result to "binaryFilename"
+     * @param binaryFilename
+     * @param finalResultFile
+     * @param thresholds
+     */
+    private static void clusterBinaryFile(String binaryFilename, File finalResultFile, List<Float> thresholds) throws Exception {
+        System.out.println("spectra-cluster API Version 1.0");
+        System.out.println("Created by Rui Wang & Johannes Griss\n");
+
+        System.out.println("Clustering single binary file: " + binaryFilename);
+        System.out.println("Result file: " + finalResultFile.getName());
+
+        // write to a (local) temporary file
+        long start = System.currentTimeMillis();
+        System.out.print("Clustering file...");
+
+        File tmpResultFile = File.createTempFile("clustering_result", ".cls");
+        BinaryFileClusteringCallable binaryFileClusteringCallable = new BinaryFileClusteringCallable(tmpResultFile, new File(binaryFilename), thresholds);
+
+        printDone(start);
+
+        // copy the file
+        System.out.println("Copying result file to " + finalResultFile);
+        FileUtils.copyFile(tmpResultFile, finalResultFile);
+
+        tmpResultFile.delete();
     }
 
     private static void printSettings(File finalResultFile, int nMajorPeakJobs, float startThreshold, float endThreshold, int rounds, boolean mergeDuplicate, boolean keepBinaryFiles, File binaryTmpDirectory, String[] peaklistFilenames, boolean reUseBinaryFiles) {

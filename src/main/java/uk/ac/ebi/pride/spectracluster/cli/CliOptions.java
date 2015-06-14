@@ -22,6 +22,7 @@ public class CliOptions {
        BINARY_TMP_DIR("binary_directory"),
        KEEP_BINARY_FILE("keep_binary_files"),
        REUSE_BINARY_FILES("reuse_binary_files"),
+       CLUSTER_BINARY_FILE("cluster_binary_file"),
        HELP("help");
 
         private String value;
@@ -93,6 +94,12 @@ public class CliOptions {
                 .withDescription("if this option is set, the binary files found in the binary file directory will be used for clustering.")
                 .create(OPTIONS.REUSE_BINARY_FILES.getValue());
         options.addOption(reuseBinaryFiles);
+
+        Option clusterBinaryFile = OptionBuilder
+                .withDescription("if this option is set, only the passed binary file will be clustered and the result written to the file specified in '-output_path' in the binary format")
+                .hasArg()
+                .create(OPTIONS.CLUSTER_BINARY_FILE.getValue());
+        options.addOption(clusterBinaryFile);
 
         Option help = new Option(
                 OPTIONS.HELP.toString(),
