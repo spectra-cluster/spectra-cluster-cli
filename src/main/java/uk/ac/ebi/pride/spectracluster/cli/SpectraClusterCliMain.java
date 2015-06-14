@@ -206,14 +206,16 @@ public class SpectraClusterCliMain {
         System.out.println("Created by Rui Wang & Johannes Griss\n");
 
         System.out.println("Clustering single binary file: " + binaryFilename);
-        System.out.println("Result file: " + finalResultFile.getName());
+        System.out.println("Result file: " + finalResultFile);
 
         // write to a (local) temporary file
+        File tmpResultFile = File.createTempFile("clustering_result", ".cls");
+
         long start = System.currentTimeMillis();
         System.out.print("Clustering file...");
 
-        File tmpResultFile = File.createTempFile("clustering_result", ".cls");
         BinaryFileClusteringCallable binaryFileClusteringCallable = new BinaryFileClusteringCallable(tmpResultFile, new File(binaryFilename), thresholds);
+        binaryFileClusteringCallable.call();
 
         printDone(start);
 
