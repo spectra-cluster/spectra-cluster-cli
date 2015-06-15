@@ -23,6 +23,7 @@ public class CliOptions {
        KEEP_BINARY_FILE("keep_binary_files"),
        REUSE_BINARY_FILES("reuse_binary_files"),
        CLUSTER_BINARY_FILE("cluster_binary_file"),
+       MERGE_BINARY_RESULTS("merge_binary_results"),
        HELP("help");
 
         private String value;
@@ -100,6 +101,11 @@ public class CliOptions {
                 .hasArg()
                 .create(OPTIONS.CLUSTER_BINARY_FILE.getValue());
         options.addOption(clusterBinaryFile);
+
+        Option mergeBinaryResuls = OptionBuilder
+                .withDescription("if this option is set, the passed binary results files are merged into a single .clustering and .cgf file and written to '-output_path'")
+                .create(OPTIONS.MERGE_BINARY_RESULTS.getValue());
+        options.addOption(mergeBinaryResuls);
 
         Option help = new Option(
                 OPTIONS.HELP.toString(),

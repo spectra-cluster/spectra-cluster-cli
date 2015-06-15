@@ -120,6 +120,12 @@ public class SpectraClusterCliMain {
                 return;
             }
 
+            // merge binary files
+            if (commandLine.hasOption(CliOptions.OPTIONS.MERGE_BINARY_RESULTS.getValue())) {
+                mergeBinaryFiles(commandLine.getArgs(), finalResultFile, mergeDuplicate);
+                return;
+            }
+
             /**
              * ------- THE ACTUAL LOGIC STARTS HERE -----------
              */
@@ -193,6 +199,30 @@ public class SpectraClusterCliMain {
 
             System.exit(1);
         }
+    }
+
+    private static void mergeBinaryFiles(String[] binaryFilenames, File finalResultFile, boolean mergeDuplicate) throws Exception {
+        File tmpResultFile = File.createTempFile("combined_results", ".cgf");
+
+        MergingCGFConverter mergingCGFConverter = new MergingCGFConverter(tmpResultFile, false, false, null); // do not delete any files
+
+        System.out.print("Merging " + binaryFilenames.length + " binary files...");
+        long start = System.currentTimeMillis();
+
+        for (String binaryFilename : binaryFilenames) {
+            mergingCGFConverter.onNewResultFile(new File(binaryFilename));
+        }
+
+        printDone(start);
+
+        // copy the temporary file to the final destination
+        start = System.currentTimeMillis();
+        System.out.print("Copying result to " + finalResultFile + "...");
+
+        FileUtils.copyFile(tmpResultFile, finalResultFile);
+
+        printDone(start);
+        tmpResultFile.delete();
     }
 
     /**
