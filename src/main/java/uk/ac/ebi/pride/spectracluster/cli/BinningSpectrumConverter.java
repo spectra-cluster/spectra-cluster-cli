@@ -31,12 +31,14 @@ public class BinningSpectrumConverter {
 
     private final File outputDirectory;
     private final int nJobs;
+    private final boolean fastMode;
     private List<File> writtenFiles;
     private List<SpectrumReference> spectrumReferences;
 
-    public BinningSpectrumConverter(File outputDirectory, int nJobs) {
+    public BinningSpectrumConverter(File outputDirectory, int nJobs, boolean fastMode) {
         this.outputDirectory = outputDirectory;
         this.nJobs = nJobs;
+        this.fastMode = fastMode;
     }
 
     public void processPeaklistFiles(String[] filenames) throws Exception {
@@ -109,7 +111,8 @@ public class BinningSpectrumConverter {
                             filenames,
                             peaklistScanner.getFileIndices(),
                             spectrumReferences,
-                            outputFile);
+                            outputFile,
+                            fastMode);
 
             Future<File> fileFuture = writingJobsExecutorService.submit(writerCallable);
             writtenBinaryFileFutures.add(fileFuture);

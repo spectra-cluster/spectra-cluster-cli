@@ -17,6 +17,7 @@ public class BinaryFileClusterer {
     private final int nJobs;
     private final File outputDirectory;
     private final List<Float> thresholds;
+    private final boolean fastMode;
 
     private ExecutorService clusteringExecuteService;
     private ClusteringProcessLauncher clusteringProcessLauncher;
@@ -24,10 +25,11 @@ public class BinaryFileClusterer {
 
     private List<File> resultFiles;
 
-    public BinaryFileClusterer(int nJobs, File outputDirectory, List<Float> thresholds) {
+    public BinaryFileClusterer(int nJobs, File outputDirectory, List<Float> thresholds, boolean fastMode) {
         this.nJobs = nJobs;
         this.outputDirectory = outputDirectory;
         this.thresholds = thresholds;
+        this.fastMode = fastMode;
     }
 
     public void clusterFiles(List<File> binaryFiles) throws Exception {
@@ -79,7 +81,7 @@ public class BinaryFileClusterer {
 
     private void launchClusteringJobs(List<File> binaryFiles) {
         clusteringExecuteService = Executors.newFixedThreadPool(nJobs);
-        clusteringProcessLauncher = new ClusteringProcessLauncher(clusteringExecuteService, outputDirectory, thresholds);
+        clusteringProcessLauncher = new ClusteringProcessLauncher(clusteringExecuteService, outputDirectory, thresholds, fastMode);
 
         for (File binaryFile : binaryFiles) {
             clusteringProcessLauncher.onNewResultFile(binaryFile);

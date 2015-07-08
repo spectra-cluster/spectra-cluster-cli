@@ -98,6 +98,9 @@ public class SpectraClusterCliMain {
             // RE-USE BINARY FILES
             boolean reUseBinaryFiles = commandLine.hasOption(CliOptions.OPTIONS.REUSE_BINARY_FILES.getValue());
 
+            // FAST MODE
+            boolean fastMode = commandLine.hasOption(CliOptions.OPTIONS.FAST_MODE.getValue());
+
             // FILES TO PROCESS
             String[] peaklistFilenames = commandLine.getArgs();
 
@@ -116,7 +119,7 @@ public class SpectraClusterCliMain {
              */
             // cluster binary file
             if (commandLine.hasOption(CliOptions.OPTIONS.CLUSTER_BINARY_FILE.getValue())) {
-                clusterBinaryFile(commandLine.getOptionValue(CliOptions.OPTIONS.CLUSTER_BINARY_FILE.getValue()), finalResultFile, thresholds);
+                clusterBinaryFile(commandLine.getOptionValue(CliOptions.OPTIONS.CLUSTER_BINARY_FILE.getValue()), finalResultFile, thresholds, fastMode);
                 return;
             }
 
@@ -138,7 +141,7 @@ public class SpectraClusterCliMain {
             /**
              * ------- THE ACTUAL LOGIC STARTS HERE -----------
              */
-            printSettings(finalResultFile, nMajorPeakJobs, startThreshold, endThreshold, rounds, mergeDuplicate, keepBinaryFiles, binaryTmpDirectory, peaklistFilenames, reUseBinaryFiles);
+            printSettings(finalResultFile, nMajorPeakJobs, startThreshold, endThreshold, rounds, mergeDuplicate, keepBinaryFiles, binaryTmpDirectory, peaklistFilenames, reUseBinaryFiles, fastMode);
 
             List<File> binaryFiles = null;
             BinningSpectrumConverter binningSpectrumConverter = null;
@@ -147,7 +150,7 @@ public class SpectraClusterCliMain {
                 System.out.print("Writing binary files...");
                 long start = System.currentTimeMillis();
 
-                binningSpectrumConverter = new BinningSpectrumConverter(binaryTmpDirectory, nMajorPeakJobs);
+                binningSpectrumConverter = new BinningSpectrumConverter(binaryTmpDirectory, nMajorPeakJobs, fastMode);
                 binningSpectrumConverter.processPeaklistFiles(peaklistFilenames);
                 binaryFiles = binningSpectrumConverter.getWrittenFiles();
 
@@ -168,7 +171,7 @@ public class SpectraClusterCliMain {
             File tmpClusteringResults = createTemporaryDirectory("clustering_results");
 
             // cluster the binary files and immediately convert the results
-            BinaryFileClusterer binaryFileClusterer = new BinaryFileClusterer(nMajorPeakJobs, tmpClusteringResults, thresholds);
+            BinaryFileClusterer binaryFileClusterer = new BinaryFileClusterer(nMajorPeakJobs, tmpClusteringResults, thresholds, fastMode);
 
             File combinedResultFile = File.createTempFile("combined_clustering_results", ".cgf");
             MergingCGFConverter mergingCGFConverter = new MergingCGFConverter(combinedResultFile, DELETE_TEMPORARY_CLUSTERING_RESULTS, !keepBinaryFiles, binaryTmpDirectory);
@@ -240,7 +243,7 @@ public class SpectraClusterCliMain {
      * @param finalResultFile
      * @param thresholds
      */
-    private static void clusterBinaryFile(String binaryFilename, File finalResultFile, List<Float> thresholds) throws Exception {
+    private static void clusterBinaryFile(String binaryFilename, File finalResultFile, List<Float> thresholds, boolean fastMode) throws Exception {
         System.out.println("spectra-cluster API Version 1.0");
         System.out.println("Created by Rui Wang & Johannes Griss\n");
 
@@ -253,7 +256,7 @@ public class SpectraClusterCliMain {
         long start = System.currentTimeMillis();
         System.out.print("Clustering file...");
 
-        BinaryFileClusteringCallable binaryFileClusteringCallable = new BinaryFileClusteringCallable(tmpResultFile, new File(binaryFilename), thresholds);
+        BinaryFileClusteringCallable binaryFileClusteringCallable = new BinaryFileClusteringCallable(tmpResultFile, new File(binaryFilename), thresholds, fastMode);
         binaryFileClusteringCallable.call();
 
         printDone(start);
@@ -265,7 +268,7 @@ public class SpectraClusterCliMain {
         tmpResultFile.delete();
     }
 
-    private static void printSettings(File finalResultFile, int nMajorPeakJobs, float startThreshold, float endThreshold, int rounds, boolean mergeDuplicate, boolean keepBinaryFiles, File binaryTmpDirectory, String[] peaklistFilenames, boolean reUseBinaryFiles) {
+    private static void printSettings(File finalResultFile, int nMajorPeakJobs, float startThreshold, float endThreshold, int rounds, boolean mergeDuplicate, boolean keepBinaryFiles, File binaryTmpDirectory, String[] peaklistFilenames, boolean reUseBinaryFiles, boolean fastMode) {
         System.out.println("spectra-cluster API Version 1.0");
         System.out.println("Created by Rui Wang & Johannes Griss\n");
 
@@ -278,6 +281,7 @@ public class SpectraClusterCliMain {
         System.out.println("Result file: " + finalResultFile);
         System.out.println("Reuse binary files: " + (reUseBinaryFiles ? "true" : "false"));
         System.out.println("Input files: " + peaklistFilenames.length);
+        System.out.println("Using fast mode: " + (fastMode ? "yes" : "no"));
 
         System.out.println();
     }

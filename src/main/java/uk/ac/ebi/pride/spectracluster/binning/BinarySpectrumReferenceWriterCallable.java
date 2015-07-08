@@ -15,17 +15,19 @@ public class BinarySpectrumReferenceWriterCallable implements Callable<File> {
     private final List<List<IndexElement>> fileIndices;
     private final List<SpectrumReference> spectrumReferencesToWrite;
     private final File outputFile;
+    private final boolean fastMode;
 
-    public BinarySpectrumReferenceWriterCallable(String[] peaklistFiles, List<List<IndexElement>> fileIndices, List<SpectrumReference> spectrumReferencesToWrite, File outputFile) {
+    public BinarySpectrumReferenceWriterCallable(String[] peaklistFiles, List<List<IndexElement>> fileIndices, List<SpectrumReference> spectrumReferencesToWrite, File outputFile, boolean fastMode) {
         this.peaklistFiles = peaklistFiles;
         this.fileIndices = fileIndices;
         this.spectrumReferencesToWrite = spectrumReferencesToWrite;
         this.outputFile = outputFile;
+        this.fastMode = fastMode;
     }
 
     @Override
     public File call() throws Exception {
-        ISpectrumReferenceWriter writer = new BinarySpectrumReferenceWriter(peaklistFiles, fileIndices);
+        ISpectrumReferenceWriter writer = new BinarySpectrumReferenceWriter(peaklistFiles, fileIndices, fastMode);
 
         writer.writeSpectra(spectrumReferencesToWrite, outputFile);
 

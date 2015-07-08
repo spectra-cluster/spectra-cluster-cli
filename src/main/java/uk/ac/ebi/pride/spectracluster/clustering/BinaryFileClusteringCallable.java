@@ -11,6 +11,7 @@ import uk.ac.ebi.pride.spectracluster.similarity.ISimilarityChecker;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
+import uk.ac.ebi.pride.spectracluster.util.function.peak.FractionTICPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.predicate.IComparisonPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.ClusterShareMajorPeakPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.IsKnownComparisonsPredicate;
@@ -26,17 +27,24 @@ public class BinaryFileClusteringCallable implements Callable<File> {
     public static final float FRAGMENT_TOLERANCE = 0.5F;
     public static final ISimilarityChecker SIMILARITY_CHECKER = new CombinedFisherIntensityTest(FRAGMENT_TOLERANCE);
     public static final float WINDOW_SIZE = 4.0F;
-    //public static final IFunction<List<IPeak>, List<IPeak>> peakFilterFunction = new FractionTICPeakFunction(0.5f, 20);
-    public static final IFunction<List<IPeak>, List<IPeak>> peakFilterFunction = null;
+
+    public final IFunction<List<IPeak>, List<IPeak>> peakFilterFunction;
 
     private final File outputFile;
     private final File inputFile;
     private final List<Float> thresholds;
 
-    public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds) {
+    public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds, boolean fastMode) {
         this.outputFile = outputFile;
         this.inputFile = inputFile;
         this.thresholds = thresholds;
+
+        if (fastMode) {
+            peakFilterFunction = null;
+        }
+        else {
+            peakFilterFunction = new FractionTICPeakFunction(0.5f, 20);
+        }
     }
 
     @Override

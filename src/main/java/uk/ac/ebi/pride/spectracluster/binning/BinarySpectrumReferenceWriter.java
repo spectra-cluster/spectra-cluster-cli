@@ -30,12 +30,18 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
     private Map<Integer, JMzReader> readerPerFileIndex = new HashMap<Integer, JMzReader>();
     private final String[] peakListFilenames;
     private final List<List<IndexElement>> fileIndices;
+    /**
+     * If this is set, the comparison peak filtering is applied
+     * to every input spectrum during loading.
+     */
+    private final boolean fastMode;
     private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
 
 
-    public BinarySpectrumReferenceWriter(String[] peakListFilenames, List<List<IndexElement>> fileIndices) {
+    public BinarySpectrumReferenceWriter(String[] peakListFilenames, List<List<IndexElement>> fileIndices, boolean fastMode) {
         this.peakListFilenames = peakListFilenames;
         this.fileIndices = fileIndices;
+        this.fastMode = fastMode;
     }
 
     @Override
@@ -69,7 +75,9 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
                         processedSpectrum, Defaults.getDefaultIntensityNormalizer().normalizePeaks(processedSpectrum.getPeaks()));
 
                 // do the radical peak filtering already now
-                processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, comparisonFilterFunction.apply(processedSpectrum.getPeaks()));
+                if (fastMode) {
+                    processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, comparisonFilterFunction.apply(processedSpectrum.getPeaks()));
+                }
 
                 // write it to the file
                 BinaryClusterAppender.INSTANCE.appendCluster(objectOutputStream, ClusterUtilities.asCluster(processedSpectrum));

@@ -25,6 +25,7 @@ public class CliOptions {
        CLUSTER_BINARY_FILE("cluster_binary_file"),
        MERGE_BINARY_RESULTS("merge_binary_results"),
        CONVERT_CGF("convert_cgf"),
+       FAST_MODE("fast_mode"),
        HELP("help");
 
         private String value;
@@ -112,6 +113,11 @@ public class CliOptions {
                 .withDescription("if this option is set the passed CGF file is converted into a .clustering file")
                 .create(OPTIONS.CONVERT_CGF.getValue());
         options.addOption(convertCgf);
+
+        Option fastMode = OptionBuilder
+                .withDescription("if this option is set the 'fast mode' is enabled. In this mode, the radical peak filtering used for the comparison function is already applied during spectrum conversion. Thereby, the clustering and consensus spectrum quality is slightly decreased but speed increases 2-3 fold.")
+                .create(OPTIONS.FAST_MODE.getValue());
+        options.addOption(fastMode);
 
         Option help = new Option(
                 OPTIONS.HELP.toString(),
