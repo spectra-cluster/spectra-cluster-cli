@@ -24,6 +24,7 @@ public class CliOptions {
        REUSE_BINARY_FILES("reuse_binary_files"),
        CLUSTER_BINARY_FILE("cluster_binary_file"),
        MERGE_BINARY_RESULTS("merge_binary_results"),
+       CONVERT_CGF("convert_cgf"),
        HELP("help");
 
         private String value;
@@ -103,9 +104,14 @@ public class CliOptions {
         options.addOption(clusterBinaryFile);
 
         Option mergeBinaryResuls = OptionBuilder
-                .withDescription("if this option is set, the passed binary results files are merged into a single .clustering and .cgf file and written to '-output_path'")
+                .withDescription("if this option is set, the passed binary results files are merged into a single .cgf file and written to '-output_path'")
                 .create(OPTIONS.MERGE_BINARY_RESULTS.getValue());
         options.addOption(mergeBinaryResuls);
+
+        Option convertCgf = OptionBuilder
+                .withDescription("if this option is set the passed CGF file is converted into a .clustering file")
+                .create(OPTIONS.CONVERT_CGF.getValue());
+        options.addOption(convertCgf);
 
         Option help = new Option(
                 OPTIONS.HELP.toString(),

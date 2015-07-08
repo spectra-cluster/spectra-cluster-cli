@@ -126,6 +126,15 @@ public class SpectraClusterCliMain {
                 return;
             }
 
+            // convert cgf
+            if (commandLine.hasOption(CliOptions.OPTIONS.CONVERT_CGF.getValue())) {
+                if (commandLine.getArgs().length > 1)
+                    throw new Exception("Can only convert a single file at the time.");
+
+                convertClusters(new File(commandLine.getArgs()[0]), finalResultFile, endThreshold);
+                return;
+            }
+
             /**
              * ------- THE ACTUAL LOGIC STARTS HERE -----------
              */
