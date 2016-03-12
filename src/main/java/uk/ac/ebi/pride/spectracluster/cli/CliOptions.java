@@ -3,6 +3,8 @@ package uk.ac.ebi.pride.spectracluster.cli;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import sun.dc.pr.PRError;
+import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemovePrecursorPeaksFunction;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,6 +16,8 @@ import org.apache.commons.cli.Options;
 public class CliOptions {
     public enum OPTIONS {
        OUTPUT_PATH("output_path"),
+       PRECURSOR_TOLERANCE("precursor_tolerance"),
+       FRAGMENT_TOLERANCE("fragment_tolerance"),
        MAJOR_PEAK_JOBS("major_peak_jobs"),
        START_THRESHOLD("threshold_start"),
        END_THRESHOLD("threshold_end"),
@@ -47,6 +51,18 @@ public class CliOptions {
     private static final Options options = new Options();
 
     static {
+        Option fragmentTolerance = OptionBuilder
+                .hasArg()
+                .withDescription("fragment ion tolerance in m/z to use for fragment peak matching")
+                .create(OPTIONS.FRAGMENT_TOLERANCE.getValue());
+        options.addOption(fragmentTolerance);
+
+        Option precursorTolerance = OptionBuilder
+                .hasArg()
+                .withDescription("precursor tolerance (clustering window size) in m/z used during matching.")
+                .create(OPTIONS.PRECURSOR_TOLERANCE.getValue());
+        options.addOption(precursorTolerance);
+
         Option outputPath = OptionBuilder
                 .hasArg()
                 .withDescription("path to the outputfile. Outputfile must not exist.")

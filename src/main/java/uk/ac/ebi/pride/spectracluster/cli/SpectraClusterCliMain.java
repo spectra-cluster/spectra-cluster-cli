@@ -81,6 +81,18 @@ public class SpectraClusterCliMain {
 
             List<Float> thresholds = generateThreshold(startThreshold, endThreshold, rounds);
 
+            // PRECURSOR TOLERANCE
+            if (commandLine.hasOption(CliOptions.OPTIONS.PRECURSOR_TOLERANCE.getValue())) {
+                float precursorTolerance = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.PRECURSOR_TOLERANCE.getValue()));
+                Defaults.setDefaultPrecursorIonTolerance(precursorTolerance);
+            }
+
+            // FRAGMENT ION TOLERANCE
+            if (commandLine.hasOption(CliOptions.OPTIONS.FRAGMENT_TOLERANCE.getValue())) {
+                float fragmentTolerance = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.FRAGMENT_TOLERANCE.getValue()));
+                Defaults.setFragmentIonTolerance(fragmentTolerance);
+            }
+
             // MERGE DUPLICATE
             boolean mergeDuplicate = commandLine.hasOption(CliOptions.OPTIONS.MERGE_DUPLICATE.getValue());
 
@@ -194,6 +206,8 @@ public class SpectraClusterCliMain {
                 if (!tmpClusteringResults.delete())
                     System.out.println("Warning: Failed to delete " + tmpClusteringResults);
             }
+
+            // TODO: this implementation is still missing the merging job
 
             // create the output file
             if (mergeDuplicate)
