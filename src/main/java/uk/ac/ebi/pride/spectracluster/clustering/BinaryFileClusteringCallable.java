@@ -24,9 +24,8 @@ import java.util.concurrent.Callable;
  * Created by jg on 15.05.15.
  */
 public class BinaryFileClusteringCallable implements Callable<File> {
-    public static final float FRAGMENT_TOLERANCE = 0.5F;
-    public static final ISimilarityChecker SIMILARITY_CHECKER = new CombinedFisherIntensityTest(FRAGMENT_TOLERANCE);
-    public static final float WINDOW_SIZE = 4.0F;
+    public static final ISimilarityChecker SIMILARITY_CHECKER = new CombinedFisherIntensityTest(Defaults.getFragmentIonTolerance());
+    public static final int DEFAULT_MAJOR_PEAK_COUNT = 5;
 
     public final IFunction<List<IPeak>, List<IPeak>> peakFilterFunction;
 
@@ -62,7 +61,7 @@ public class BinaryFileClusteringCallable implements Callable<File> {
 
                 if (nRound == 0) {
                     // first round only compare spectra that share a major peak
-                    comparisonPredicate = new ClusterShareMajorPeakPredicate(5);
+                    comparisonPredicate = new ClusterShareMajorPeakPredicate(DEFAULT_MAJOR_PEAK_COUNT);
                 } else {
                     // subsequent rounds only compare known matches
                     comparisonPredicate = new IsKnownComparisonsPredicate();
@@ -143,7 +142,7 @@ public class BinaryFileClusteringCallable implements Callable<File> {
         IIncrementalClusteringEngine clusteringEngine = new GreedyIncrementalClusteringEngine(
                 SIMILARITY_CHECKER,
                 Defaults.getDefaultSpectrumComparator(),
-                WINDOW_SIZE,
+                Defaults.getDefaultPrecursorIonTolerance(),
                 clusteringPrecision,
                 peakFilterFunction,
                 comparisonPredicate);
