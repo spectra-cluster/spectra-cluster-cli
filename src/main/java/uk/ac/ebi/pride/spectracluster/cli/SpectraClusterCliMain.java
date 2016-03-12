@@ -143,7 +143,7 @@ public class SpectraClusterCliMain {
              */
             printSettings(finalResultFile, nMajorPeakJobs, startThreshold, endThreshold, rounds, mergeDuplicate, keepBinaryFiles, binaryTmpDirectory, peaklistFilenames, reUseBinaryFiles, fastMode);
 
-            List<File> binaryFiles = null;
+            List<File> binaryFiles;
             BinningSpectrumConverter binningSpectrumConverter = null;
 
             if (!reUseBinaryFiles) {
