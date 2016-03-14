@@ -33,7 +33,26 @@ public class BinaryFileClusteringCallable implements Callable<BinaryClusterFileR
     private final File inputFile;
     private final List<Float> thresholds;
 
+    private final float minMz;
+    private final float maxMz;
+
     public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds, boolean fastMode) {
+        this(outputFile, inputFile, thresholds, fastMode, -1, -1);
+    }
+
+    /**
+     * Create a new BinaryFileClustering object.
+     * @param outputFile File to write the output to.
+     * @param inputFile The (binary) file to cluster.
+     * @param thresholds The thresholds to use in the clustering rounds.
+     * @param fastMode If set to true no peak filter will be applied. Otherwise, each spectrum will be filtered for the comparison.
+     * @param minMz All clusters below the set m/z will be ignored and simply written to the output file.
+     * @param maxMz All clusters above the set m/z will be ignored and simply written to the output file. If set to -1
+     *              the value is ignored.
+     */
+    public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds, boolean fastMode, float minMz, float maxMz) {
+        this.minMz = minMz;
+        this.maxMz = maxMz;
         this.outputFile = outputFile;
         this.inputFile = inputFile;
         this.thresholds = thresholds;
@@ -88,6 +107,16 @@ public class BinaryFileClusteringCallable implements Callable<BinaryClusterFileR
                             maxMz = clusterToAdd.getPrecursorMz();
                     }
 
+                    // write out clusters that are below of above the set m/z limit
+                    if (clusterToAdd.getPrecursorMz() < minMz ||
+                            (maxMz > -1 && clusterToAdd.getPrecursorMz() > maxMz)) {
+                        List<ICluster> clusterList = new ArrayList<ICluster>(1);
+                        clusterList.add(clusterToAdd);
+                        writeOutClusters(clusterList, outputStream);
+                        continue;
+                    }
+
+                    // do the clustering
                     Collection<ICluster> removedClusters = incrementalClusteringEngine.addClusterIncremental(clusterToAdd);
 
                     // write out the removed clusters
