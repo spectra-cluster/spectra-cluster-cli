@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
 public class ClusteringProcessLauncher implements  IBinaryClusteringResultListener {
     private final ExecutorService executorService;
     private final File outputDirectory;
-    private List<Future<File>> fileFutures = new ArrayList<Future<File>>();
+    private List<Future<BinaryClusterFileReference>> fileFutures = new ArrayList<Future<BinaryClusterFileReference>>();
     private final List<Float> thresholds;
     private final boolean fastMode;
 
@@ -26,15 +26,15 @@ public class ClusteringProcessLauncher implements  IBinaryClusteringResultListen
     }
 
     @Override
-    public void onNewResultFile(File binaryClusteringResultFile) {
-        File outputFile = new File(outputDirectory, binaryClusteringResultFile.getName());
-        BinaryFileClusteringCallable clusteringCallable = new BinaryFileClusteringCallable(outputFile, binaryClusteringResultFile, thresholds, fastMode);
-        Future<File> fileFuture = executorService.submit(clusteringCallable);
+    public void onNewResultFile(BinaryClusterFileReference binaryBinaryClusterFileReferenceFile) {
+        File outputFile = new File(outputDirectory, binaryBinaryClusterFileReferenceFile.getResultFile().getName());
+        BinaryFileClusteringCallable clusteringCallable = new BinaryFileClusteringCallable(outputFile, binaryBinaryClusterFileReferenceFile.getResultFile(), thresholds, fastMode);
+        Future<BinaryClusterFileReference> fileFuture = executorService.submit(clusteringCallable);
 
         fileFutures.add(fileFuture);
     }
 
-    public List<Future<File>> getFileFutures() {
+    public List<Future<BinaryClusterFileReference>> getResultFileFutures() {
         return Collections.unmodifiableList(fileFutures);
     }
 }

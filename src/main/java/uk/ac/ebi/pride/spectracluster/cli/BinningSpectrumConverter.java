@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.spectracluster.cli;
 
 import uk.ac.ebi.pride.spectracluster.binning.*;
+import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.spectra_list.IPeaklistScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingMgfScanner;
@@ -27,12 +28,12 @@ public class BinningSpectrumConverter {
 
     private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
     private ExecutorService writingJobsExecutorService;
-    private List<Future<File>> writtenBinaryFileFutures;
+    private List<Future<BinaryClusterFileReference>> writtenBinaryFileFutures;
 
     private final File outputDirectory;
     private final int nJobs;
     private final boolean fastMode;
-    private List<File> writtenFiles;
+    private List<BinaryClusterFileReference> writtenFiles;
     private List<SpectrumReference> spectrumReferences;
 
     public BinningSpectrumConverter(File outputDirectory, int nJobs, boolean fastMode) {
@@ -57,7 +58,7 @@ public class BinningSpectrumConverter {
 
     private void waitForCompletedJobs() throws Exception {
         boolean allDone = false;
-        writtenFiles = new ArrayList<File>();
+        writtenFiles = new ArrayList<BinaryClusterFileReference>();
         Set<Integer> completedWritingJobs = new HashSet<Integer>();
 
         while (!allDone) {
@@ -67,14 +68,14 @@ public class BinningSpectrumConverter {
                 if (completedWritingJobs.contains(i))
                     continue;
 
-                Future<File> fileFuture = writtenBinaryFileFutures.get(i);
+                Future<BinaryClusterFileReference> fileFuture = writtenBinaryFileFutures.get(i);
 
                 if (!fileFuture.isDone()) {
                     allDone = false;
                 }
                 else {
                     // save the written file
-                    File writtenFile = fileFuture.get();
+                    BinaryClusterFileReference writtenFile = fileFuture.get();
                     writtenFiles.add(writtenFile);
                     // notify all listeners
                     notifyListeners(writtenFile);
@@ -88,7 +89,7 @@ public class BinningSpectrumConverter {
         writingJobsExecutorService.awaitTermination(1, TimeUnit.MINUTES);
     }
 
-    private void notifyListeners(File writtenFile) {
+    private void notifyListeners(BinaryClusterFileReference writtenFile) {
         for (IBinaryClusteringResultListener listener : listeners) {
             listener.onNewResultFile(writtenFile);
         }
@@ -99,7 +100,7 @@ public class BinningSpectrumConverter {
             throw new Exception("Invalid output directory for converted spectra set");
 
         writingJobsExecutorService = Executors.newFixedThreadPool(nJobs);
-        writtenBinaryFileFutures = new ArrayList<Future<File>>(binnedSpectrumReferences.size());
+        writtenBinaryFileFutures = new ArrayList<Future<BinaryClusterFileReference>>(binnedSpectrumReferences.size());
 
         // launch the jobs
         for (int i = 0; i < binnedSpectrumReferences.size(); i++) {
@@ -114,7 +115,7 @@ public class BinningSpectrumConverter {
                             outputFile,
                             fastMode);
 
-            Future<File> fileFuture = writingJobsExecutorService.submit(writerCallable);
+            Future<BinaryClusterFileReference> fileFuture = writingJobsExecutorService.submit(writerCallable);
             writtenBinaryFileFutures.add(fileFuture);
         }
 
@@ -122,14 +123,29 @@ public class BinningSpectrumConverter {
     }
 
     public File generateOutputfile(int bin) {
-        return new File(outputDirectory, "convertedSpectra_" + bin + ".cls");
+        String binString;
+
+        if (bin >= 1000) {
+            binString = String.valueOf(bin);
+        }
+        else if (bin >= 100) {
+            binString = "0" + String.valueOf(bin);
+        }
+        else if (bin >= 10) {
+            binString = "00" + String.valueOf(bin);
+        }
+        else {
+            binString = "000" + String.valueOf(bin);
+        }
+
+        return new File(outputDirectory, "convertedSpectra_" + binString + ".cls");
     }
 
     public void addWrittenFileListener(IBinaryClusteringResultListener listener) {
         listeners.add(listener);
     }
 
-    public List<File> getWrittenFiles() {
+    public List<BinaryClusterFileReference> getWrittenFiles() {
         return Collections.unmodifiableList(writtenFiles);
     }
 

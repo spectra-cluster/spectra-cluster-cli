@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.spectracluster.cli;
 
 import uk.ac.ebi.pride.spectracluster.clustering.ClusteringProcessLauncher;
+import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 
 import java.io.File;
@@ -23,7 +24,7 @@ public class BinaryFileClusterer {
     private ClusteringProcessLauncher clusteringProcessLauncher;
     private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
 
-    private List<File> resultFiles;
+    private List<BinaryClusterFileReference> resultFiles;
 
     public BinaryFileClusterer(int nJobs, File outputDirectory, List<Float> thresholds, boolean fastMode) {
         this.nJobs = nJobs;
@@ -32,17 +33,17 @@ public class BinaryFileClusterer {
         this.fastMode = fastMode;
     }
 
-    public void clusterFiles(List<File> binaryFiles) throws Exception {
+    public void clusterFiles(List<BinaryClusterFileReference> binaryFiles) throws Exception {
         launchClusteringJobs(binaryFiles);
 
         waitForCompletedJobs();
     }
 
     private void waitForCompletedJobs() throws Exception {
-        List<Future<File>> fileFutures = clusteringProcessLauncher.getFileFutures();
+        List<Future<BinaryClusterFileReference>> fileFutures = clusteringProcessLauncher.getResultFileFutures();
 
         boolean allDone = false;
-        resultFiles = new ArrayList<File>();
+        resultFiles = new ArrayList<BinaryClusterFileReference>();
         Set<Integer> completedJobs = new HashSet<Integer>();
 
         while (!allDone) {
@@ -52,14 +53,14 @@ public class BinaryFileClusterer {
                 if (completedJobs.contains(i))
                     continue;
 
-                Future<File> fileFuture = fileFutures.get(i);
+                Future<BinaryClusterFileReference> fileFuture = fileFutures.get(i);
 
                 if (!fileFuture.isDone()) {
                     allDone = false;
                 }
                 else {
                     // save the written file
-                    File resultFile = fileFuture.get();
+                    BinaryClusterFileReference resultFile = fileFuture.get();
                     resultFiles.add(resultFile);
                     // notify all listeners
                     notifyListeners(resultFile);
@@ -73,17 +74,17 @@ public class BinaryFileClusterer {
         clusteringExecuteService.awaitTermination(1, TimeUnit.MINUTES);
     }
 
-    private void notifyListeners(File writtenFile) {
+    private void notifyListeners(BinaryClusterFileReference writtenFile) {
         for (IBinaryClusteringResultListener listener : listeners) {
             listener.onNewResultFile(writtenFile);
         }
     }
 
-    private void launchClusteringJobs(List<File> binaryFiles) {
+    private void launchClusteringJobs(List<BinaryClusterFileReference> binaryFiles) {
         clusteringExecuteService = Executors.newFixedThreadPool(nJobs);
         clusteringProcessLauncher = new ClusteringProcessLauncher(clusteringExecuteService, outputDirectory, thresholds, fastMode);
 
-        for (File binaryFile : binaryFiles) {
+        for (BinaryClusterFileReference binaryFile : binaryFiles) {
             clusteringProcessLauncher.onNewResultFile(binaryFile);
         }
 
@@ -94,7 +95,7 @@ public class BinaryFileClusterer {
         listeners.add(listener);
     }
 
-    public List<File> getResultFiles() {
+    public List<BinaryClusterFileReference> getResultFiles() {
         return Collections.unmodifiableList(resultFiles);
     }
 }

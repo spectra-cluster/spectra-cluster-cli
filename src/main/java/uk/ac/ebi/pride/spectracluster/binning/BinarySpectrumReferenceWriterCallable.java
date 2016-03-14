@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.spectracluster.binning;
 
+import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
 
@@ -10,7 +11,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by jg on 28.05.15.
  */
-public class BinarySpectrumReferenceWriterCallable implements Callable<File> {
+public class BinarySpectrumReferenceWriterCallable implements Callable<BinaryClusterFileReference> {
     private final String[] peaklistFiles;
     private final List<List<IndexElement>> fileIndices;
     private final List<SpectrumReference> spectrumReferencesToWrite;
@@ -26,11 +27,23 @@ public class BinarySpectrumReferenceWriterCallable implements Callable<File> {
     }
 
     @Override
-    public File call() throws Exception {
+    public BinaryClusterFileReference call() throws Exception {
         ISpectrumReferenceWriter writer = new BinarySpectrumReferenceWriter(peaklistFiles, fileIndices, fastMode);
 
         writer.writeSpectra(spectrumReferencesToWrite, outputFile);
 
-        return outputFile;
+        // get the min and max m/z
+        double minMz = Double.MAX_VALUE, maxMz = 0;
+
+        for (SpectrumReference spectrumReference : spectrumReferencesToWrite) {
+            if (spectrumReference.getPrecursorMz() < minMz) {
+                minMz = spectrumReference.getPrecursorMz();
+            }
+            if (spectrumReference.getPrecursorMz() > maxMz) {
+                maxMz = spectrumReference.getPrecursorMz();
+            }
+        }
+
+        return new BinaryClusterFileReference(outputFile, minMz, maxMz);
     }
 }

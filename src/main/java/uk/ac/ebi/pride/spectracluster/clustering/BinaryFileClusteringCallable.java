@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by jg on 15.05.15.
  */
-public class BinaryFileClusteringCallable implements Callable<File> {
+public class BinaryFileClusteringCallable implements Callable<BinaryClusterFileReference> {
     public static final ISimilarityChecker SIMILARITY_CHECKER = new CombinedFisherIntensityTest(Defaults.getFragmentIonTolerance());
     public static final int DEFAULT_MAJOR_PEAK_COUNT = 5;
 
@@ -47,7 +47,7 @@ public class BinaryFileClusteringCallable implements Callable<File> {
     }
 
     @Override
-    public File call() throws Exception {
+    public BinaryClusterFileReference call() throws Exception {
         try {
             File currentInputFile = inputFile;
             long start = System.currentTimeMillis();
@@ -125,7 +125,7 @@ public class BinaryFileClusteringCallable implements Callable<File> {
 
             printCompletion(inputFile.getName(), start, nSpectra, minMz, maxMz);
 
-            return outputFile;
+            return new BinaryClusterFileReference(outputFile, minMz, maxMz);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
