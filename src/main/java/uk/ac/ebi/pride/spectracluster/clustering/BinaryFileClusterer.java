@@ -67,6 +67,8 @@ public class BinaryFileClusterer {
 
                     completedJobs.add(i);
                 }
+
+                Thread.sleep(1000); // only check every second
             }
         }
 
