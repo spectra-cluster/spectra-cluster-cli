@@ -182,6 +182,7 @@ public class SpectraClusterCliMain {
 
             // sort result files by min m/z
             List<BinaryClusterFileReference> clusteredFiles = binaryFileClusterer.getResultFiles();
+            clusteredFiles = new ArrayList<BinaryClusterFileReference>(clusteredFiles);
             Collections.sort(clusteredFiles);
 
             // merge the results

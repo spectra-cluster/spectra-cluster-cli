@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.spectracluster.binning;
 
+import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
@@ -106,7 +107,8 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
                 }
 
                 // write it to the file
-                BinaryClusterAppender.INSTANCE.appendCluster(objectOutputStream, ClusterUtilities.asCluster(processedSpectrum));
+                ICluster spectrumAsCluster = ClusterUtilities.asCluster(processedSpectrum);
+                BinaryClusterAppender.INSTANCE.appendCluster(objectOutputStream, spectrumAsCluster);
             }
             catch (Exception e) {
                 throw new Exception("Error while processing spectrum reference (file id = " + spectrumReference.getFileId() + " > " + peakListFilenames[spectrumReference.getFileId()] + ", spec index = " + spectrumReference.getSpectrumIndex() + ", m/z = " + spectrumReference.getPrecursorMz() + ")", e);
