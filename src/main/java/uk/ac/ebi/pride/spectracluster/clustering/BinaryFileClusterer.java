@@ -3,6 +3,7 @@ package uk.ac.ebi.pride.spectracluster.clustering;
 import uk.ac.ebi.pride.spectracluster.clustering.ClusteringProcessLauncher;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
+import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
 
 import java.io.File;
 import java.util.*;
@@ -40,7 +41,7 @@ public class BinaryFileClusterer {
     }
 
     private void waitForCompletedJobs() throws Exception {
-        List<Future<BinaryClusterFileReference>> fileFutures = clusteringProcessLauncher.getResultFileFutures();
+        List<Future<ClusteringJobReference>> fileFutures = clusteringProcessLauncher.getResultFileFutures();
 
         boolean allDone = false;
         resultFiles = new ArrayList<BinaryClusterFileReference>();
@@ -53,14 +54,14 @@ public class BinaryFileClusterer {
                 if (completedJobs.contains(i))
                     continue;
 
-                Future<BinaryClusterFileReference> fileFuture = fileFutures.get(i);
+                Future<ClusteringJobReference> fileFuture = fileFutures.get(i);
 
                 if (!fileFuture.isDone()) {
                     allDone = false;
                 }
                 else {
                     // save the written file
-                    BinaryClusterFileReference resultFile = fileFuture.get();
+                    BinaryClusterFileReference resultFile = fileFuture.get().getOutputFile();
                     resultFiles.add(resultFile);
                     // notify all listeners
                     notifyListeners(resultFile);
