@@ -10,6 +10,7 @@ import java.util.List;
 /**
  * Created by jg on 16.05.15.
  */
+@Deprecated // random access doesn't seem to work with binary files
 public class BinaryClusterFileScanner implements IClusterScanner {
     @Override
     public List<ClusterReference> getClusterReferences(File inputFile, int fileId) throws Exception {
