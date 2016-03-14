@@ -8,7 +8,7 @@ import java.io.File;
  *
  * Created by jg on 13.03.16.
  */
-public class BinaryClusterFileReference {
+public class BinaryClusterFileReference implements Comparable<BinaryClusterFileReference> {
     /**
      * The actual binary result file
      */
@@ -38,5 +38,13 @@ public class BinaryClusterFileReference {
 
     public double getMaxMz() {
         return maxMz;
+    }
+
+    @Override
+    /**
+     * Naturally sorts according to min m/z
+     */
+    public int compareTo(BinaryClusterFileReference o) {
+        return Double.compare(getMinMz(), o.getMinMz());
     }
 }
