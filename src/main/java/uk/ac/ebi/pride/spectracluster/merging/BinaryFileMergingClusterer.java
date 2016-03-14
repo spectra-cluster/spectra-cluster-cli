@@ -4,6 +4,7 @@ import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
 import uk.ac.ebi.pride.spectracluster.clustering.ClusteringProcessLauncher;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
+import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
 
 import java.io.File;
 import java.util.*;
@@ -29,19 +30,25 @@ public class BinaryFileMergingClusterer {
     private final List<Float> thresholds;
     private final boolean fastMode;
     private final double windowSize;
+    private final boolean deleteInputFiles;
 
     private ExecutorService clusteringExecuteService;
     private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
-    private List<Future<BinaryClusterFileReference>> clusteringFutures = new ArrayList<Future<BinaryClusterFileReference>>();
+    private List<Future<ClusteringJobReference>> clusteringFutures = new ArrayList<Future<ClusteringJobReference>>();
 
     private List<BinaryClusterFileReference> resultFiles;
 
     public BinaryFileMergingClusterer(int nJobs, File outputDirectory, List<Float> thresholds, boolean fastMode, double windowSize) {
+        this(nJobs, outputDirectory, thresholds, fastMode, windowSize, false);
+    }
+
+    public BinaryFileMergingClusterer(int nJobs, File outputDirectory, List<Float> thresholds, boolean fastMode, double windowSize, boolean deleteInputFiles) {
         this.nJobs = nJobs;
         this.outputDirectory = outputDirectory;
         this.thresholds = thresholds;
         this.fastMode = fastMode;
         this.windowSize = windowSize;
+        this.deleteInputFiles = deleteInputFiles;
     }
 
     public void clusterFiles(List<BinaryClusterFileReference> binaryFiles) throws Exception {
@@ -62,20 +69,28 @@ public class BinaryFileMergingClusterer {
                 if (completedJobs.contains(i))
                     continue;
 
-                Future<BinaryClusterFileReference> fileFuture = clusteringFutures.get(i);
+                Future<ClusteringJobReference> fileFuture = clusteringFutures.get(i);
 
                 if (!fileFuture.isDone()) {
                     allDone = false;
                 }
                 else {
                     // save the written file
-                    BinaryClusterFileReference resultFile = fileFuture.get();
+                    BinaryClusterFileReference resultFile = fileFuture.get().getOutputFile();
                     resultFiles.add(resultFile);
                     // notify all listeners
                     notifyListeners(resultFile);
 
+                    // delete the input file if set
+                    if (deleteInputFiles) {
+                        // ignore if the deletion fails
+                        fileFuture.get().getInputFile().delete();
+                    }
+
                     completedJobs.add(i);
                 }
+
+                Thread.sleep(1000); // only check every second
             }
         }
 
@@ -110,7 +125,7 @@ public class BinaryFileMergingClusterer {
             BinaryFileClusteringCallable clusteringCallable =
                     new BinaryFileClusteringCallable(outputFile, binaryClusterFileReference.getResultFile(),
                             thresholds, fastMode, 0, (float) maxMz);
-            Future<BinaryClusterFileReference> resultFileFuture = clusteringExecuteService.submit(clusteringCallable);
+            Future<ClusteringJobReference> resultFileFuture = clusteringExecuteService.submit(clusteringCallable);
             clusteringFutures.add(resultFileFuture);
         }
 
