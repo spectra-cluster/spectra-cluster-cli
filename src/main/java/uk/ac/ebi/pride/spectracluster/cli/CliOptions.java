@@ -3,8 +3,6 @@ package uk.ac.ebi.pride.spectracluster.cli;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import sun.dc.pr.PRError;
-import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemovePrecursorPeaksFunction;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.spectracluster.conversion;
 
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
+import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
 import uk.ac.ebi.pride.spectracluster.io.CGFClusterAppender;
@@ -39,13 +40,14 @@ public class MergingCGFConverter implements IBinaryClusteringResultListener {
     }
 
     @Override
-    public void onNewResultFile(File binaryClusteringResultFile) {
+    public void onNewResultFile(BinaryClusterFileReference binaryClusteringResultFile) {
         try {
             // open the result file to write to
             FileOutputStream outputStream = new FileOutputStream(resultFile, true);
 
             // read from the clustering result file
-            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(binaryClusteringResultFile));
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(
+                    binaryClusteringResultFile.getResultFile()));
             BinaryClusterIterable binaryClusterIterable = new BinaryClusterIterable(objectInputStream);
 
             for (ICluster cluster : binaryClusterIterable) {
@@ -64,7 +66,7 @@ public class MergingCGFConverter implements IBinaryClusteringResultListener {
             outputStream.close();
 
             // delete the files
-            deleteTemporaryFiles(binaryClusteringResultFile);
+            deleteTemporaryFiles(binaryClusteringResultFile.getResultFile());
         }
         catch (Exception e) {
             throw new RuntimeException(e);

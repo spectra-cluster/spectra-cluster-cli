@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.spectracluster.binning;
 
+import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
 import uk.ac.ebi.pride.spectracluster.normalizer.IIntensityNormalizer;
@@ -64,6 +65,8 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
         FileOutputStream outputStream = new FileOutputStream(outputFile);
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 
+        double minMz = Double.MAX_VALUE, maxMz = 0;
+
         for (SpectrumReference spectrumReference : spectrumReferences) {
             try {
                 int fileIndex = spectrumReference.getFileId();
@@ -94,6 +97,14 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
                     processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, peakFilter.apply(processedSpectrum.getPeaks()));
                 }
 
+                // update the statistics
+                if (processedSpectrum.getPrecursorMz() < minMz) {
+                    minMz = processedSpectrum.getPrecursorMz();
+                }
+                if (processedSpectrum.getPrecursorMz() > maxMz) {
+                    maxMz = processedSpectrum.getPrecursorMz();
+                }
+
                 // write it to the file
                 BinaryClusterAppender.INSTANCE.appendCluster(objectOutputStream, ClusterUtilities.asCluster(processedSpectrum));
             }
@@ -109,7 +120,7 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
 
         // notify the listeners
         for (IBinaryClusteringResultListener listener : listeners)
-            listener.onNewResultFile(outputFile);
+            listener.onNewResultFile(new BinaryClusterFileReference(outputFile, minMz, maxMz));
     }
 
     private JMzReader openFile(String peakListFilename, List<IndexElement> fileIndex) throws Exception {

@@ -11,14 +11,11 @@ import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusterer;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.conversion.MergingCGFConverter;
-import uk.ac.ebi.pride.spectracluster.engine.IIncrementalClusteringEngine;
 import uk.ac.ebi.pride.spectracluster.io.*;
 import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
-import uk.ac.ebi.pride.spectracluster.merging.LoadingSimilarClusteringEngine;
 import uk.ac.ebi.pride.spectracluster.spectra_list.*;
 import uk.ac.ebi.pride.spectracluster.util.BinaryFileScanner;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
-import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
 
 import java.io.*;
 import java.util.*;
@@ -233,13 +230,20 @@ public class SpectraClusterCliMain {
     private static void mergeBinaryFiles(String[] binaryFilenames, File finalResultFile) throws Exception {
         File tmpResultFile = File.createTempFile("combined_results", ".cgf");
 
+        // scan the binary files
+        File[] binaryFiles = new File[binaryFilenames.length];
+        for (int i = 0; i < binaryFilenames.length; i++) {
+            binaryFiles[i] = new File(binaryFilenames[i]);
+        }
+        List<BinaryClusterFileReference> binaryFileRefs = BinaryFileScanner.scanBinaryFiles(binaryFiles);
+
         MergingCGFConverter mergingCGFConverter = new MergingCGFConverter(tmpResultFile, false, false, null); // do not delete any files
 
         System.out.print("Merging " + binaryFilenames.length + " binary files...");
         long start = System.currentTimeMillis();
 
-        for (String binaryFilename : binaryFilenames) {
-            mergingCGFConverter.onNewResultFile(new File(binaryFilename));
+        for (BinaryClusterFileReference binaryClusterFileReference : binaryFileRefs) {
+            mergingCGFConverter.onNewResultFile(binaryClusterFileReference);
         }
 
         printDone(start);
@@ -349,59 +353,6 @@ public class SpectraClusterCliMain {
         // copy the final CGF file as well
         FileUtils.copyFile(combinedResultFile, new File(finalResultFile.getAbsolutePath() + ".cgf"));
         System.out.println("Copied CGF result to " + finalResultFile.getAbsolutePath() + ".cgf");
-    }
-
-    @Deprecated // the current implementation does not create duplicate clusters
-    private static void mergeDuplicateClusters(File combinedResultFile, List<ClusterReference> clusterReferences, File finalResultFile, Map<String, SpectrumReference> spectrumReferencesPerId, String[] peaklistFilenames, float finalThreshold, List<List<IndexElement>> fileIndices) throws Exception {
-        FileInputStream fileInputStream = new FileInputStream(combinedResultFile);
-
-        FileWriter writer = new FileWriter(finalResultFile);
-        final float WINDOW_SIZE = 1.0F;
-        final double MIN_SHARED_SPECTRA = 0.4;
-
-        int nClusterRead = 0;
-        int nClusterWritten = 0;
-
-        // process all clusters based on precursor m/z
-        Collections.sort(clusterReferences);
-
-        System.out.print("Merging duplicate clusters...");
-        long start = System.currentTimeMillis();
-
-        IIncrementalClusteringEngine clusteringEngine = new LoadingSimilarClusteringEngine(Defaults.getDefaultSpectrumComparator(), WINDOW_SIZE, MIN_SHARED_SPECTRA, spectrumReferencesPerId, peaklistFilenames, fileIndices);
-        DotClusterClusterAppender.INSTANCE.appendStart(writer, "GreedyClustering_" + String.valueOf(finalThreshold)); // TODO: add better name
-
-        for (ClusterReference clusterReference : clusterReferences) {
-            nClusterRead++;
-
-            // load the cluster
-            fileInputStream.getChannel().position(clusterReference.getOffset());
-            LineNumberReader reader = new LineNumberReader(new InputStreamReader(fileInputStream));
-            ICluster cluster = ParserUtilities.readSpectralCluster(reader, null);
-
-            if (!clusterReference.getId().equals(cluster.getId()))
-                throw new IllegalStateException("Wrong cluster read");
-
-            // if a cluster is merged, load its spectra from the binary file first
-            Collection<ICluster> removedCluster = clusteringEngine.addClusterIncremental(cluster);
-
-            if (!removedCluster.isEmpty()) {
-                for (ICluster rc : removedCluster) {
-                    nClusterWritten++;
-                    DotClusterClusterAppender.INSTANCE.appendCluster(writer, rc);
-                }
-            }
-        }
-
-        Collection<ICluster> remainingClusters = clusteringEngine.getClusters();
-        for (ICluster rc : remainingClusters) {
-            nClusterWritten++;
-            DotClusterClusterAppender.INSTANCE.appendCluster(writer, rc);
-        }
-
-        DotClusterClusterAppender.INSTANCE.appendEnd(writer);
-        writer.close();
-        System.out.println("Done. (Took " + String.format("%.2f", (float) (System.currentTimeMillis() - start) / 1000 / 60) + " min. Reduced " + nClusterRead + " to " + nClusterWritten + " final clusters)");
     }
 
     private static Map<String, SpectrumReference> getSpectrumReferencesPerId(List<SpectrumReference> spectrumReferences) {
