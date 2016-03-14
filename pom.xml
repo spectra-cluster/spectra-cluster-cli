@@ -58,7 +58,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.2.1</version>
                 <configuration>
-                    <finalName>${artifactId}-${version}-${profile.name}</finalName>
+                    <finalName>${artifactId}-${version}</finalName>
                     <descriptors>
                         <descriptor>src/main/assembly/assembly.xml</descriptor>
                     </descriptors>
