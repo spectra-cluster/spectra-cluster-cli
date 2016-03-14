@@ -1,7 +1,7 @@
 # spectra-cluster-cli
 This is a stand-alone implementation of the [PRIDE Cluster](https://www.ebi.ac.uk/pride/cluster) algorithm. It is based on the [spectra-cluster](https://github.com/spectra-cluster/spectra-cluster) API and uses a highly similar logic as the Hadoop implementation [spectra-cluster-hadoop](https://github.com/spectra-cluster/spectra-cluster-hadoop).
 
-__WARNING__: This software is still in beta mode. We do expect it to still have several bugs. Bug reports are highly welcome! Just submit in [issue](https://github.com/spectra-cluster/spectra-cluster-cli/issues) to let us know.
+__WARNING__: This software is still in beta phase. We do expect it to still have several bugs. Bug reports are highly welcome! Just submit in [issue](https://github.com/spectra-cluster/spectra-cluster-cli/issues) to let us know.
 
 ## Installation
 The spectra-cluster-cli application is written in Java and therefore runs on Windows, Linux, and Mac OS X. 
