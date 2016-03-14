@@ -9,6 +9,7 @@ import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
 import uk.ac.ebi.pride.spectracluster.similarity.CombinedFisherIntensityTest;
 import uk.ac.ebi.pride.spectracluster.similarity.ISimilarityChecker;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
+import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.FractionTICPeakFunction;
@@ -23,7 +24,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by jg on 15.05.15.
  */
-public class BinaryFileClusteringCallable implements Callable<BinaryClusterFileReference> {
+public class BinaryFileClusteringCallable implements Callable<ClusteringJobReference> {
     public static final ISimilarityChecker SIMILARITY_CHECKER = new CombinedFisherIntensityTest(Defaults.getFragmentIonTolerance());
     public static final int DEFAULT_MAJOR_PEAK_COUNT = 5;
 
@@ -66,7 +67,7 @@ public class BinaryFileClusteringCallable implements Callable<BinaryClusterFileR
     }
 
     @Override
-    public BinaryClusterFileReference call() throws Exception {
+    public ClusteringJobReference call() throws Exception {
         try {
             File currentInputFile = inputFile;
             long start = System.currentTimeMillis();
@@ -154,7 +155,7 @@ public class BinaryFileClusteringCallable implements Callable<BinaryClusterFileR
 
             printCompletion(inputFile.getName(), start, nSpectra, minMz, maxMz);
 
-            return new BinaryClusterFileReference(outputFile, minMz, maxMz);
+            return new ClusteringJobReference(inputFile, new BinaryClusterFileReference(outputFile, minMz, maxMz));
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
