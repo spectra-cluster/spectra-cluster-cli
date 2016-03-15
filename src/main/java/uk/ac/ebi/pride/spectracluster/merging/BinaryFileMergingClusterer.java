@@ -31,6 +31,7 @@ public class BinaryFileMergingClusterer {
     private final boolean fastMode;
     private final double windowSize;
     private final boolean deleteInputFiles;
+    private final File temporaryDirectory;
 
     private ExecutorService clusteringExecuteService;
     private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
@@ -38,17 +39,20 @@ public class BinaryFileMergingClusterer {
 
     private List<BinaryClusterFileReference> resultFiles;
 
-    public BinaryFileMergingClusterer(int nJobs, File outputDirectory, List<Float> thresholds, boolean fastMode, double windowSize) {
-        this(nJobs, outputDirectory, thresholds, fastMode, windowSize, false);
+    public BinaryFileMergingClusterer(int nJobs, File outputDirectory, List<Float> thresholds, boolean fastMode,
+                                      double windowSize, File temporaryDirectory) {
+        this(nJobs, outputDirectory, thresholds, fastMode, windowSize, false, temporaryDirectory);
     }
 
-    public BinaryFileMergingClusterer(int nJobs, File outputDirectory, List<Float> thresholds, boolean fastMode, double windowSize, boolean deleteInputFiles) {
+    public BinaryFileMergingClusterer(int nJobs, File outputDirectory, List<Float> thresholds, boolean fastMode,
+                                      double windowSize, boolean deleteInputFiles, File temporaryDirectory) {
         this.nJobs = nJobs;
         this.outputDirectory = outputDirectory;
         this.thresholds = thresholds;
         this.fastMode = fastMode;
         this.windowSize = windowSize;
         this.deleteInputFiles = deleteInputFiles;
+        this.temporaryDirectory = temporaryDirectory;
     }
 
     public void clusterFiles(List<BinaryClusterFileReference> binaryFiles) throws Exception {
@@ -124,7 +128,7 @@ public class BinaryFileMergingClusterer {
             File outputFile = new File(outputDirectory, binaryClusterFileReference.getResultFile().getName());
             BinaryFileClusteringCallable clusteringCallable =
                     new BinaryFileClusteringCallable(outputFile, binaryClusterFileReference.getResultFile(),
-                            thresholds, fastMode, 0, (float) maxMz);
+                            thresholds, fastMode, 0, (float) maxMz, temporaryDirectory);
             Future<ClusteringJobReference> resultFileFuture = clusteringExecuteService.submit(clusteringCallable);
             clusteringFutures.add(resultFileFuture);
         }

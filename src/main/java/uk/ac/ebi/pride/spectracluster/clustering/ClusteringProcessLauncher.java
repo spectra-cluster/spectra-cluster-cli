@@ -18,19 +18,24 @@ public class ClusteringProcessLauncher implements  IBinaryClusteringResultListen
     private List<Future<ClusteringJobReference>> fileFutures = new ArrayList<Future<ClusteringJobReference>>();
     private final List<Float> thresholds;
     private final boolean fastMode;
+    private final File temporaryDirectory;
 
 
-    public ClusteringProcessLauncher(ExecutorService executorService, File outputDirectory, List<Float> thresholds, boolean fastMode) {
+    public ClusteringProcessLauncher(ExecutorService executorService, File outputDirectory, List<Float> thresholds,
+                                     boolean fastMode, File temporaryDirectory) {
         this.executorService = executorService;
         this.outputDirectory = outputDirectory;
         this.thresholds = thresholds;
         this.fastMode = fastMode;
+        this.temporaryDirectory = temporaryDirectory;
     }
 
     @Override
     public void onNewResultFile(BinaryClusterFileReference binaryBinaryClusterFileReferenceFile) {
         File outputFile = new File(outputDirectory, binaryBinaryClusterFileReferenceFile.getResultFile().getName());
-        BinaryFileClusteringCallable clusteringCallable = new BinaryFileClusteringCallable(outputFile, binaryBinaryClusterFileReferenceFile.getResultFile(), thresholds, fastMode);
+        BinaryFileClusteringCallable clusteringCallable = new
+                BinaryFileClusteringCallable(outputFile, binaryBinaryClusterFileReferenceFile.getResultFile(),
+                thresholds, fastMode, temporaryDirectory);
         Future<ClusteringJobReference> fileFuture = executorService.submit(clusteringCallable);
 
         fileFutures.add(fileFuture);

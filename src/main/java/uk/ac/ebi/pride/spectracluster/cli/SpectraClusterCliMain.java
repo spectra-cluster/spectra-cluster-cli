@@ -168,10 +168,12 @@ public class SpectraClusterCliMain {
             }
 
             // create a temporary directory for the clustering results
-            File tmpClusteringResultDirectory = createTemporaryDirectory("clustering_results");
+            File clusteringResultDirectory = createTemporaryDirectory("clustering_results", binaryTmpDirectory);
+            File tmpClusteringResultDirectory = createTemporaryDirectory("clustering_results", binaryTmpDirectory);
 
             // cluster the binary files and immediately convert the results
-            BinaryFileClusterer binaryFileClusterer = new BinaryFileClusterer(nMajorPeakJobs, tmpClusteringResultDirectory, thresholds, useFastMode);
+            BinaryFileClusterer binaryFileClusterer = new BinaryFileClusterer(nMajorPeakJobs, clusteringResultDirectory,
+                    thresholds, useFastMode, tmpClusteringResultDirectory);
 
             System.out.println("Clustering " + binaryFiles.size() + " binary files...");
             long start = System.currentTimeMillis();
@@ -180,18 +182,25 @@ public class SpectraClusterCliMain {
 
             printDone(start, "Completed clustering.");
 
+            // delete the temporary directory
+            if (!tmpClusteringResultDirectory.delete()) {
+                System.out.println("Warning: Failed to delete " + tmpClusteringResultDirectory.getName());
+            }
+
             // sort result files by min m/z
             List<BinaryClusterFileReference> clusteredFiles = binaryFileClusterer.getResultFiles();
             clusteredFiles = new ArrayList<BinaryClusterFileReference>(clusteredFiles);
             Collections.sort(clusteredFiles);
 
             // merge the results
-            File mergedResultsDirectory = createTemporaryDirectory("merged_results");
+            File mergedResultsDirectory = createTemporaryDirectory("merged_results", binaryTmpDirectory);
+            File mergedResultsDirectoryTmp = createTemporaryDirectory("merged_results_tmp", binaryTmpDirectory);
             BinaryFileMergingClusterer mergingClusterer = new BinaryFileMergingClusterer(nMajorPeakJobs, mergedResultsDirectory,
-                    thresholds, useFastMode, Defaults.getDefaultPrecursorIonTolerance(), DELETE_TEMPORARY_CLUSTERING_RESULTS);
+                    thresholds, useFastMode, Defaults.getDefaultPrecursorIonTolerance(), DELETE_TEMPORARY_CLUSTERING_RESULTS,
+                    mergedResultsDirectory);
 
             // create the combined output file as soon as a job is done
-            File combinedResultFile = File.createTempFile("combined_clustering_results", ".cgf");
+            File combinedResultFile = File.createTempFile("combined_clustering_results", ".cgf", binaryTmpDirectory);
             MergingCGFConverter mergingCGFConverter = new MergingCGFConverter(combinedResultFile, DELETE_TEMPORARY_CLUSTERING_RESULTS, !keepBinaryFiles, binaryTmpDirectory);
             mergingClusterer.addListener(mergingCGFConverter);
 
@@ -202,15 +211,19 @@ public class SpectraClusterCliMain {
 
             printDone(start, "Completed merging.");
 
+            // delete the temporary directory after merging - this directory should be empty
+            if (!mergedResultsDirectoryTmp.delete()) {
+                System.out.println("Warning: Failed to delete " + mergedResultsDirectoryTmp.getName());
+            }
             // delete the temporary directories if set
+            if (DELETE_TEMPORARY_CLUSTERING_RESULTS) {
+                if (!clusteringResultDirectory.delete())
+                    System.out.println("Warning: Failed to delete " + clusteringResultDirectory);
+            }
+
             if (!keepBinaryFiles) {
                 if (!binaryTmpDirectory.delete())
                     System.out.println("Warning: Failed to delete " + binaryTmpDirectory);
-            }
-
-            if (DELETE_TEMPORARY_CLUSTERING_RESULTS) {
-                if (!tmpClusteringResultDirectory.delete())
-                    System.out.println("Warning: Failed to delete " + tmpClusteringResultDirectory);
             }
 
             // create the output file
@@ -278,7 +291,8 @@ public class SpectraClusterCliMain {
         long start = System.currentTimeMillis();
         System.out.print("Clustering file...");
 
-        BinaryFileClusteringCallable binaryFileClusteringCallable = new BinaryFileClusteringCallable(tmpResultFile, new File(binaryFilename), thresholds, fastMode);
+        BinaryFileClusteringCallable binaryFileClusteringCallable = new BinaryFileClusteringCallable(
+                tmpResultFile, new File(binaryFilename), thresholds, fastMode, tmpResultFile.getParentFile());
         binaryFileClusteringCallable.call();
 
         printDone(start);
@@ -380,7 +394,18 @@ public class SpectraClusterCliMain {
     }
 
     private static File createTemporaryDirectory(String prefix) throws Exception {
-        File tmpFile = File.createTempFile(prefix, "");
+        return createTemporaryDirectory(prefix, null);
+    }
+
+    private static File createTemporaryDirectory(String prefix, File tmpDirectory) throws Exception {
+        File tmpFile;
+
+        if (tmpDirectory != null && tmpDirectory.isDirectory()) {
+            tmpFile = File.createTempFile(prefix, "", tmpDirectory);
+        }
+        else {
+            tmpFile = File.createTempFile(prefix, "");
+        }
 
         if (!tmpFile.delete())
             throw new Exception("Failed to delete temporary file");

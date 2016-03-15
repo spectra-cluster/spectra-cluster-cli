@@ -37,8 +37,10 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
     private final float minMz;
     private final float maxMz;
 
-    public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds, boolean fastMode) {
-        this(outputFile, inputFile, thresholds, fastMode, -1, -1);
+    private final File temporaryDirectory;
+
+    public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds, boolean fastMode, File temporaryDirectory) {
+        this(outputFile, inputFile, thresholds, fastMode, -1, -1, temporaryDirectory);
     }
 
     /**
@@ -50,13 +52,15 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
      * @param minMz All clusters below the set m/z will be ignored and simply written to the output file.
      * @param maxMz All clusters above the set m/z will be ignored and simply written to the output file. If set to -1
      *              the value is ignored.
+     * @param temporaryDirectory The directory where temporary clustering files should be stored
      */
-    public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds, boolean fastMode, float minMz, float maxMz) {
+    public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds, boolean fastMode, float minMz, float maxMz, File temporaryDirectory) {
         this.minMz = minMz;
         this.maxMz = maxMz;
         this.outputFile = outputFile;
         this.inputFile = inputFile;
         this.thresholds = thresholds;
+        this.temporaryDirectory = temporaryDirectory;
 
         if (fastMode) {
             peakFilterFunction = null;
@@ -72,7 +76,7 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
             File currentInputFile = inputFile;
             long start = System.currentTimeMillis();
             int nSpectra = 0;
-            float minMz = Float.MAX_VALUE, maxMz = 0;
+            float fileMinMz = Float.MAX_VALUE, fileMaxMz = 0;
 
             for (int nRound = 0; nRound < thresholds.size(); nRound++) {
                 float threshold = thresholds.get(nRound);
@@ -91,7 +95,7 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
                         createIncrementalClusteringEngine(threshold, comparisonPredicate);
 
                 // create the result file
-                File tmpOutputfile = File.createTempFile("clustering_tmp", ".cls");
+                File tmpOutputfile = File.createTempFile("clustering_tmp", ".cls", temporaryDirectory);
                 ObjectOutputStream outputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(tmpOutputfile)));
 
                 // read the clusters
@@ -102,10 +106,14 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
                 for (ICluster clusterToAdd : clusterIterable) {
                     if (nRound == 0) {
                         nSpectra++;
-                        if (clusterToAdd.getPrecursorMz() < minMz)
-                            minMz = clusterToAdd.getPrecursorMz();
-                        if (clusterToAdd.getPrecursorMz() > maxMz)
-                            maxMz = clusterToAdd.getPrecursorMz();
+                    }
+
+                    // update the file statistics in the last round
+                    if (nRound == thresholds.size() - 1) {
+                        if (clusterToAdd.getPrecursorMz() < fileMinMz)
+                            fileMinMz = clusterToAdd.getPrecursorMz();
+                        if (clusterToAdd.getPrecursorMz() > fileMaxMz)
+                            fileMaxMz = clusterToAdd.getPrecursorMz();
                     }
 
                     // write out clusters that are below of above the set m/z limit
@@ -153,9 +161,9 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
                 currentInputFile = outputFile;
             }
 
-            printCompletion(inputFile.getName(), start, nSpectra, minMz, maxMz);
+            printCompletion(inputFile.getName(), start, nSpectra, fileMinMz, fileMaxMz);
 
-            return new ClusteringJobReference(inputFile, new BinaryClusterFileReference(outputFile, minMz, maxMz));
+            return new ClusteringJobReference(inputFile, new BinaryClusterFileReference(outputFile, fileMinMz, fileMaxMz));
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
