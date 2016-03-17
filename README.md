@@ -1,5 +1,7 @@
 # spectra-cluster-cli
-This is a stand-alone implementation of the [PRIDE Cluster](https://www.ebi.ac.uk/pride/cluster) algorithm. It is based on the [spectra-cluster](https://github.com/spectra-cluster/spectra-cluster) API and uses a highly similar logic as the Hadoop implementation [spectra-cluster-hadoop](https://github.com/spectra-cluster/spectra-cluster-hadoop).
+This is a stand-alone implementation of the new updated [PRIDE Cluster](https://www.ebi.ac.uk/pride/cluster) algorithm. It is based on the [spectra-cluster](https://github.com/spectra-cluster/spectra-cluster) API and uses a highly similar logic as the Hadoop implementation [spectra-cluster-hadoop](https://github.com/spectra-cluster/spectra-cluster-hadoop) used to build the [PRIDE Cluster](https://www.ebi.ac.uk/pride/cluster) resource.
+
+This is a completely re-developed version of the original PRIDE Cluster algorithm and, among other optimisations, uses a probabilistic similarity metrics instead of the normalised dot-product.
 
 __WARNING__: This software is still in beta phase. We do expect it to still have several bugs. Bug reports are highly welcome! Just submit in [issue](https://github.com/spectra-cluster/spectra-cluster-cli/issues) to let us know.
 
