@@ -114,6 +114,10 @@ public class SpectraClusterCliMain {
             if (reUseBinaryFiles && peaklistFilenames.length > 0)
                 System.out.println("WARNING: " + CliOptions.OPTIONS.REUSE_BINARY_FILES.getValue() + " set, input files will be ignored");
 
+            // make sure input files were set
+            if (!reUseBinaryFiles && peaklistFilenames.length < 1)
+                throw new MissingParameterException("No spectrum files passed. Please list the peak list files to process after the command.");
+
             /**
              * SPECIAL MODES
              */
