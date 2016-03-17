@@ -16,6 +16,7 @@ import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
 import uk.ac.ebi.pride.spectracluster.spectra_list.*;
 import uk.ac.ebi.pride.spectracluster.util.BinaryFileScanner;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
+import uk.ac.ebi.pride.spectracluster.util.MissingParameterException;
 
 import java.io.*;
 import java.util.*;
@@ -45,7 +46,7 @@ public class SpectraClusterCliMain {
 
             // RESULT FILE PATH
             if (!commandLine.hasOption(CliOptions.OPTIONS.OUTPUT_PATH.getValue()))
-                throw new Exception("Missing required option " + CliOptions.OPTIONS.OUTPUT_PATH.getValue());
+                throw new MissingParameterException("Missing required option " + CliOptions.OPTIONS.OUTPUT_PATH.getValue());
             File finalResultFile = new File(commandLine.getOptionValue(CliOptions.OPTIONS.OUTPUT_PATH.getValue()));
 
             if (finalResultFile.exists())
@@ -108,7 +109,7 @@ public class SpectraClusterCliMain {
 
             // if re-use is set, binaryTmpDirectory is required and merging is impossible
             if (reUseBinaryFiles && !commandLine.hasOption(CliOptions.OPTIONS.BINARY_TMP_DIR.getValue()))
-                throw new Exception("Missing required option '" + CliOptions.OPTIONS.BINARY_TMP_DIR.getValue() + "' with " + CliOptions.OPTIONS.REUSE_BINARY_FILES.getValue());
+                throw new MissingParameterException("Missing required option '" + CliOptions.OPTIONS.BINARY_TMP_DIR.getValue() + "' with " + CliOptions.OPTIONS.REUSE_BINARY_FILES.getValue());
 
             if (reUseBinaryFiles && peaklistFilenames.length > 0)
                 System.out.println("WARNING: " + CliOptions.OPTIONS.REUSE_BINARY_FILES.getValue() + " set, input files will be ignored");
@@ -233,6 +234,11 @@ public class SpectraClusterCliMain {
                 System.out.println("Warning: Failed to delete " + combinedResultFile);
 
             System.out.println("Clustering completed. Results written to " + finalResultFile);
+        } catch (MissingParameterException e) {
+            System.out.println("Error: " + e.getMessage() + "\n\n");
+            printUsage();
+
+            System.exit(1);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error: " + e.getMessage());
