@@ -129,6 +129,7 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
         if (peakListFilename.toLowerCase().endsWith(".mgf")) {
             MgfFile mgfFile = new MgfFile(new File(peakListFilename), fileIndex);
             mgfFile.setDisableCommentSupport(true);
+            mgfFile.setAllowCustomTags(true);
 
             return mgfFile;
         }
