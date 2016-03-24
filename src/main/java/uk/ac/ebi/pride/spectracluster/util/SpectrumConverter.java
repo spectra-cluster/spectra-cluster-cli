@@ -7,6 +7,8 @@ import uk.ac.ebi.pride.spectracluster.spectrum.Peak;
 import uk.ac.ebi.pride.tools.jmzreader.model.Param;
 import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.CvParam;
+import uk.ac.ebi.pride.tools.jmzreader.model.impl.ParamGroup;
+import uk.ac.ebi.pride.tools.jmzreader.model.impl.UserParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,7 @@ public final class SpectrumConverter {
         }
 
         // if a spectrum title was found, try to extract the id
+        boolean sequenceFound = false;
         if (spectrumTitle != null) {
             int index = spectrumTitle.indexOf("sequence=");
             if (index >= 0) {
@@ -53,6 +56,7 @@ public final class SpectrumConverter {
 
                 String sequence = spectrumTitle.substring(index + "sequence=".length(), end);
                 convertedSpectrum.setProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY, sequence);
+                sequenceFound = true;
             }
             else {
                 index = spectrumTitle.indexOf("splib_sequence=");
@@ -64,6 +68,20 @@ public final class SpectrumConverter {
 
                     String sequence = spectrumTitle.substring(index + "splib_sequence=".length(), end);
                     convertedSpectrum.setProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY, sequence);
+                    sequenceFound = true;
+                }
+            }
+        }
+
+        // if there is no peptide sequence encoded in the title, check for "SEQ=" tags
+        if (!sequenceFound) {
+            ParamGroup paramGroup = jmzReaderSpectrum.getAdditional();
+
+            for (UserParam userParam : paramGroup.getUserParams()) {
+                if ("Sequence".equals(userParam.getName())) {
+                    convertedSpectrum.setProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY, userParam.getValue());
+                    sequenceFound = true;
+                    break;
                 }
             }
         }
