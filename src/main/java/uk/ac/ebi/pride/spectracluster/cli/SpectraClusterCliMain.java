@@ -119,6 +119,15 @@ public class SpectraClusterCliMain {
                 throw new MissingParameterException("No spectrum files passed. Please list the peak list files to process after the command.");
 
             /**
+             * Advanced options
+             */
+            // MIN NUMBER COMPARISONS
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue())) {
+                int minComparisons = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue()));
+                Defaults.setMinNumberComparisons(minComparisons);
+            }
+
+            /**
              * SPECIAL MODES
              */
             // cluster binary file
@@ -329,6 +338,14 @@ public class SpectraClusterCliMain {
         System.out.println("Reuse binary files: " + (reUseBinaryFiles ? "true" : "false"));
         System.out.println("Input files: " + peaklistFilenames.length);
         System.out.println("Using fast mode: " + (fastMode ? "yes" : "no"));
+
+        System.out.println("\nPrint other settings:");
+        System.out.println("Precursor tolerance: " + Defaults.getDefaultPrecursorIonTolerance());
+        System.out.println("Fragment ion tolerance: " + Defaults.getFragmentIonTolerance());
+
+        // only show certain settings if they were changed
+        if (Defaults.getMinNumberComparisons() != Defaults.DEFAULT_MIN_NUMBER_COMPARISONS)
+            System.out.println("Minimum number of comparisons: " + Defaults.getMinNumberComparisons());
 
         System.out.println();
     }

@@ -13,21 +13,24 @@ import org.apache.commons.cli.Options;
  */
 public class CliOptions {
     public enum OPTIONS {
-       OUTPUT_PATH("output_path"),
-       PRECURSOR_TOLERANCE("precursor_tolerance"),
-       FRAGMENT_TOLERANCE("fragment_tolerance"),
-       MAJOR_PEAK_JOBS("major_peak_jobs"),
-       START_THRESHOLD("threshold_start"),
-       END_THRESHOLD("threshold_end"),
-       ROUNDS("rounds"),
-       BINARY_TMP_DIR("binary_directory"),
-       KEEP_BINARY_FILE("keep_binary_files"),
-       REUSE_BINARY_FILES("reuse_binary_files"),
-       CLUSTER_BINARY_FILE("cluster_binary_file"),
-       MERGE_BINARY_RESULTS("merge_binary_results"),
-       CONVERT_CGF("convert_cgf"),
-       FAST_MODE("fast_mode"),
-       HELP("help");
+        OUTPUT_PATH("output_path"),
+        PRECURSOR_TOLERANCE("precursor_tolerance"),
+        FRAGMENT_TOLERANCE("fragment_tolerance"),
+        MAJOR_PEAK_JOBS("major_peak_jobs"),
+        START_THRESHOLD("threshold_start"),
+        END_THRESHOLD("threshold_end"),
+        ROUNDS("rounds"),
+        BINARY_TMP_DIR("binary_directory"),
+        KEEP_BINARY_FILE("keep_binary_files"),
+        REUSE_BINARY_FILES("reuse_binary_files"),
+        CLUSTER_BINARY_FILE("cluster_binary_file"),
+        MERGE_BINARY_RESULTS("merge_binary_results"),
+        CONVERT_CGF("convert_cgf"),
+        FAST_MODE("fast_mode"),
+        HELP("help"),
+
+        // Advanced options
+        ADVANCED_MIN_NUMBER_COMPARISONS("x_min_comparisons");
 
         private String value;
 
@@ -132,6 +135,14 @@ public class CliOptions {
                 "print this message.");
         options.addOption(help);
 
+        /**
+         * ADVANCED OPTIONS
+         */
+        Option xMinComparisons = OptionBuilder
+                .withDescription("(Experimental option) Sets the minimum number of comparisons used to calculate the probability that incorrect spectra are clustered.")
+                .hasArg()
+                .create(OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue());
+        options.addOption(xMinComparisons);
     }
 
     public static Options getOptions() {

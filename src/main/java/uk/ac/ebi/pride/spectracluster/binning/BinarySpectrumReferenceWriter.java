@@ -27,7 +27,8 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Writes spectra stored as SpectrumReferences to a file.
+ * Writes spectra stored as SpectrumReferences to a file and performs the complete
+ * spectrum pre-processing (normalization, peak filtering etc.).
  *
  * Created by jg on 13.05.15.
  */
