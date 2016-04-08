@@ -6,6 +6,10 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import uk.ac.ebi.pride.spectracluster.cdf.CdfLearner;
+import uk.ac.ebi.pride.spectracluster.cdf.CdfResult;
+import uk.ac.ebi.pride.spectracluster.cdf.CumulativeDistributionFunction;
+import uk.ac.ebi.pride.spectracluster.cdf.IComparisonProgressListener;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusterer;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
@@ -28,7 +32,7 @@ import java.util.*;
  * Time: 11:19 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SpectraClusterCliMain {
+public class SpectraClusterCliMain implements IComparisonProgressListener {
     public final static int MAJOR_PEAK_CLUSTERING_JOBS = 4;
     public static final boolean DELETE_TEMPORARY_CLUSTERING_RESULTS = true;
 
@@ -149,6 +153,48 @@ public class SpectraClusterCliMain {
 
                 convertClusters(new File(commandLine.getArgs()[0]), finalResultFile, endThreshold);
                 return;
+            }
+
+            /**
+             * ------ Learn the CDF if set --------
+             */
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_LEARN_CDF.getValue())) {
+                String cdfOuputFilename = commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_LEARN_CDF.getValue());
+                File cdfOutputFile = new File(cdfOuputFilename);
+
+                if (cdfOutputFile.exists()) {
+                    throw new Exception("CDF output file " + cdfOuputFilename + " already exists.");
+                }
+
+                CdfLearner cdfLearner = new CdfLearner();
+                System.out.println("Learning CDF...");
+                CdfResult cdfResult = cdfLearner.learnCumulativeDistribution(peaklistFilenames, nMajorPeakJobs);
+
+                // write it to the file
+                FileWriter writer = new FileWriter(cdfOutputFile);
+                writer.write(cdfResult.toString());
+                writer.close();
+
+                System.out.println("CDF successfully written to " + cdfOuputFilename);
+                return;
+            }
+
+            /**
+             * ------ Load the CDF from file -------
+             */
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_LOAD_CDF_FILE.getValue())) {
+                BufferedReader reader = new BufferedReader(
+                        new FileReader(
+                                commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_LOAD_CDF_FILE.getValue())));
+
+                StringBuilder cdfString = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    cdfString.append(line);
+                }
+                reader.close();
+
+                Defaults.setCumulativeDistributionFunction(CumulativeDistributionFunction.fromString(cdfString.toString()));
             }
 
             /**
@@ -450,5 +496,8 @@ public class SpectraClusterCliMain {
                 CliOptions.getOptions(), "\n\n", true);
     }
 
-
+    @Override
+    public void progress(int completedCalculations, int totalCalculations) {
+        System.out.println("  Completed " + completedCalculations + " / " + totalCalculations);
+    }
 }

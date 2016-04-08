@@ -30,7 +30,10 @@ public class CliOptions {
         HELP("help"),
 
         // Advanced options
-        ADVANCED_MIN_NUMBER_COMPARISONS("x_min_comparisons");
+        ADVANCED_MIN_NUMBER_COMPARISONS("x_min_comparisons"),
+        ADVANCED_NUMBER_PREFILTERED_PEAKS("x_n_prefiltered_peaks"),
+        ADVANCED_LEARN_CDF("x_learn_cdf"),
+        ADVANCED_LOAD_CDF_FILE("x_load_cdf");
 
         private String value;
 
@@ -143,6 +146,27 @@ public class CliOptions {
                 .hasArg()
                 .create(OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue());
         options.addOption(xMinComparisons);
+
+        Option xLearnCdf = OptionBuilder
+                .hasArg()
+                .withArgName("output filename")
+                .withDescription("(Experimental option) Learn the used cumulative distribution function directly from the processed data. This is only recommended for high-resolution data. The result will be written to the defined file.")
+                .create(OPTIONS.ADVANCED_LEARN_CDF.getValue());
+        options.addOption(xLearnCdf);
+
+        Option xLoadCdf = OptionBuilder
+                .hasArg()
+                .withArgName("CDF filename")
+                .withDescription("(Experimental option) Loads the cumulative distribution function to use from the specified file. These files can be created using the " + OPTIONS.ADVANCED_LEARN_CDF.getValue() + " parameter")
+                .create(OPTIONS.ADVANCED_LOAD_CDF_FILE.getValue());
+        options.addOption(xLoadCdf);
+
+        Option xNumberPrefilteredPeaks = OptionBuilder
+                .hasArg()
+                .withArgName("number peaks")
+                .withDescription("(Experimental option) Set the number of highest peaks that are kept per spectrum during loading.")
+                .create(OPTIONS.ADVANCED_NUMBER_PREFILTERED_PEAKS.getValue());
+        options.addOption(xNumberPrefilteredPeaks);
     }
 
     public static Options getOptions() {
