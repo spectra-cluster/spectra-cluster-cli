@@ -19,6 +19,7 @@ import uk.ac.ebi.pride.spectracluster.io.*;
 import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
 import uk.ac.ebi.pride.spectracluster.spectra_list.*;
 import uk.ac.ebi.pride.spectracluster.util.BinaryFileScanner;
+import uk.ac.ebi.pride.spectracluster.util.CliSettings;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.MissingParameterException;
 
@@ -129,6 +130,12 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
             if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue())) {
                 int minComparisons = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue()));
                 Defaults.setMinNumberComparisons(minComparisons);
+            }
+
+            // N HIGHEST PEAKS
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_NUMBER_PREFILTERED_PEAKS.getValue())) {
+                int nHighestPeaks = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_NUMBER_PREFILTERED_PEAKS.getValue()));
+                CliSettings.setNumberOfPrefilteringPeaks(nHighestPeaks);
             }
 
             /**
@@ -385,13 +392,17 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
         System.out.println("Input files: " + peaklistFilenames.length);
         System.out.println("Using fast mode: " + (fastMode ? "yes" : "no"));
 
-        System.out.println("\nPrint other settings:");
+        System.out.println("\nOther settings:");
         System.out.println("Precursor tolerance: " + Defaults.getDefaultPrecursorIonTolerance());
         System.out.println("Fragment ion tolerance: " + Defaults.getFragmentIonTolerance());
 
         // only show certain settings if they were changed
         if (Defaults.getMinNumberComparisons() != Defaults.DEFAULT_MIN_NUMBER_COMPARISONS)
             System.out.println("Minimum number of comparisons: " + Defaults.getMinNumberComparisons());
+
+        if (CliSettings.getNumberOfPrefilteringPeaks() != CliSettings.DEFAULT_NUMBER_OF_PREFILTERING_PEAKS) {
+            System.out.println("Number of highest peaks during pre-filtering: " + CliOptions.getOptions());
+        }
 
         System.out.println();
     }

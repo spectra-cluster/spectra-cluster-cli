@@ -8,10 +8,7 @@ import uk.ac.ebi.pride.spectracluster.normalizer.IIntensityNormalizer;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
-import uk.ac.ebi.pride.spectracluster.util.ClusterUtilities;
-import uk.ac.ebi.pride.spectracluster.util.Defaults;
-import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
-import uk.ac.ebi.pride.spectracluster.util.SpectrumUtilities;
+import uk.ac.ebi.pride.spectracluster.util.*;
 import uk.ac.ebi.pride.spectracluster.util.function.Functions;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.FractionTICPeakFunction;
@@ -33,14 +30,6 @@ import java.util.*;
  * Created by jg on 13.05.15.
  */
 public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
-    public static final int N_HIGHES_PEAKS = 70;
-
-    public static final IIntensityNormalizer intensityNormalizer = Defaults.getDefaultIntensityNormalizer();
-    public static final IFunction<ISpectrum, ISpectrum> initialSpectrumFilter =  Functions.join(
-            new RemoveImpossiblyHighPeaksFunction(),
-            new RemovePrecursorPeaksFunction(Defaults.getFragmentIonTolerance()));
-    public static final IFunction<List<IPeak>, List<IPeak>> peakFilter = new HighestNPeakFunction(N_HIGHES_PEAKS);
-    public static final IFunction<List<IPeak>, List<IPeak>> comparisonFilterFunction = new FractionTICPeakFunction(0.5f, 20);
     private Map<Integer, JMzReader> readerPerFileIndex = new HashMap<Integer, JMzReader>();
     private final String[] peakListFilenames;
     private final List<List<IndexElement>> fileIndices;
@@ -86,17 +75,17 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
 
                 // pre-process the spectrum
                 ISpectrum convertedSpectrum = SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId());
-                ISpectrum processedSpectrum = initialSpectrumFilter.apply(convertedSpectrum);
+                ISpectrum processedSpectrum = CliSettings.getInitialSpectrumFilter().apply(convertedSpectrum);
                 // normalize the spectrum
                 processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(
-                        processedSpectrum, intensityNormalizer.normalizePeaks(processedSpectrum.getPeaks()));
+                        processedSpectrum, CliSettings.getIntensityNormalizer().normalizePeaks(processedSpectrum.getPeaks()));
 
-                // do the radical peak filtering if fastMode is enabled, otherwise only retain the N_HIGHEST_PEAKS highest peaks
+                // apply the comparison filter function right when loading the specturm in fast mode.
                 if (fastMode) {
-                    processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, comparisonFilterFunction.apply(processedSpectrum.getPeaks()));
+                    processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, CliSettings.getComparisonFilterFunction().apply(processedSpectrum.getPeaks()));
                 }
                 else {
-                    processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, peakFilter.apply(processedSpectrum.getPeaks()));
+                    processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, CliSettings.getLoadingSpectrumFilter().apply(processedSpectrum.getPeaks()));
                 }
 
                 // update the statistics
