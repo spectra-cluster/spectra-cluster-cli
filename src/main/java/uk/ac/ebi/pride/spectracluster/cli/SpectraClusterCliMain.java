@@ -22,6 +22,7 @@ import uk.ac.ebi.pride.spectracluster.util.BinaryFileScanner;
 import uk.ac.ebi.pride.spectracluster.util.CliSettings;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.MissingParameterException;
+import uk.ac.ebi.pride.spectracluster.util.function.peak.HighestNPeakFunction;
 
 import java.io.*;
 import java.util.*;
@@ -135,7 +136,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
             // N HIGHEST PEAKS
             if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_NUMBER_PREFILTERED_PEAKS.getValue())) {
                 int nHighestPeaks = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_NUMBER_PREFILTERED_PEAKS.getValue()));
-                CliSettings.setNumberOfPrefilteringPeaks(nHighestPeaks);
+                CliSettings.setLoadingSpectrumFilter(new HighestNPeakFunction(nHighestPeaks));
             }
 
             /**
@@ -210,8 +211,26 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
             printSettings(finalResultFile, nMajorPeakJobs, startThreshold, endThreshold, rounds, keepBinaryFiles,
                     binaryTmpDirectory, peaklistFilenames, reUseBinaryFiles, useFastMode);
 
-            List<BinaryClusterFileReference> binaryFiles;
+            List<BinaryClusterFileReference> binaryFiles = null;
             BinningSpectrumConverter binningSpectrumConverter = null;
+
+            if (reUseBinaryFiles) {
+                // get the list of files
+                File[] existingBinaryFiles = binaryTmpDirectory.listFiles((FilenameFilter) FileFilterUtils.suffixFileFilter(".cls"));
+
+                // if no binary files were found, simply create them
+                if (existingBinaryFiles.length < 1) {
+                    System.out.println("No binary files found. Re-creating binary files...");
+                    reUseBinaryFiles = false;
+                }
+                else {
+                    System.out.print("Scanning " + String.valueOf(existingBinaryFiles.length) + " binary files...");
+                    // scan the binary files to get the basic metadata about each file
+                    binaryFiles = BinaryFileScanner.scanBinaryFiles(existingBinaryFiles);
+
+                    System.out.println("Found " + binaryFiles.size() + " existing binary files.");
+                }
+            }
 
             if (!reUseBinaryFiles) {
                 System.out.print("Writing binary files...");
@@ -223,15 +242,6 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
 
                 String message = String.format("Done. Found %d spectra", binningSpectrumConverter.getSpectrumReferences().size());
                 printDone(start, message);
-            }
-            else {
-                // get the list of files
-                File[] existingBinaryFiles = binaryTmpDirectory.listFiles((FilenameFilter) FileFilterUtils.suffixFileFilter(".cls"));
-                System.out.print("Scanning " + String.valueOf(existingBinaryFiles.length) + " binary files...");
-                // scan the binary files to get the basic metadata about each file
-                binaryFiles = BinaryFileScanner.scanBinaryFiles(existingBinaryFiles);
-
-                System.out.println("Found " + binaryFiles.size() + " existing binary files.");
             }
 
             // create a temporary directory for the clustering results
@@ -399,10 +409,6 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
         // only show certain settings if they were changed
         if (Defaults.getMinNumberComparisons() != Defaults.DEFAULT_MIN_NUMBER_COMPARISONS)
             System.out.println("Minimum number of comparisons: " + Defaults.getMinNumberComparisons());
-
-        if (CliSettings.getNumberOfPrefilteringPeaks() != CliSettings.DEFAULT_NUMBER_OF_PREFILTERING_PEAKS) {
-            System.out.println("Number of highest peaks during pre-filtering: " + CliOptions.getOptions());
-        }
 
         System.out.println();
     }
