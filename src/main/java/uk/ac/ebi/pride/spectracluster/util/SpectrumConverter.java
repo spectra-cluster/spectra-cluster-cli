@@ -31,8 +31,6 @@ public final class SpectrumConverter {
             peaks.add(peak);
         }
 
-        String.format("#file=%s#id=%s#title=%s");
-
         // create the spectrum
         ISpectrum convertedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(spectrumId,
                 jmzReaderSpectrum.getPrecursorCharge(), (float) jmzReaderSpectrum.getPrecursorMZ().doubleValue(),
