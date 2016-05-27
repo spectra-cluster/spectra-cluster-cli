@@ -22,7 +22,7 @@ public final class SpectrumConverter {
 
     }
 
-    public static ISpectrum convertJmzReaderSpectrum(Spectrum jmzReaderSpectrum, String spectrumId) {
+    public static ISpectrum convertJmzReaderSpectrum(Spectrum jmzReaderSpectrum, String spectrumId, String peakListFilename) {
         // create the peak list first
         List<IPeak> peaks = new ArrayList<IPeak>();
 
@@ -31,8 +31,12 @@ public final class SpectrumConverter {
             peaks.add(peak);
         }
 
+        String.format("#file=%s#id=%s#title=%s");
+
         // create the spectrum
-        ISpectrum convertedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(spectrumId, jmzReaderSpectrum.getPrecursorCharge(), (float) jmzReaderSpectrum.getPrecursorMZ().doubleValue(), Defaults.getDefaultQualityScorer(), peaks);
+        ISpectrum convertedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(spectrumId,
+                jmzReaderSpectrum.getPrecursorCharge(), (float) jmzReaderSpectrum.getPrecursorMZ().doubleValue(),
+                Defaults.getDefaultQualityScorer(), peaks);
 
         // set the original title if available
         String spectrumTitle = null;
@@ -40,9 +44,17 @@ public final class SpectrumConverter {
         for (CvParam param : jmzReaderSpectrum.getAdditional().getCvParams()) {
             if ("MS:1000796".equals(param.getAccession())) {
                 spectrumTitle = param.getValue();
-                convertedSpectrum.setProperty(KnownProperties.SPECTRUM_TITLE, spectrumTitle);
+                convertedSpectrum.setProperty(KnownProperties.SPECTRUM_TITLE,
+                        String.format("#file=%s#id=index=%s#title=%s",
+                                peakListFilename, jmzReaderSpectrum.getId(), spectrumTitle));
                 break;
             }
+        }
+
+        // if the title wasn't found, format the default version
+        if (spectrumTitle == null) {
+            convertedSpectrum.setProperty(KnownProperties.SPECTRUM_TITLE, String.format("" +
+                    "#file=%s#id=index=%s#title=Unknown", peakListFilename, jmzReaderSpectrum.getId()));
         }
 
         // if a spectrum title was found, try to extract the id
@@ -80,7 +92,6 @@ public final class SpectrumConverter {
             for (UserParam userParam : paramGroup.getUserParams()) {
                 if ("Sequence".equals(userParam.getName())) {
                     convertedSpectrum.setProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY, userParam.getValue());
-                    sequenceFound = true;
                     break;
                 }
             }

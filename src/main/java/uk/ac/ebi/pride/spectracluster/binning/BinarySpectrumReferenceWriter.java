@@ -48,7 +48,7 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
     }
 
     @Override
-    public void writeSpectra(List<SpectrumReference> spectrumReferences, File outputFile) throws Exception {
+    public void writeSpectra(List<SpectrumReference> spectrumReferences, File outputFile, String[] peakListFilenames) throws Exception {
         // sort the references
         Collections.sort(spectrumReferences);
 
@@ -65,6 +65,8 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
                 if (fileIndex >= peakListFilenames.length)
                     throw new Exception("Invalid file id for spectrum reference");
 
+                String peakListFilename = peakListFilenames[fileIndex];
+
                 if (!readerPerFileIndex.containsKey(fileIndex))
                     readerPerFileIndex.put(fileIndex, openFile(peakListFilenames[fileIndex], fileIndices.get(fileIndex)));
 
@@ -74,7 +76,7 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
                 Spectrum spectrum = fileReader.getSpectrumByIndex(spectrumReference.getSpectrumIndex());
 
                 // pre-process the spectrum
-                ISpectrum convertedSpectrum = SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId());
+                ISpectrum convertedSpectrum = SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId(), peakListFilename);
                 ISpectrum processedSpectrum = CliSettings.getInitialSpectrumFilter().apply(convertedSpectrum);
                 // normalize the spectrum
                 processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(

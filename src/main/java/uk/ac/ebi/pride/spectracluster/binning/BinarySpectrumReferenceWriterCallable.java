@@ -30,7 +30,7 @@ public class BinarySpectrumReferenceWriterCallable implements Callable<BinaryClu
     public BinaryClusterFileReference call() throws Exception {
         ISpectrumReferenceWriter writer = new BinarySpectrumReferenceWriter(peaklistFiles, fileIndices, fastMode);
 
-        writer.writeSpectra(spectrumReferencesToWrite, outputFile);
+        writer.writeSpectra(spectrumReferencesToWrite, outputFile, peaklistFiles);
 
         // get the min and max m/z
         double minMz = Double.MAX_VALUE, maxMz = 0;

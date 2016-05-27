@@ -9,5 +9,5 @@ import java.util.List;
  * Created by jg on 30.05.15.
  */
 public interface ISpectrumReferenceWriter {
-    public void writeSpectra(List<SpectrumReference> spectrumReferences, File outputFile) throws Exception;
+    public void writeSpectra(List<SpectrumReference> spectrumReferences, File outputFile, String[] peakListFilenames) throws Exception;
 }

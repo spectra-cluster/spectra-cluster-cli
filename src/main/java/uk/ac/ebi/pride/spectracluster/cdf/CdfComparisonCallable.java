@@ -106,7 +106,7 @@ public class CdfComparisonCallable implements Callable<CdfResult> {
             uk.ac.ebi.pride.tools.jmzreader.model.Spectrum spectrum = currentFileReader.getSpectrumByIndex(spectrumReference.getSpectrumIndex());
 
             // pre-process the spectrum
-            ISpectrum convertedSpectrum = SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId());
+            ISpectrum convertedSpectrum = SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId(), "testfile");
             ISpectrum processedSpectrum = CliSettings.getInitialSpectrumFilter().apply(convertedSpectrum);
             // normalize the spectrum
             processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(
