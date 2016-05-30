@@ -17,8 +17,6 @@ import java.util.List;
  */
 public class MergingCGFConverter implements IBinaryClusteringResultListener {
     private final boolean deleteTemporaryClusteringFiles;
-    private final boolean deleteInputFiles;
-    private final File inputDirectry;
     private final File resultFile;
 
     private List<ClusterReference> clusterReferences;
@@ -27,14 +25,10 @@ public class MergingCGFConverter implements IBinaryClusteringResultListener {
      * Creates a new MergingCGFConverter instance
      * @param resultFile The result file to write to.
      * @param deleteTemporaryClusteringFiles whether to delete clustering result files.
-     * @param deleteInputFiles Whether to delete the input files to the clustering result files (must have the same name as the result file)
-     * @param inputDirectry Directory holding the clustering input files - may be null if deleteInputFiles is false.
      */
-    public MergingCGFConverter(File resultFile, boolean deleteTemporaryClusteringFiles, boolean deleteInputFiles, File inputDirectry) {
+    public MergingCGFConverter(File resultFile, boolean deleteTemporaryClusteringFiles) {
         this.resultFile = resultFile;
         this.deleteTemporaryClusteringFiles = deleteTemporaryClusteringFiles;
-        this.deleteInputFiles = deleteInputFiles;
-        this.inputDirectry = inputDirectry;
 
         this.clusterReferences = new ArrayList<ClusterReference>();
     }
@@ -76,13 +70,6 @@ public class MergingCGFConverter implements IBinaryClusteringResultListener {
     private void deleteTemporaryFiles(File binaryClusteringResultFile) {
         if (deleteTemporaryClusteringFiles) {
             binaryClusteringResultFile.delete();
-        }
-
-        if (deleteInputFiles) {
-            File inputFile = new File(inputDirectry, binaryClusteringResultFile.getName());
-            if (inputFile.exists()) {
-                inputFile.delete();
-            }
         }
     }
 

@@ -4,7 +4,6 @@ import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.spectrum.KnownProperties;
 import uk.ac.ebi.pride.spectracluster.spectrum.Peak;
-import uk.ac.ebi.pride.tools.jmzreader.model.Param;
 import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.CvParam;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.ParamGroup;
@@ -12,7 +11,6 @@ import uk.ac.ebi.pride.tools.jmzreader.model.impl.UserParam;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by jg on 13.05.15.
@@ -22,7 +20,7 @@ public final class SpectrumConverter {
 
     }
 
-    public static ISpectrum convertJmzReaderSpectrum(Spectrum jmzReaderSpectrum, String spectrumId) {
+    public static ISpectrum convertJmzReaderSpectrum(Spectrum jmzReaderSpectrum, String spectrumId, String peakListFilename) {
         // create the peak list first
         List<IPeak> peaks = new ArrayList<IPeak>();
 
@@ -48,9 +46,17 @@ public final class SpectrumConverter {
         for (CvParam param : jmzReaderSpectrum.getAdditional().getCvParams()) {
             if ("MS:1000796".equals(param.getAccession())) {
                 spectrumTitle = param.getValue();
-                convertedSpectrum.setProperty(KnownProperties.SPECTRUM_TITLE, spectrumTitle);
+                convertedSpectrum.setProperty(KnownProperties.SPECTRUM_TITLE,
+                        String.format("#file=%s#id=index=%s#title=%s",
+                                peakListFilename, jmzReaderSpectrum.getId(), spectrumTitle));
                 break;
             }
+        }
+
+        // if the title wasn't found, format the default version
+        if (spectrumTitle == null) {
+            convertedSpectrum.setProperty(KnownProperties.SPECTRUM_TITLE, String.format("" +
+                    "#file=%s#id=index=%s#title=Unknown", peakListFilename, jmzReaderSpectrum.getId()));
         }
 
         // if a spectrum title was found, try to extract the id
@@ -88,7 +94,6 @@ public final class SpectrumConverter {
             for (UserParam userParam : paramGroup.getUserParams()) {
                 if ("Sequence".equals(userParam.getName())) {
                     convertedSpectrum.setProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY, userParam.getValue());
-                    sequenceFound = true;
                     break;
                 }
             }

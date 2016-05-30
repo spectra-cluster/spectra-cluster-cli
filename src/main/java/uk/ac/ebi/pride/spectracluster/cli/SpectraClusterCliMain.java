@@ -6,6 +6,10 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import uk.ac.ebi.pride.spectracluster.cdf.CdfLearner;
+import uk.ac.ebi.pride.spectracluster.cdf.CdfResult;
+import uk.ac.ebi.pride.spectracluster.cdf.CumulativeDistributionFunction;
+import uk.ac.ebi.pride.spectracluster.cdf.IComparisonProgressListener;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusterer;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
@@ -15,8 +19,10 @@ import uk.ac.ebi.pride.spectracluster.io.*;
 import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
 import uk.ac.ebi.pride.spectracluster.spectra_list.*;
 import uk.ac.ebi.pride.spectracluster.util.BinaryFileScanner;
+import uk.ac.ebi.pride.spectracluster.util.CliSettings;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.MissingParameterException;
+import uk.ac.ebi.pride.spectracluster.util.function.peak.HighestNPeakFunction;
 
 import java.io.*;
 import java.util.*;
@@ -28,7 +34,7 @@ import java.util.*;
  * Time: 11:19 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SpectraClusterCliMain {
+public class SpectraClusterCliMain implements IComparisonProgressListener {
     public final static int MAJOR_PEAK_CLUSTERING_JOBS = 4;
     public static final boolean DELETE_TEMPORARY_CLUSTERING_RESULTS = true;
 
@@ -127,6 +133,12 @@ public class SpectraClusterCliMain {
                 Defaults.setMinNumberComparisons(minComparisons);
             }
 
+            // N HIGHEST PEAKS
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_NUMBER_PREFILTERED_PEAKS.getValue())) {
+                int nHighestPeaks = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_NUMBER_PREFILTERED_PEAKS.getValue()));
+                CliSettings.setLoadingSpectrumFilter(new HighestNPeakFunction(nHighestPeaks));
+            }
+
             /**
              * SPECIAL MODES
              */
@@ -152,93 +164,69 @@ public class SpectraClusterCliMain {
             }
 
             /**
+             * ------ Learn the CDF if set --------
+             */
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_LEARN_CDF.getValue())) {
+                String cdfOuputFilename = commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_LEARN_CDF.getValue());
+                File cdfOutputFile = new File(cdfOuputFilename);
+
+                if (cdfOutputFile.exists()) {
+                    throw new Exception("CDF output file " + cdfOuputFilename + " already exists.");
+                }
+
+                CdfLearner cdfLearner = new CdfLearner();
+                System.out.println("Learning CDF...");
+                CdfResult cdfResult = cdfLearner.learnCumulativeDistribution(peaklistFilenames, nMajorPeakJobs);
+
+                // write it to the file
+                FileWriter writer = new FileWriter(cdfOutputFile);
+                writer.write(cdfResult.toString());
+                writer.close();
+
+                System.out.println("CDF successfully written to " + cdfOuputFilename);
+                return;
+            }
+
+            /**
+             * ------ Load the CDF from file -------
+             */
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_LOAD_CDF_FILE.getValue())) {
+                BufferedReader reader = new BufferedReader(
+                        new FileReader(
+                                commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_LOAD_CDF_FILE.getValue())));
+
+                StringBuilder cdfString = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    cdfString.append(line);
+                }
+                reader.close();
+
+                Defaults.setCumulativeDistributionFunction(CumulativeDistributionFunction.fromString(cdfString.toString()));
+            }
+
+            /**
              * ------- THE ACTUAL LOGIC STARTS HERE -----------
              */
             printSettings(finalResultFile, nMajorPeakJobs, startThreshold, endThreshold, rounds, keepBinaryFiles,
                     binaryTmpDirectory, peaklistFilenames, reUseBinaryFiles, useFastMode);
 
-            List<BinaryClusterFileReference> binaryFiles;
-            BinningSpectrumConverter binningSpectrumConverter = null;
+            // get the binary files
+            File binarySpectraDirectory = new File(binaryTmpDirectory, "spectra");
+            List<BinaryClusterFileReference> binaryFiles = convertInputFiles(peaklistFilenames, binarySpectraDirectory,
+                    reUseBinaryFiles, nMajorPeakJobs, useFastMode);
 
-            if (!reUseBinaryFiles) {
-                System.out.print("Writing binary files...");
-                long start = System.currentTimeMillis();
-
-                binningSpectrumConverter = new BinningSpectrumConverter(binaryTmpDirectory, nMajorPeakJobs, useFastMode);
-                binningSpectrumConverter.processPeaklistFiles(peaklistFilenames);
-                binaryFiles = binningSpectrumConverter.getWrittenFiles();
-
-                String message = String.format("Done. Found %d spectra", binningSpectrumConverter.getSpectrumReferences().size());
-                printDone(start, message);
-            }
-            else {
-                // get the list of files
-                File[] existingBinaryFiles = binaryTmpDirectory.listFiles((FilenameFilter) FileFilterUtils.suffixFileFilter(".cls"));
-                System.out.print("Scanning " + String.valueOf(existingBinaryFiles.length) + " binary files...");
-                // scan the binary files to get the basic metadata about each file
-                binaryFiles = BinaryFileScanner.scanBinaryFiles(existingBinaryFiles);
-
-                System.out.println("Found " + binaryFiles.size() + " existing binary files.");
-            }
-
-            // create a temporary directory for the clustering results
-            File clusteringResultDirectory = createTemporaryDirectory("clustering_results", binaryTmpDirectory);
-            File tmpClusteringResultDirectory = createTemporaryDirectory("clustering_results", binaryTmpDirectory);
-
-            // cluster the binary files and immediately convert the results
-            BinaryFileClusterer binaryFileClusterer = new BinaryFileClusterer(nMajorPeakJobs, clusteringResultDirectory,
-                    thresholds, useFastMode, tmpClusteringResultDirectory);
-
-            System.out.println("Clustering " + binaryFiles.size() + " binary files...");
-            long start = System.currentTimeMillis();
-
-            binaryFileClusterer.clusterFiles(binaryFiles);
-
-            printDone(start, "Completed clustering.");
-
-            // delete the temporary directory
-            if (!tmpClusteringResultDirectory.delete()) {
-                System.out.println("Warning: Failed to delete " + tmpClusteringResultDirectory.getName());
-            }
-
-            // sort result files by min m/z
-            List<BinaryClusterFileReference> clusteredFiles = binaryFileClusterer.getResultFiles();
-            clusteredFiles = new ArrayList<BinaryClusterFileReference>(clusteredFiles);
-            Collections.sort(clusteredFiles);
-
-            // merge the results
-            File mergedResultsDirectory = createTemporaryDirectory("merged_results", binaryTmpDirectory);
-            File mergedResultsDirectoryTmp = createTemporaryDirectory("merged_results_tmp", binaryTmpDirectory);
-            BinaryFileMergingClusterer mergingClusterer = new BinaryFileMergingClusterer(nMajorPeakJobs, mergedResultsDirectory,
-                    thresholds, useFastMode, Defaults.getDefaultPrecursorIonTolerance(), DELETE_TEMPORARY_CLUSTERING_RESULTS,
-                    mergedResultsDirectory);
-
-            // create the combined output file as soon as a job is done
-            File combinedResultFile = File.createTempFile("combined_clustering_results", ".cgf", binaryTmpDirectory);
-            MergingCGFConverter mergingCGFConverter = new MergingCGFConverter(combinedResultFile, DELETE_TEMPORARY_CLUSTERING_RESULTS, !keepBinaryFiles, binaryTmpDirectory);
-            mergingClusterer.addListener(mergingCGFConverter);
-
-            // launch the merging job
-            System.out.println("Merging " + clusteredFiles.size() + " binary files...");
-            start = System.currentTimeMillis();
-            mergingClusterer.clusterFiles(clusteredFiles);
-
-            printDone(start, "Completed merging.");
-
-            // delete the temporary directory after merging - this directory should be empty
-            if (!mergedResultsDirectoryTmp.delete()) {
-                System.out.println("Warning: Failed to delete " + mergedResultsDirectoryTmp.getName());
-            }
-            // delete the temporary directories if set
-            if (DELETE_TEMPORARY_CLUSTERING_RESULTS) {
-                if (!clusteringResultDirectory.delete())
-                    System.out.println("Warning: Failed to delete " + clusteringResultDirectory);
-            }
+            // cluster the input files
+            List<BinaryClusterFileReference> clusteredFiles = clusterFiles(binaryFiles, thresholds, useFastMode,
+                    nMajorPeakJobs, binaryTmpDirectory, keepBinaryFiles);
 
             if (!keepBinaryFiles) {
-                if (!binaryTmpDirectory.delete())
-                    System.out.println("Warning: Failed to delete " + binaryTmpDirectory);
+                binarySpectraDirectory.delete();
             }
+
+            // merge the results
+            File combinedResultFile = mergeClusteringResults(clusteredFiles, thresholds, useFastMode,
+                    nMajorPeakJobs, binaryTmpDirectory);
 
             // create the output file
             convertClusters(combinedResultFile, finalResultFile, endThreshold);
@@ -260,6 +248,169 @@ public class SpectraClusterCliMain {
         }
     }
 
+    /**
+     * Merges the result files (clusters at the borders of two result files are re-processed based on the precursor
+     * tolerance). The resulting clustering are automatically merged into a single CGF file.
+     * @param clusteredFiles Clustered (binary) files to merge.
+     * @param thresholds Thresholds to use for clustering.
+     * @param useFastMode Indicates whether fast mode is enabled. In this case spectra are heavily filtered during loading and filtering is not used during the actual comparison.
+     * @param nJobs Number of parallel jobs to use during the conversion.
+     * @param binaryTmpDirectory Temporary directory for binary files.
+     * @return The resulting CGF file as a File object.
+     * @throws Exception
+     */
+    private static File mergeClusteringResults(List<BinaryClusterFileReference> clusteredFiles, List<Float> thresholds,
+                                               boolean useFastMode, int nJobs, File binaryTmpDirectory)
+            throws Exception {
+        if (clusteredFiles.size() < 1) {
+            throw new Exception("No clustering result files found for merging.");
+        }
+
+        // create the required temporary directories
+        File mergedResultsDirectory = createTemporaryDirectory("merged_results", binaryTmpDirectory);
+        File mergedResultsDirectoryTmp = createTemporaryDirectory("merged_results_tmp", binaryTmpDirectory);
+
+        // create the merger
+        BinaryFileMergingClusterer mergingClusterer = new BinaryFileMergingClusterer(nJobs, mergedResultsDirectory,
+                thresholds, useFastMode, Defaults.getDefaultPrecursorIonTolerance(), DELETE_TEMPORARY_CLUSTERING_RESULTS,
+                mergedResultsDirectoryTmp);
+
+        // create the combined output file as soon as a job is done
+        File combinedResultFile = File.createTempFile("combined_clustering_results", ".cgf", binaryTmpDirectory);
+        MergingCGFConverter mergingCGFConverter = new MergingCGFConverter(combinedResultFile, DELETE_TEMPORARY_CLUSTERING_RESULTS);
+        mergingClusterer.addListener(mergingCGFConverter);
+
+        // launch the merging job
+        System.out.println("Merging " + clusteredFiles.size() + " binary files...");
+        long start = System.currentTimeMillis();
+        mergingClusterer.clusterFiles(clusteredFiles);
+
+        printDone(start, "Completed merging.");
+
+        // delete the temporary directory after merging - this directory should be empty
+        if (!mergedResultsDirectoryTmp.delete()) {
+            System.out.println("Warning: Failed to delete " + mergedResultsDirectoryTmp.getName());
+        }
+        // delete the temporary directories if set
+        if (DELETE_TEMPORARY_CLUSTERING_RESULTS) {
+            File clusteredFilesDirectory = clusteredFiles.get(0).getResultFile().getParentFile();
+
+            if (!clusteredFilesDirectory.delete())
+                System.out.println("Warning: Failed to delete " + clusteredFilesDirectory);
+
+            if (!mergedResultsDirectory.delete())
+                System.out.println("Warning: Failed to delete " + mergedResultsDirectory);
+        }
+
+        return combinedResultFile;
+    }
+
+    /**
+     * Clusters the passed binary files.
+     * @param binaryFiles The input files to cluster in binary format.
+     * @param thresholds Thresholds to use for clustering.
+     * @param useFastMode Indicates whether fast mode is enabled. In this case spectra are heavily filtered during loading and filtering is not used during the actual comparison.
+     * @param nJobs Number of parallel jobs to use during the conversion.
+     * @param binaryTmpDirectory Temporary directory for binary files.
+     * @param keepBinaryFiles Indicates whether binary input files should be kept or deleted upon completion.
+     * @return A list of BinaryClusterFileReferenceS that represent the result files.
+     * @throws Exception
+     */
+    private static List<BinaryClusterFileReference> clusterFiles(List<BinaryClusterFileReference> binaryFiles,
+                                                                 List<Float> thresholds, boolean useFastMode,
+                                                                 int nJobs, File binaryTmpDirectory, boolean keepBinaryFiles)
+            throws Exception {
+        // create the needed temporary directories
+        File clusteringResultDirectory = createTemporaryDirectory("clustering_results", binaryTmpDirectory);
+        File tmpClusteringResultDirectory = createTemporaryDirectory("clustering_results_tmp", binaryTmpDirectory);
+
+        // cluster the files
+        BinaryFileClusterer binaryFileClusterer = new BinaryFileClusterer(nJobs, clusteringResultDirectory,
+                thresholds, useFastMode, tmpClusteringResultDirectory);
+
+        System.out.println("Clustering " + binaryFiles.size() + " binary files...");
+        long start = System.currentTimeMillis();
+
+        binaryFileClusterer.clusterFiles(binaryFiles);
+
+        printDone(start, "Completed clustering.");
+
+        // delete the temporary directory
+        if (!tmpClusteringResultDirectory.delete()) {
+            System.out.println("Warning: Failed to delete " + tmpClusteringResultDirectory.getName());
+        }
+        // delete the binary files if set
+        if (!keepBinaryFiles) {
+            for (BinaryClusterFileReference binaryFile : binaryFiles) {
+                binaryFile.getResultFile().delete();
+            }
+        }
+
+        // sort result files by min m/z
+        List<BinaryClusterFileReference> clusteredFiles = binaryFileClusterer.getResultFiles();
+        clusteredFiles = new ArrayList<BinaryClusterFileReference>(clusteredFiles);
+        Collections.sort(clusteredFiles);
+
+        return clusteredFiles;
+    }
+
+    /**
+     * This function either converts the input files and writes them to the
+     * binary format or simply re-loads already existing binary files.
+     * @param peaklistFilenames Array of input peaklist filenames.
+     * @param binarySpectraDirectory Directory into which the binary files should be written to (or from where they are loaded).
+     * @param reUseBinaryFiles Boolean indicating whether existing binary files should be re-used.
+     * @param nJobs Number of parallel jobs to use during the conversion.
+     * @param useFastMode Indicates whether fast mode is enabled. In this case spectra are heavily filtered during loading.
+     * @return A list of BinaryClusterFileReferenceS representing the generated / existing binary files.
+     */
+    private static List<BinaryClusterFileReference> convertInputFiles(String[] peaklistFilenames,
+                                                                      File binarySpectraDirectory, boolean reUseBinaryFiles,
+                                                                      int nJobs, boolean useFastMode)
+            throws Exception {
+        List<BinaryClusterFileReference> binaryFiles = new ArrayList<BinaryClusterFileReference>();
+
+        // if the binary spectra directory doesn't exist, create it
+        if (!binarySpectraDirectory.exists()) {
+            if (!binarySpectraDirectory.mkdir()) {
+                throw new Exception("Failed to create temporary binary directory: " + binarySpectraDirectory);
+            }
+        }
+
+        // either re-create the binary files or simply load them
+        if (reUseBinaryFiles) {
+            // get the list of files
+            File[] existingBinaryFiles = binarySpectraDirectory.listFiles((FilenameFilter) FileFilterUtils.suffixFileFilter(".cls"));
+
+            // if no binary files were found, simply create them
+            if (existingBinaryFiles.length < 1) {
+                System.out.println("No binary files found. Re-creating binary files...");
+                reUseBinaryFiles = false;
+            }
+            else {
+                System.out.print("Scanning " + String.valueOf(existingBinaryFiles.length) + " binary files...");
+                // scan the binary files to get the basic metadata about each file
+                binaryFiles = BinaryFileScanner.scanBinaryFiles(existingBinaryFiles);
+
+                System.out.println("Found " + binaryFiles.size() + " existing binary files.");
+            }
+        }
+
+        if (!reUseBinaryFiles) {
+            System.out.print("Writing binary files...");
+            long start = System.currentTimeMillis();
+
+            BinningSpectrumConverter binningSpectrumConverter = new BinningSpectrumConverter(binarySpectraDirectory, nJobs, useFastMode);
+            binningSpectrumConverter.processPeaklistFiles(peaklistFilenames);
+            binaryFiles = binningSpectrumConverter.getWrittenFiles();
+
+            String message = String.format("Done. Found %d spectra", binningSpectrumConverter.getSpectrumReferences().size());
+            printDone(start, message);
+        }
+
+        return binaryFiles;
+    }
+
     private static void mergeBinaryFiles(String[] binaryFilenames, File finalResultFile) throws Exception {
         File tmpResultFile = File.createTempFile("combined_results", ".cgf");
 
@@ -270,7 +421,7 @@ public class SpectraClusterCliMain {
         }
         List<BinaryClusterFileReference> binaryFileRefs = BinaryFileScanner.scanBinaryFiles(binaryFiles);
 
-        MergingCGFConverter mergingCGFConverter = new MergingCGFConverter(tmpResultFile, false, false, null); // do not delete any files
+        MergingCGFConverter mergingCGFConverter = new MergingCGFConverter(tmpResultFile, false); // do not delete any files
 
         System.out.print("Merging " + binaryFilenames.length + " binary files...");
         long start = System.currentTimeMillis();
@@ -339,7 +490,7 @@ public class SpectraClusterCliMain {
         System.out.println("Input files: " + peaklistFilenames.length);
         System.out.println("Using fast mode: " + (fastMode ? "yes" : "no"));
 
-        System.out.println("\nPrint other settings:");
+        System.out.println("\nOther settings:");
         System.out.println("Precursor tolerance: " + Defaults.getDefaultPrecursorIonTolerance());
         System.out.println("Fragment ion tolerance: " + Defaults.getFragmentIonTolerance());
 
@@ -391,10 +542,6 @@ public class SpectraClusterCliMain {
         writer.close();
 
         System.out.println("Done. (Took " + String.format("%.2f", (float) (System.currentTimeMillis() - start) / 1000 / 60) + " min. " + nClusterWritten + " final clusters)");
-
-        // copy the final CGF file as well
-        FileUtils.copyFile(combinedResultFile, new File(finalResultFile.getAbsolutePath() + ".cgf"));
-        System.out.println("Copied CGF result to " + finalResultFile.getAbsolutePath() + ".cgf");
     }
 
     private static Map<String, SpectrumReference> getSpectrumReferencesPerId(List<SpectrumReference> spectrumReferences) {
@@ -450,5 +597,8 @@ public class SpectraClusterCliMain {
                 CliOptions.getOptions(), "\n\n", true);
     }
 
-
+    @Override
+    public void progress(int completedCalculations, int totalCalculations) {
+        System.out.println("  Completed " + completedCalculations + " / " + totalCalculations);
+    }
 }

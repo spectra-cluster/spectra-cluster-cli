@@ -9,6 +9,7 @@ import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
 import uk.ac.ebi.pride.spectracluster.similarity.CombinedFisherIntensityTest;
 import uk.ac.ebi.pride.spectracluster.similarity.ISimilarityChecker;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
+import uk.ac.ebi.pride.spectracluster.util.CliSettings;
 import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
@@ -66,7 +67,7 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
             peakFilterFunction = null;
         }
         else {
-            peakFilterFunction = new FractionTICPeakFunction(0.5f, 20);
+            peakFilterFunction = CliSettings.getComparisonFilterFunction();
         }
     }
 

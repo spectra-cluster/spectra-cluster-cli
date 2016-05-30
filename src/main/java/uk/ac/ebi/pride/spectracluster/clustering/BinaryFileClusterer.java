@@ -76,7 +76,7 @@ public class BinaryFileClusterer {
         }
 
         // terminate the executor service
-        clusteringExecuteService.awaitTermination(1, TimeUnit.MINUTES);
+        clusteringExecuteService.awaitTermination(2, TimeUnit.SECONDS);
     }
 
     private void notifyListeners(BinaryClusterFileReference writtenFile) {
