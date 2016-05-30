@@ -31,9 +31,19 @@ public final class SpectrumConverter {
             peaks.add(peak);
         }
 
+        // encode missing charges using "0"
+        int charge = 0;
+        if (jmzReaderSpectrum.getPrecursorCharge() != null) {
+            charge = jmzReaderSpectrum.getPrecursorCharge();
+        }
+
         // create the spectrum
         ISpectrum convertedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(spectrumId,
+<<<<<<< HEAD
                 jmzReaderSpectrum.getPrecursorCharge(), (float) jmzReaderSpectrum.getPrecursorMZ().doubleValue(),
+=======
+                charge, (float) jmzReaderSpectrum.getPrecursorMZ().doubleValue(),
+>>>>>>> master
                 Defaults.getDefaultQualityScorer(), peaks);
 
         // set the original title if available
