@@ -4,7 +4,6 @@ import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.spectrum.KnownProperties;
 import uk.ac.ebi.pride.spectracluster.spectrum.Peak;
-import uk.ac.ebi.pride.tools.jmzreader.model.Param;
 import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.CvParam;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.ParamGroup;
@@ -12,7 +11,6 @@ import uk.ac.ebi.pride.tools.jmzreader.model.impl.UserParam;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by jg on 13.05.15.
@@ -39,11 +37,7 @@ public final class SpectrumConverter {
 
         // create the spectrum
         ISpectrum convertedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(spectrumId,
-<<<<<<< HEAD
-                jmzReaderSpectrum.getPrecursorCharge(), (float) jmzReaderSpectrum.getPrecursorMZ().doubleValue(),
-=======
                 charge, (float) jmzReaderSpectrum.getPrecursorMZ().doubleValue(),
->>>>>>> master
                 Defaults.getDefaultQualityScorer(), peaks);
 
         // set the original title if available
