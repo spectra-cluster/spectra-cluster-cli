@@ -1,9 +1,8 @@
 package uk.ac.ebi.pride.spectracluster.clustering;
 
-import uk.ac.ebi.pride.spectracluster.clustering.ClusteringProcessLauncher;
-import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
-import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
+import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
+import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
 
 import java.io.File;
 import java.util.*;
@@ -25,6 +24,7 @@ public class BinaryFileClusterer {
     private ExecutorService clusteringExecuteService;
     private ClusteringProcessLauncher clusteringProcessLauncher;
     private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
+    private List<IProgressListener> progressListeners = new ArrayList<IProgressListener>();
 
     private List<BinaryClusterFileReference> resultFiles;
 
@@ -66,23 +66,17 @@ public class BinaryFileClusterer {
                     BinaryClusterFileReference resultFile = fileFuture.get().getOutputFile();
                     resultFiles.add(resultFile);
                     // notify all listeners
-                    notifyListeners(resultFile);
+                    notifyListeners(resultFiles.size(), fileFutures.size(), resultFile);
 
                     completedJobs.add(i);
                 }
-
-                Thread.sleep(1000); // only check every second
             }
+
+            Thread.sleep(1000); // only check every second
         }
 
         // terminate the executor service
         clusteringExecuteService.awaitTermination(2, TimeUnit.SECONDS);
-    }
-
-    private void notifyListeners(BinaryClusterFileReference writtenFile) {
-        for (IBinaryClusteringResultListener listener : listeners) {
-            listener.onNewResultFile(writtenFile);
-        }
     }
 
     private void launchClusteringJobs(List<BinaryClusterFileReference> binaryFiles) {
@@ -103,5 +97,24 @@ public class BinaryFileClusterer {
 
     public List<BinaryClusterFileReference> getResultFiles() {
         return Collections.unmodifiableList(resultFiles);
+    }
+
+    public void addProgressListener(IProgressListener progressListener) {
+        progressListeners.add(progressListener);
+    }
+
+    private void notifyListeners(int completedJobs, int totalJobs, BinaryClusterFileReference writtenFile) {
+        for (IBinaryClusteringResultListener listener : listeners) {
+            listener.onNewResultFile(writtenFile);
+        }
+
+        ProgressUpdate progressUpdate = new ProgressUpdate(
+                String.format("Completed clustering %d spectra (%f.2 m/z to %f.2 m/z)",
+                        writtenFile.getnSpectra(), writtenFile.getMinMz(), writtenFile.getMaxMz()),
+                ProgressUpdate.CLUSTERING_STAGE.CLUSTERING, completedJobs, totalJobs);
+
+        for (IProgressListener progressListener : progressListeners) {
+            progressListener.onProgressUpdate(progressUpdate);
+        }
     }
 }

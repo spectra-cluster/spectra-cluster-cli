@@ -21,11 +21,16 @@ public class BinaryClusterFileReference implements Comparable<BinaryClusterFileR
      * Maxixmum precursor m/z found in the file
      */
     private final double maxMz;
+    /**
+     * Number of spectra in the file
+     */
+    private final int nSpectra;
 
-    public BinaryClusterFileReference(File resultFile, double minMz, double maxMz) {
+    public BinaryClusterFileReference(File resultFile, double minMz, double maxMz, int nSpectra) {
         this.resultFile = resultFile;
         this.minMz = minMz;
         this.maxMz = maxMz;
+        this.nSpectra = nSpectra;
     }
 
     public File getResultFile() {
@@ -38,6 +43,10 @@ public class BinaryClusterFileReference implements Comparable<BinaryClusterFileR
 
     public double getMaxMz() {
         return maxMz;
+    }
+
+    public int getnSpectra() {
+        return nSpectra;
     }
 
     @Override

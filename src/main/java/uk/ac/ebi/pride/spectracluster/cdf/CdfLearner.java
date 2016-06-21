@@ -3,6 +3,8 @@ package uk.ac.ebi.pride.spectracluster.cdf;
 import uk.ac.ebi.pride.spectracluster.spectra_list.IPeaklistScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingMgfScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
+import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
+import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -33,7 +35,7 @@ public class CdfLearner {
 
     private IPeaklistScanner peaklistScanner = new ParsingMgfScanner();
     private int numberOfComparisons = DEFAULT_NUMBER_OF_COMARPSISONS;
-    private List<IComparisonProgressListener> listeners = new ArrayList<IComparisonProgressListener>();
+    private List<IProgressListener> listeners = new ArrayList<IProgressListener>();
 
     /**
      * Derives the cumulative distribution function based on the
@@ -179,12 +181,14 @@ public class CdfLearner {
     }
 
     private void notifyListeners(int completed, int total) {
-        for (IComparisonProgressListener listener : listeners) {
-            listener.progress(completed, total);
+        ProgressUpdate progressUpdate = new ProgressUpdate("CDF comparisons completed.",
+                ProgressUpdate.CLUSTERING_STAGE.CDF_LEARNING, completed, total);
+        for (IProgressListener listener : listeners) {
+            listener.onProgressUpdate(progressUpdate);
         }
     }
 
-    public void addListener(IComparisonProgressListener listener) {
+    public void addListener(IProgressListener listener) {
         listeners.add(listener);
     }
 

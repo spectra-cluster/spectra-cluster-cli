@@ -44,6 +44,6 @@ public class BinarySpectrumReferenceWriterCallable implements Callable<BinaryClu
             }
         }
 
-        return new BinaryClusterFileReference(outputFile, minMz, maxMz);
+        return new BinaryClusterFileReference(outputFile, minMz, maxMz, spectrumReferencesToWrite.size());
     }
 }

@@ -33,6 +33,7 @@ public class BinaryFileScanner {
 
             // scan the file to get the min and max m/z
             double minMz = Double.MAX_VALUE, maxMz = 0;
+            int nCluster = 0;
 
             for (ICluster cluster : clusterIterable) {
                 if (cluster.getPrecursorMz() < minMz) {
@@ -41,10 +42,12 @@ public class BinaryFileScanner {
                 if (cluster.getPrecursorMz() > maxMz) {
                     maxMz = cluster.getPrecursorMz();
                 }
+                nCluster++;
             }
 
             // save the file reference as a CLusteringResult object
-            BinaryClusterFileReference binaryClusterFileReference = new BinaryClusterFileReference(currentInputFile, minMz, maxMz);
+            BinaryClusterFileReference binaryClusterFileReference = new BinaryClusterFileReference(
+                    currentInputFile, minMz, maxMz, nCluster);
             binaryClusterFileReferences.add(binaryClusterFileReference);
         }
 

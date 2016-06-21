@@ -45,6 +45,7 @@ public class BinaryFileRebinner {
 
         List<BinaryClusterFileReference> outputFiles = new ArrayList<BinaryClusterFileReference>();
         double outputMinMz = Double.MAX_VALUE, outputMaxMz = 0;
+        int nCluster = 0;
 
         for (BinaryClusterFileReference clusterFileReference : inputFiles) {
             // set the current max m/z
@@ -65,7 +66,7 @@ public class BinaryFileRebinner {
                     currentBin++;
 
                     // save the file reference
-                    outputFiles.add(new BinaryClusterFileReference(outputFile, outputMinMz, outputMaxMz));
+                    outputFiles.add(new BinaryClusterFileReference(outputFile, outputMinMz, outputMaxMz, nCluster));
 
                     // create the new file
                     outputFile = getResultFile(outputDirectory, currentBin);
@@ -77,6 +78,7 @@ public class BinaryFileRebinner {
                     // reset the statistics for the output file
                     outputMinMz = Double.MAX_VALUE;
                     outputMaxMz = 0;
+                    nCluster = 0;
                 }
 
                 // make sure the clusters are sorted according to m/z
@@ -97,6 +99,7 @@ public class BinaryFileRebinner {
                 if (cluster.getPrecursorMz() > outputMaxMz) {
                     outputMaxMz = cluster.getPrecursorMz();
                 }
+                nCluster++;
             }
 
             inputStream.close();
@@ -104,7 +107,7 @@ public class BinaryFileRebinner {
 
         // close the currently written file and save it
         outputStream.close();
-        outputFiles.add(new BinaryClusterFileReference(outputFile, outputMinMz, outputMaxMz));
+        outputFiles.add(new BinaryClusterFileReference(outputFile, outputMinMz, outputMaxMz, nCluster));
 
         return outputFiles;
     }

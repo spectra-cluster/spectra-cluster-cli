@@ -4,23 +4,19 @@ import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
-import uk.ac.ebi.pride.spectracluster.normalizer.IIntensityNormalizer;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
-import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
-import uk.ac.ebi.pride.spectracluster.util.*;
-import uk.ac.ebi.pride.spectracluster.util.function.Functions;
-import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
-import uk.ac.ebi.pride.spectracluster.util.function.peak.FractionTICPeakFunction;
-import uk.ac.ebi.pride.spectracluster.util.function.peak.HighestNPeakFunction;
-import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveImpossiblyHighPeaksFunction;
-import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemovePrecursorPeaksFunction;
+import uk.ac.ebi.pride.spectracluster.util.CliSettings;
+import uk.ac.ebi.pride.spectracluster.util.ClusterUtilities;
+import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
 import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
 import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
 import uk.ac.ebi.pride.tools.mgf_parser.MgfFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 
 /**
@@ -114,7 +110,7 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
 
         // notify the listeners
         for (IBinaryClusteringResultListener listener : listeners)
-            listener.onNewResultFile(new BinaryClusterFileReference(outputFile, minMz, maxMz));
+            listener.onNewResultFile(new BinaryClusterFileReference(outputFile, minMz, maxMz, spectrumReferences.size()));
     }
 
     private JMzReader openFile(String peakListFilename, List<IndexElement> fileIndex) throws Exception {

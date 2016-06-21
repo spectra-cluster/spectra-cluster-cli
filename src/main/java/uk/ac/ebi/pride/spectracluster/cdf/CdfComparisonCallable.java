@@ -1,12 +1,10 @@
 package uk.ac.ebi.pride.spectracluster.cdf;
 
-import uk.ac.ebi.pride.spectracluster.binning.BinarySpectrumReferenceWriter;
 import uk.ac.ebi.pride.spectracluster.similarity.CombinedFisherIntensityTest;
 import uk.ac.ebi.pride.spectracluster.similarity.ISimilarityChecker;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReferenceFileComparator;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
-import uk.ac.ebi.pride.spectracluster.spectrum.Spectrum;
 import uk.ac.ebi.pride.spectracluster.util.CliSettings;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;

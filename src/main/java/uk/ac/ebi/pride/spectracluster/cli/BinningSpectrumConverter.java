@@ -1,11 +1,15 @@
 package uk.ac.ebi.pride.spectracluster.cli;
 
-import uk.ac.ebi.pride.spectracluster.binning.*;
+import uk.ac.ebi.pride.spectracluster.binning.BinarySpectrumReferenceWriterCallable;
+import uk.ac.ebi.pride.spectracluster.binning.ISpectrumReferenceBinner;
+import uk.ac.ebi.pride.spectracluster.binning.ReferenceMzBinner;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.spectra_list.IPeaklistScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingMgfScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
+import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
+import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
 import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
 
 import java.io.File;
@@ -27,6 +31,7 @@ public class BinningSpectrumConverter {
     private IPeaklistScanner peaklistScanner = new ParsingMgfScanner();
 
     private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
+    private List<IProgressListener> progressListeners = new ArrayList<IProgressListener>();
     private ExecutorService writingJobsExecutorService;
     private List<Future<BinaryClusterFileReference>> writtenBinaryFileFutures;
 
@@ -79,6 +84,7 @@ public class BinningSpectrumConverter {
                     writtenFiles.add(writtenFile);
                     // notify all listeners
                     notifyListeners(writtenFile);
+                    notifyProgressListeners(writtenFiles.size(), writtenBinaryFileFutures.size());
 
                     completedWritingJobs.add(i);
                 }
@@ -92,6 +98,16 @@ public class BinningSpectrumConverter {
     private void notifyListeners(BinaryClusterFileReference writtenFile) {
         for (IBinaryClusteringResultListener listener : listeners) {
             listener.onNewResultFile(writtenFile);
+        }
+    }
+
+    private void notifyProgressListeners(int writtenFiles, int totalFiles) {
+        ProgressUpdate progressUpdate = new ProgressUpdate(
+                String.format("Converting %d / %d binary files.", writtenFiles, totalFiles),
+                ProgressUpdate.CLUSTERING_STAGE.CONVERSION, writtenFiles, totalFiles);
+
+        for (IProgressListener progressListener : progressListeners) {
+            progressListener.onProgressUpdate(progressUpdate);
         }
     }
 
@@ -155,5 +171,9 @@ public class BinningSpectrumConverter {
 
     public List<SpectrumReference> getSpectrumReferences() {
         return Collections.unmodifiableList(spectrumReferences);
+    }
+
+    public void addProgressListener(IProgressListener listener) {
+        progressListeners.add(listener);
     }
 }

@@ -28,6 +28,7 @@ public class CliOptions {
         CONVERT_CGF("convert_cgf"),
         FAST_MODE("fast_mode"),
         HELP("help"),
+        VERBOSE("verbose"),
 
         // Advanced options
         ADVANCED_MIN_NUMBER_COMPARISONS("x_min_comparisons"),
@@ -132,6 +133,11 @@ public class CliOptions {
                 .withDescription("if this option is set the 'fast mode' is enabled. In this mode, the radical peak filtering used for the comparison function is already applied during spectrum conversion. Thereby, the clustering and consensus spectrum quality is slightly decreased but speed increases 2-3 fold.")
                 .create(OPTIONS.FAST_MODE.getValue());
         options.addOption(fastMode);
+
+        Option verbose = OptionBuilder
+                .withDescription("if set additional status information is printed.")
+                .create(OPTIONS.VERBOSE.getValue());
+        options.addOption(verbose);
 
         Option help = new Option(
                 OPTIONS.HELP.toString(),

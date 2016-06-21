@@ -9,19 +9,16 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import uk.ac.ebi.pride.spectracluster.cdf.CdfLearner;
 import uk.ac.ebi.pride.spectracluster.cdf.CdfResult;
 import uk.ac.ebi.pride.spectracluster.cdf.CumulativeDistributionFunction;
-import uk.ac.ebi.pride.spectracluster.cdf.IComparisonProgressListener;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
+import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusterer;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
-import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.conversion.MergingCGFConverter;
-import uk.ac.ebi.pride.spectracluster.io.*;
+import uk.ac.ebi.pride.spectracluster.io.CGFSpectrumIterable;
+import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
 import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
-import uk.ac.ebi.pride.spectracluster.spectra_list.*;
-import uk.ac.ebi.pride.spectracluster.util.BinaryFileScanner;
-import uk.ac.ebi.pride.spectracluster.util.CliSettings;
-import uk.ac.ebi.pride.spectracluster.util.Defaults;
-import uk.ac.ebi.pride.spectracluster.util.MissingParameterException;
+import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
+import uk.ac.ebi.pride.spectracluster.util.*;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.HighestNPeakFunction;
 
 import java.io.*;
@@ -34,11 +31,18 @@ import java.util.*;
  * Time: 11:19 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SpectraClusterCliMain implements IComparisonProgressListener {
+public class SpectraClusterCliMain implements IProgressListener {
     public final static int MAJOR_PEAK_CLUSTERING_JOBS = 4;
     public static final boolean DELETE_TEMPORARY_CLUSTERING_RESULTS = true;
 
+    private boolean verbose;
+
     public static void main(String[] args) {
+        SpectraClusterCliMain instance = new SpectraClusterCliMain();
+        instance.run(args);
+    }
+
+    private void run(String[] args) {
         CommandLineParser parser = new GnuParser();
 
         try {
@@ -109,6 +113,9 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
 
             // FAST MODE
             boolean useFastMode = commandLine.hasOption(CliOptions.OPTIONS.FAST_MODE.getValue());
+
+            // VERBOSE
+            this.verbose = commandLine.hasOption(CliOptions.OPTIONS.VERBOSE.getValue());
 
             // FILES TO PROCESS
             String[] peaklistFilenames = commandLine.getArgs();
@@ -259,7 +266,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
      * @return The resulting CGF file as a File object.
      * @throws Exception
      */
-    private static File mergeClusteringResults(List<BinaryClusterFileReference> clusteredFiles, List<Float> thresholds,
+    private File mergeClusteringResults(List<BinaryClusterFileReference> clusteredFiles, List<Float> thresholds,
                                                boolean useFastMode, int nJobs, File binaryTmpDirectory)
             throws Exception {
         if (clusteredFiles.size() < 1) {
@@ -316,7 +323,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
      * @return A list of BinaryClusterFileReferenceS that represent the result files.
      * @throws Exception
      */
-    private static List<BinaryClusterFileReference> clusterFiles(List<BinaryClusterFileReference> binaryFiles,
+    private List<BinaryClusterFileReference> clusterFiles(List<BinaryClusterFileReference> binaryFiles,
                                                                  List<Float> thresholds, boolean useFastMode,
                                                                  int nJobs, File binaryTmpDirectory, boolean keepBinaryFiles)
             throws Exception {
@@ -327,6 +334,9 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
         // cluster the files
         BinaryFileClusterer binaryFileClusterer = new BinaryFileClusterer(nJobs, clusteringResultDirectory,
                 thresholds, useFastMode, tmpClusteringResultDirectory);
+        if (verbose) {
+            binaryFileClusterer.addProgressListener(this);
+        }
 
         System.out.println("Clustering " + binaryFiles.size() + " binary files...");
         long start = System.currentTimeMillis();
@@ -364,7 +374,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
      * @param useFastMode Indicates whether fast mode is enabled. In this case spectra are heavily filtered during loading.
      * @return A list of BinaryClusterFileReferenceS representing the generated / existing binary files.
      */
-    private static List<BinaryClusterFileReference> convertInputFiles(String[] peaklistFilenames,
+    private List<BinaryClusterFileReference> convertInputFiles(String[] peaklistFilenames,
                                                                       File binarySpectraDirectory, boolean reUseBinaryFiles,
                                                                       int nJobs, boolean useFastMode)
             throws Exception {
@@ -401,6 +411,9 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
             long start = System.currentTimeMillis();
 
             BinningSpectrumConverter binningSpectrumConverter = new BinningSpectrumConverter(binarySpectraDirectory, nJobs, useFastMode);
+            if (verbose) {
+                binningSpectrumConverter.addProgressListener(this);
+            }
             binningSpectrumConverter.processPeaklistFiles(peaklistFilenames);
             binaryFiles = binningSpectrumConverter.getWrittenFiles();
 
@@ -411,7 +424,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
         return binaryFiles;
     }
 
-    private static void mergeBinaryFiles(String[] binaryFilenames, File finalResultFile) throws Exception {
+    private void mergeBinaryFiles(String[] binaryFilenames, File finalResultFile) throws Exception {
         File tmpResultFile = File.createTempFile("combined_results", ".cgf");
 
         // scan the binary files
@@ -448,7 +461,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
      * @param finalResultFile
      * @param thresholds
      */
-    private static void clusterBinaryFile(String binaryFilename, File finalResultFile, List<Float> thresholds, boolean fastMode) throws Exception {
+    private void clusterBinaryFile(String binaryFilename, File finalResultFile, List<Float> thresholds, boolean fastMode) throws Exception {
         System.out.println("spectra-cluster API Version 1.0");
         System.out.println("Created by Rui Wang & Johannes Griss\n");
 
@@ -474,7 +487,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
         tmpResultFile.delete();
     }
 
-    private static void printSettings(File finalResultFile, int nMajorPeakJobs, float startThreshold,
+    private void printSettings(File finalResultFile, int nMajorPeakJobs, float startThreshold,
                                       float endThreshold, int rounds, boolean keepBinaryFiles, File binaryTmpDirectory,
                                       String[] peaklistFilenames, boolean reUseBinaryFiles, boolean fastMode) {
         System.out.println("spectra-cluster API Version 1.0");
@@ -512,7 +525,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
      * @param rounds Number of rounds of clustering to perform
      * @return
      */
-    private static List<Float> generateThreshold(float startThreshold, float endThreshold, int rounds) {
+    private List<Float> generateThreshold(float startThreshold, float endThreshold, int rounds) {
         List<Float> thresholds = new ArrayList<Float>(rounds);
         float stepSize = (startThreshold - endThreshold) / (rounds - 1);
 
@@ -523,7 +536,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
         return thresholds;
     }
 
-    private static void convertClusters(File combinedResultFile, File finalResultFile, float endThreshold) throws Exception {
+    private void convertClusters(File combinedResultFile, File finalResultFile, float endThreshold) throws Exception {
         FileInputStream fileInputStream = new FileInputStream(combinedResultFile);
         FileWriter writer = new FileWriter(finalResultFile);
 
@@ -544,7 +557,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
         System.out.println("Done. (Took " + String.format("%.2f", (float) (System.currentTimeMillis() - start) / 1000 / 60) + " min. " + nClusterWritten + " final clusters)");
     }
 
-    private static Map<String, SpectrumReference> getSpectrumReferencesPerId(List<SpectrumReference> spectrumReferences) {
+    private Map<String, SpectrumReference> getSpectrumReferencesPerId(List<SpectrumReference> spectrumReferences) {
         Map<String, SpectrumReference> spectrumReferencePerId = new HashMap<String, SpectrumReference>();
 
         // save the spectrum references per id
@@ -558,20 +571,20 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
         return spectrumReferencePerId;
     }
 
-    private static void printDone(long start) {
+    private void printDone(long start) {
         printDone(start, "Done");
     }
 
-    private static void printDone(long start, String message) {
+    private void printDone(long start, String message) {
         long duration = System.currentTimeMillis() - start;
         System.out.println(message + " (" + String.format("%.2f", (double) duration / 1000 / 60) + " min)");
     }
 
-    private static File createTemporaryDirectory(String prefix) throws Exception {
+    private File createTemporaryDirectory(String prefix) throws Exception {
         return createTemporaryDirectory(prefix, null);
     }
 
-    private static File createTemporaryDirectory(String prefix, File tmpDirectory) throws Exception {
+    private File createTemporaryDirectory(String prefix, File tmpDirectory) throws Exception {
         File tmpFile;
 
         if (tmpDirectory != null && tmpDirectory.isDirectory()) {
@@ -590,7 +603,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
         return tmpFile;
     }
 
-    private static void printUsage() {
+    private void printUsage() {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("Spectra Cluster - Clusterer",
                 "Clusters the spectra found in an MGF file and writes the results in a text-based file.\n",
@@ -598,7 +611,7 @@ public class SpectraClusterCliMain implements IComparisonProgressListener {
     }
 
     @Override
-    public void progress(int completedCalculations, int totalCalculations) {
-        System.out.println("  Completed " + completedCalculations + " / " + totalCalculations);
+    public void onProgressUpdate(ProgressUpdate progressUpdate) {
+        System.out.println(progressUpdate.getMessage());
     }
 }

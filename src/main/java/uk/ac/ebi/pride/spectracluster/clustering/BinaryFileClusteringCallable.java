@@ -13,13 +13,15 @@ import uk.ac.ebi.pride.spectracluster.util.CliSettings;
 import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
-import uk.ac.ebi.pride.spectracluster.util.function.peak.FractionTICPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.predicate.IComparisonPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.ClusterShareMajorPeakPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.IsKnownComparisonsPredicate;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -162,19 +164,12 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
                 currentInputFile = outputFile;
             }
 
-            printCompletion(inputFile.getName(), start, nSpectra, fileMinMz, fileMaxMz);
-
-            return new ClusteringJobReference(inputFile, new BinaryClusterFileReference(outputFile, fileMinMz, fileMaxMz));
+            return new ClusteringJobReference(inputFile, new BinaryClusterFileReference(outputFile, fileMinMz, fileMaxMz, nSpectra));
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
             throw (e);
         }
-    }
-
-    private void printCompletion(String filename, long start, int nSpectra, float minMz, float maxMz) {
-        System.out.println(String.format("Processed %s in %.2f min (%d spectra, %.2f m/z - %.2f m/z)",
-                filename, (float) (System.currentTimeMillis() - start) / 1000 / 60, nSpectra, minMz, maxMz));
     }
 
     private IIncrementalClusteringEngine createIncrementalClusteringEngine(double clusteringPrecision, IComparisonPredicate<ICluster> comparisonPredicate) {

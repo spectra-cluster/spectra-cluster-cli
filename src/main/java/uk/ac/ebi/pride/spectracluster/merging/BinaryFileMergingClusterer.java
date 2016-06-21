@@ -2,7 +2,6 @@ package uk.ac.ebi.pride.spectracluster.merging;
 
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
-import uk.ac.ebi.pride.spectracluster.clustering.ClusteringProcessLauncher;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
 
@@ -93,9 +92,9 @@ public class BinaryFileMergingClusterer {
 
                     completedJobs.add(i);
                 }
-
-                Thread.sleep(1000); // only check every second
             }
+
+            Thread.sleep(1000); // only check every second
         }
 
         // terminate the executor service
