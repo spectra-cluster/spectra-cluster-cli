@@ -25,6 +25,7 @@ public class CliOptions {
         REUSE_BINARY_FILES("reuse_binary_files"),
         CLUSTER_BINARY_FILE("cluster_binary_file"),
         MERGE_BINARY_RESULTS("merge_binary_results"),
+        REMOVE_REPORTER_PEAKS("remove_reporters"),
         CONVERT_CGF("convert_cgf"),
         FAST_MODE("fast_mode"),
         HELP("help"),
@@ -138,6 +139,13 @@ public class CliOptions {
                 .withDescription("if set additional status information is printed.")
                 .create(OPTIONS.VERBOSE.getValue());
         options.addOption(verbose);
+
+        Option removeReporters = OptionBuilder
+                .hasArg()
+                .withArgName("QUANTITATION TYPE")
+                .withDescription("remove reporter ion peaks in quantitation experiments. Possible QUANTIATION TYPES are 'ITRAQ', 'TMT' and 'ALL' ('TMT' and 'ITRAQ' peaks are removed.")
+                .create(OPTIONS.REMOVE_REPORTER_PEAKS.getValue());
+        options.addOption(removeReporters);
 
         Option help = new Option(
                 OPTIONS.HELP.toString(),

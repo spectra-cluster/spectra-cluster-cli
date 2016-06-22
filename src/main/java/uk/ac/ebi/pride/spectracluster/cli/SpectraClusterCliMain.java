@@ -19,7 +19,9 @@ import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
 import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.util.*;
+import uk.ac.ebi.pride.spectracluster.util.function.Functions;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.HighestNPeakFunction;
+import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveReporterIonPeaksFunction;
 
 import java.io.*;
 import java.util.*;
@@ -116,6 +118,32 @@ public class SpectraClusterCliMain implements IProgressListener {
 
             // VERBOSE
             this.verbose = commandLine.hasOption(CliOptions.OPTIONS.VERBOSE.getValue());
+
+            // REMOVE QUANT PEAKS
+            RemoveReporterIonPeaksFunction.REPORTER_TYPE reporterType = null;
+            if (commandLine.hasOption(CliOptions.OPTIONS.REMOVE_REPORTER_PEAKS.getValue())) {
+                String quantTypeString = commandLine.getOptionValue(CliOptions.OPTIONS.REMOVE_REPORTER_PEAKS.getValue());
+
+                if (quantTypeString.toLowerCase().equals("itraq")) {
+                    reporterType = RemoveReporterIonPeaksFunction.REPORTER_TYPE.ITRAQ;
+                }
+                else if (quantTypeString.toLowerCase().equals("tmt")) {
+                    reporterType = RemoveReporterIonPeaksFunction.REPORTER_TYPE.TMT;
+                }
+                else if (quantTypeString.toLowerCase().equals("all")) {
+                    reporterType = RemoveReporterIonPeaksFunction.REPORTER_TYPE.ALL;
+                }
+                else {
+                    throw new MissingParameterException("Invalid reporter type defined. Valid values are 'ITRAQ', 'TMT', and 'ALL'.");
+                }
+
+                if (reporterType != null) {
+                    CliSettings.setInitialSpectrumFilter(Functions.join(
+                            CliSettings.DEFAULT_INITIAL_SPECTRUM_FILTER,
+                            new RemoveReporterIonPeaksFunction(Defaults.getFragmentIonTolerance(), reporterType)
+                    ));
+                }
+            }
 
             // FILES TO PROCESS
             String[] peaklistFilenames = commandLine.getArgs();
