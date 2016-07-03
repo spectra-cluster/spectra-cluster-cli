@@ -62,42 +62,46 @@ public class BinningSpectrumConverter {
     }
 
     private void waitForCompletedJobs() throws Exception {
-        boolean allDone = false;
-        writtenFiles = new ArrayList<BinaryClusterFileReference>();
-        Set<Integer> completedWritingJobs = new HashSet<Integer>();
+        try {
+            boolean allDone = false;
+            writtenFiles = new ArrayList<BinaryClusterFileReference>();
+            Set<Integer> completedWritingJobs = new HashSet<Integer>();
 
-        while (!allDone) {
-            allDone = true;
+            while (!allDone) {
+                allDone = true;
 
-            for (int i = 0; i < writtenBinaryFileFutures.size(); i++) {
-                if (Thread.currentThread().isInterrupted()) {
-                    writingJobsExecutorService.shutdownNow();
-                    throw new InterruptedException();
-                }
+                for (int i = 0; i < writtenBinaryFileFutures.size(); i++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new InterruptedException();
+                    }
 
-                if (completedWritingJobs.contains(i))
-                    continue;
+                    if (completedWritingJobs.contains(i))
+                        continue;
 
-                Future<BinaryClusterFileReference> fileFuture = writtenBinaryFileFutures.get(i);
+                    Future<BinaryClusterFileReference> fileFuture = writtenBinaryFileFutures.get(i);
 
-                if (!fileFuture.isDone()) {
-                    allDone = false;
-                }
-                else {
-                    // save the written file
-                    BinaryClusterFileReference writtenFile = fileFuture.get();
-                    writtenFiles.add(writtenFile);
-                    // notify all listeners
-                    notifyListeners(writtenFile);
-                    notifyProgressListeners(writtenFiles.size(), writtenBinaryFileFutures.size());
+                    if (!fileFuture.isDone()) {
+                        allDone = false;
+                    } else {
+                        // save the written file
+                        BinaryClusterFileReference writtenFile = fileFuture.get();
+                        writtenFiles.add(writtenFile);
+                        // notify all listeners
+                        notifyListeners(writtenFile);
+                        notifyProgressListeners(writtenFiles.size(), writtenBinaryFileFutures.size());
 
-                    completedWritingJobs.add(i);
+                        completedWritingJobs.add(i);
+                    }
                 }
             }
-        }
 
-        // terminate the executor service
-        writingJobsExecutorService.awaitTermination(1, TimeUnit.SECONDS);
+            // terminate the executor service
+            writingJobsExecutorService.awaitTermination(1, TimeUnit.SECONDS);
+        }
+        catch (InterruptedException e) {
+            writingJobsExecutorService.shutdownNow();
+            throw(e);
+        }
     }
 
     private void notifyListeners(BinaryClusterFileReference writtenFile) {

@@ -61,49 +61,53 @@ public class BinaryFileMergingClusterer {
     }
 
     private void waitForCompletedJobs() throws Exception {
-        boolean allDone = false;
-        resultFiles = new ArrayList<BinaryClusterFileReference>();
-        Set<Integer> completedJobs = new HashSet<Integer>();
+        try {
+            boolean allDone = false;
+            resultFiles = new ArrayList<BinaryClusterFileReference>();
+            Set<Integer> completedJobs = new HashSet<Integer>();
 
-        while (!allDone) {
-            allDone = true;
+            while (!allDone) {
+                allDone = true;
 
-            for (int i = 0; i < clusteringFutures.size(); i++) {
-                if (Thread.currentThread().isInterrupted()) {
-                    clusteringExecuteService.shutdownNow();
-                    throw new InterruptedException();
-                }
-
-                if (completedJobs.contains(i))
-                    continue;
-
-                Future<ClusteringJobReference> fileFuture = clusteringFutures.get(i);
-
-                if (!fileFuture.isDone()) {
-                    allDone = false;
-                }
-                else {
-                    // save the written file
-                    BinaryClusterFileReference resultFile = fileFuture.get().getOutputFile();
-                    resultFiles.add(resultFile);
-                    // notify all listeners
-                    notifyListeners(resultFile);
-
-                    // delete the input file if set
-                    if (deleteInputFiles) {
-                        // ignore if the deletion fails
-                        fileFuture.get().getInputFile().delete();
+                for (int i = 0; i < clusteringFutures.size(); i++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new InterruptedException();
                     }
 
-                    completedJobs.add(i);
+                    if (completedJobs.contains(i))
+                        continue;
+
+                    Future<ClusteringJobReference> fileFuture = clusteringFutures.get(i);
+
+                    if (!fileFuture.isDone()) {
+                        allDone = false;
+                    } else {
+                        // save the written file
+                        BinaryClusterFileReference resultFile = fileFuture.get().getOutputFile();
+                        resultFiles.add(resultFile);
+                        // notify all listeners
+                        notifyListeners(resultFile);
+
+                        // delete the input file if set
+                        if (deleteInputFiles) {
+                            // ignore if the deletion fails
+                            fileFuture.get().getInputFile().delete();
+                        }
+
+                        completedJobs.add(i);
+                    }
                 }
+
+                Thread.sleep(1000); // only check every second
             }
 
-            Thread.sleep(1000); // only check every second
+            // terminate the executor service
+            clusteringExecuteService.awaitTermination(2, TimeUnit.SECONDS);
         }
-
-        // terminate the executor service
-        clusteringExecuteService.awaitTermination(2, TimeUnit.SECONDS);
+        catch (InterruptedException e) {
+            clusteringExecuteService.shutdownNow();
+            throw e;
+        }
     }
 
     private void notifyListeners(BinaryClusterFileReference writtenFile) {
@@ -113,36 +117,40 @@ public class BinaryFileMergingClusterer {
     }
 
     private void launchClusteringJobs(List<BinaryClusterFileReference> binaryFiles) {
-        clusteringExecuteService = Executors.newFixedThreadPool(nJobs);
+        try {
+            clusteringExecuteService = Executors.newFixedThreadPool(nJobs);
 
-        // make sure the files are sorted according to m/z
-        Collections.sort(binaryFiles);
+            // make sure the files are sorted according to m/z
+            Collections.sort(binaryFiles);
 
-        for (int i = 0; i < binaryFiles.size(); i++) {
-            if (Thread.currentThread().isInterrupted()) {
-                clusteringExecuteService.shutdownNow();
-                return;
+            for (int i = 0; i < binaryFiles.size(); i++) {
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException();
+                }
+
+                BinaryClusterFileReference binaryClusterFileReference = binaryFiles.get(i);
+
+                // ignore the first file since it will not be clustered
+                if (i == 0) {
+                    notifyListeners(binaryClusterFileReference);
+                    continue;
+                }
+
+                // launch the clustering process
+                double maxMz = binaryClusterFileReference.getMinMz() + windowSize;
+                File outputFile = new File(outputDirectory, binaryClusterFileReference.getResultFile().getName());
+                BinaryFileClusteringCallable clusteringCallable =
+                        new BinaryFileClusteringCallable(outputFile, binaryClusterFileReference.getResultFile(),
+                                thresholds, fastMode, 0, (float) maxMz, temporaryDirectory);
+                Future<ClusteringJobReference> resultFileFuture = clusteringExecuteService.submit(clusteringCallable);
+                clusteringFutures.add(resultFileFuture);
             }
 
-            BinaryClusterFileReference binaryClusterFileReference = binaryFiles.get(i);
-
-            // ignore the first file since it will not be clustered
-            if (i == 0) {
-                notifyListeners(binaryClusterFileReference);
-                continue;
-            }
-
-            // launch the clustering process
-            double maxMz = binaryClusterFileReference.getMinMz() + windowSize;
-            File outputFile = new File(outputDirectory, binaryClusterFileReference.getResultFile().getName());
-            BinaryFileClusteringCallable clusteringCallable =
-                    new BinaryFileClusteringCallable(outputFile, binaryClusterFileReference.getResultFile(),
-                            thresholds, fastMode, 0, (float) maxMz, temporaryDirectory);
-            Future<ClusteringJobReference> resultFileFuture = clusteringExecuteService.submit(clusteringCallable);
-            clusteringFutures.add(resultFileFuture);
+            clusteringExecuteService.shutdown();
         }
-
-        clusteringExecuteService.shutdown();
+        catch (InterruptedException e) {
+            clusteringExecuteService.shutdownNow();
+        }
     }
 
     public void addListener(IBinaryClusteringResultListener listener) {

@@ -43,45 +43,50 @@ public class BinaryFileClusterer {
     }
 
     private void waitForCompletedJobs() throws Exception {
-        List<Future<ClusteringJobReference>> fileFutures = clusteringProcessLauncher.getResultFileFutures();
+        try {
+            List<Future<ClusteringJobReference>> fileFutures = clusteringProcessLauncher.getResultFileFutures();
 
-        boolean allDone = false;
-        resultFiles = new ArrayList<BinaryClusterFileReference>();
-        Set<Integer> completedJobs = new HashSet<Integer>();
+            boolean allDone = false;
+            resultFiles = new ArrayList<BinaryClusterFileReference>();
+            Set<Integer> completedJobs = new HashSet<Integer>();
 
-        while (!allDone) {
-            allDone = true;
+            while (!allDone) {
+                allDone = true;
 
-            for (int i = 0; i < fileFutures.size(); i++) {
-                if (Thread.currentThread().isInterrupted()) {
-                    clusteringExecuteService.shutdownNow();
-                    throw new InterruptedException();
+                for (int i = 0; i < fileFutures.size(); i++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        clusteringExecuteService.shutdownNow();
+                        throw new InterruptedException();
+                    }
+
+                    if (completedJobs.contains(i))
+                        continue;
+
+                    Future<ClusteringJobReference> fileFuture = fileFutures.get(i);
+
+                    if (!fileFuture.isDone()) {
+                        allDone = false;
+                    } else {
+                        // save the written file
+                        BinaryClusterFileReference resultFile = fileFuture.get().getOutputFile();
+                        resultFiles.add(resultFile);
+                        // notify all listeners
+                        notifyListeners(resultFiles.size(), fileFutures.size(), resultFile);
+
+                        completedJobs.add(i);
+                    }
                 }
 
-                if (completedJobs.contains(i))
-                    continue;
-
-                Future<ClusteringJobReference> fileFuture = fileFutures.get(i);
-
-                if (!fileFuture.isDone()) {
-                    allDone = false;
-                }
-                else {
-                    // save the written file
-                    BinaryClusterFileReference resultFile = fileFuture.get().getOutputFile();
-                    resultFiles.add(resultFile);
-                    // notify all listeners
-                    notifyListeners(resultFiles.size(), fileFutures.size(), resultFile);
-
-                    completedJobs.add(i);
-                }
+                Thread.sleep(1000); // only check every second
             }
 
-            Thread.sleep(1000); // only check every second
+            // terminate the executor service
+            clusteringExecuteService.awaitTermination(2, TimeUnit.SECONDS);
         }
-
-        // terminate the executor service
-        clusteringExecuteService.awaitTermination(2, TimeUnit.SECONDS);
+        catch (InterruptedException e) {
+            clusteringExecuteService.shutdownNow();
+            throw(e);
+        }
     }
 
     private void launchClusteringJobs(List<BinaryClusterFileReference> binaryFiles) {
@@ -90,6 +95,11 @@ public class BinaryFileClusterer {
                 thresholds, fastMode, temporaryDirectory);
 
         for (BinaryClusterFileReference binaryFile : binaryFiles) {
+            if (Thread.currentThread().isInterrupted()) {
+                clusteringExecuteService.shutdownNow();
+                return;
+            }
+
             clusteringProcessLauncher.onNewResultFile(binaryFile);
         }
 
