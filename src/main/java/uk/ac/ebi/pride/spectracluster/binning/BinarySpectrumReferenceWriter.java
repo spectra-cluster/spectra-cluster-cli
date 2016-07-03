@@ -6,7 +6,7 @@ import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
-import uk.ac.ebi.pride.spectracluster.util.CliSettings;
+import uk.ac.ebi.pride.spectracluster.cli.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.util.ClusterUtilities;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
@@ -73,17 +73,17 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
 
                 // pre-process the spectrum
                 ISpectrum convertedSpectrum = SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId(), peakListFilename);
-                ISpectrum processedSpectrum = CliSettings.getInitialSpectrumFilter().apply(convertedSpectrum);
+                ISpectrum processedSpectrum = ClusteringSettings.getInitialSpectrumFilter().apply(convertedSpectrum);
                 // normalize the spectrum
                 processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(
-                        processedSpectrum, CliSettings.getIntensityNormalizer().normalizePeaks(processedSpectrum.getPeaks()));
+                        processedSpectrum, ClusteringSettings.getIntensityNormalizer().normalizePeaks(processedSpectrum.getPeaks()));
 
                 // apply the comparison filter function right when loading the specturm in fast mode.
                 if (fastMode) {
-                    processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, CliSettings.getComparisonFilterFunction().apply(processedSpectrum.getPeaks()));
+                    processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, ClusteringSettings.getComparisonFilterFunction().apply(processedSpectrum.getPeaks()));
                 }
                 else {
-                    processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, CliSettings.getLoadingSpectrumFilter().apply(processedSpectrum.getPeaks()));
+                    processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum, ClusteringSettings.getLoadingSpectrumFilter().apply(processedSpectrum.getPeaks()));
                 }
 
                 // update the statistics

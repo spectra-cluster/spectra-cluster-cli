@@ -6,6 +6,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
 import uk.ac.ebi.pride.spectracluster.cdf.CdfLearner;
 import uk.ac.ebi.pride.spectracluster.cdf.CdfResult;
 import uk.ac.ebi.pride.spectracluster.cdf.CumulativeDistributionFunction;
@@ -138,8 +139,8 @@ public class SpectraClusterCliMain implements IProgressListener {
                 }
 
                 if (reporterType != null) {
-                    CliSettings.setInitialSpectrumFilter(Functions.join(
-                            CliSettings.DEFAULT_INITIAL_SPECTRUM_FILTER,
+                    ClusteringSettings.setInitialSpectrumFilter(Functions.join(
+                            ClusteringSettings.DEFAULT_INITIAL_SPECTRUM_FILTER,
                             new RemoveReporterIonPeaksFunction(Defaults.getFragmentIonTolerance(), reporterType)
                     ));
                 }
@@ -171,7 +172,7 @@ public class SpectraClusterCliMain implements IProgressListener {
             // N HIGHEST PEAKS
             if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_NUMBER_PREFILTERED_PEAKS.getValue())) {
                 int nHighestPeaks = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_NUMBER_PREFILTERED_PEAKS.getValue()));
-                CliSettings.setLoadingSpectrumFilter(new HighestNPeakFunction(nHighestPeaks));
+                ClusteringSettings.setLoadingSpectrumFilter(new HighestNPeakFunction(nHighestPeaks));
             }
 
             /**

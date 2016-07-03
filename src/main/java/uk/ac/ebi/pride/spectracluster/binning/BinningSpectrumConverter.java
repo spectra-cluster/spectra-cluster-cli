@@ -1,4 +1,4 @@
-package uk.ac.ebi.pride.spectracluster.cli;
+package uk.ac.ebi.pride.spectracluster.binning;
 
 import uk.ac.ebi.pride.spectracluster.binning.BinarySpectrumReferenceWriterCallable;
 import uk.ac.ebi.pride.spectracluster.binning.ISpectrumReferenceBinner;

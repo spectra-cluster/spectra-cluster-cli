@@ -5,7 +5,7 @@ import uk.ac.ebi.pride.spectracluster.similarity.ISimilarityChecker;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReferenceFileComparator;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
-import uk.ac.ebi.pride.spectracluster.util.CliSettings;
+import uk.ac.ebi.pride.spectracluster.cli.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
@@ -105,18 +105,18 @@ public class CdfComparisonCallable implements Callable<CdfResult> {
 
             // pre-process the spectrum
             ISpectrum convertedSpectrum = SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId(), "testfile");
-            ISpectrum processedSpectrum = CliSettings.getInitialSpectrumFilter().apply(convertedSpectrum);
+            ISpectrum processedSpectrum = ClusteringSettings.getInitialSpectrumFilter().apply(convertedSpectrum);
             // normalize the spectrum
             processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(
-                    processedSpectrum, CliSettings.getIntensityNormalizer().normalizePeaks(processedSpectrum.getPeaks()));
+                    processedSpectrum, ClusteringSettings.getIntensityNormalizer().normalizePeaks(processedSpectrum.getPeaks()));
 
             // only retain the N-highest peaks
             processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum,
-                    CliSettings.getLoadingSpectrumFilter().apply(processedSpectrum.getPeaks()));
+                    ClusteringSettings.getLoadingSpectrumFilter().apply(processedSpectrum.getPeaks()));
 
             // perform the actual "comparison" filter
             processedSpectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(processedSpectrum,
-                    CliSettings.getComparisonFilterFunction().apply(processedSpectrum.getPeaks()));
+                    ClusteringSettings.getComparisonFilterFunction().apply(processedSpectrum.getPeaks()));
 
             loadedSpectra.put(spectrumReference, processedSpectrum);
         }

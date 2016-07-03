@@ -1,8 +1,9 @@
-package uk.ac.ebi.pride.spectracluster.util;
+package uk.ac.ebi.pride.spectracluster.cli;
 
 import uk.ac.ebi.pride.spectracluster.normalizer.IIntensityNormalizer;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
+import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.function.Functions;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.FractionTICPeakFunction;
@@ -17,7 +18,7 @@ import java.util.List;
  * defined settings.
  * Created by jg on 08.04.16.
  */
-public class CliSettings {
+public class ClusteringSettings {
     /**
      * This filter is applied to all spectra as soon as they are loaded from file.
      */
@@ -61,7 +62,7 @@ public class CliSettings {
      * @param initialSpectrumFilter
      */
     public static void setInitialSpectrumFilter(IFunction<ISpectrum, ISpectrum> initialSpectrumFilter) {
-        CliSettings.initialSpectrumFilter = initialSpectrumFilter;
+        ClusteringSettings.initialSpectrumFilter = initialSpectrumFilter;
     }
 
     /**
@@ -79,7 +80,7 @@ public class CliSettings {
      * @param comparisonFilterFunction
      */
     public static void setComparisonFilterFunction(IFunction<List<IPeak>, List<IPeak>> comparisonFilterFunction) {
-        CliSettings.comparisonFilterFunction = comparisonFilterFunction;
+        ClusteringSettings.comparisonFilterFunction = comparisonFilterFunction;
     }
 
     /**
@@ -95,7 +96,7 @@ public class CliSettings {
      * @param intensityNormalizer
      */
     public static void setIntensityNormalizer(IIntensityNormalizer intensityNormalizer) {
-        CliSettings.intensityNormalizer = intensityNormalizer;
+        ClusteringSettings.intensityNormalizer = intensityNormalizer;
     }
 
     /**
@@ -113,6 +114,6 @@ public class CliSettings {
      * @param loadingSpectrumFilter
      */
     public static void setLoadingSpectrumFilter(IFunction<List<IPeak>, List<IPeak>> loadingSpectrumFilter) {
-        CliSettings.loadingSpectrumFilter = loadingSpectrumFilter;
+        ClusteringSettings.loadingSpectrumFilter = loadingSpectrumFilter;
     }
 }
