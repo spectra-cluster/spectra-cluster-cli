@@ -6,7 +6,7 @@ import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
-import uk.ac.ebi.pride.spectracluster.cli.ClusteringSettings;
+import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.util.ClusterUtilities;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;

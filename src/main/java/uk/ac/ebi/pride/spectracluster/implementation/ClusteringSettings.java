@@ -1,4 +1,4 @@
-package uk.ac.ebi.pride.spectracluster.cli;
+package uk.ac.ebi.pride.spectracluster.implementation;
 
 import uk.ac.ebi.pride.spectracluster.normalizer.IIntensityNormalizer;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;

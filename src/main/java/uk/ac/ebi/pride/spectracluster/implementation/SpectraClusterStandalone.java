@@ -1,4 +1,4 @@
-package uk.ac.ebi.pride.spectracluster.cli;
+package uk.ac.ebi.pride.spectracluster.implementation;
 
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
@@ -229,6 +229,11 @@ public class SpectraClusterStandalone {
      * @param temporaryDirectory
      */
     public void setTemporaryDirectory(File temporaryDirectory) {
+        // try to delete the currently set temporary directory but ignore any problems
+        if (this.temporaryDirectory != null && this.temporaryDirectory.exists()) {
+            this.temporaryDirectory.delete();
+        }
+
         this.temporaryDirectory = temporaryDirectory;
     }
 

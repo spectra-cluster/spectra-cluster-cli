@@ -9,7 +9,7 @@ import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
 import uk.ac.ebi.pride.spectracluster.similarity.CombinedFisherIntensityTest;
 import uk.ac.ebi.pride.spectracluster.similarity.ISimilarityChecker;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
-import uk.ac.ebi.pride.spectracluster.cli.ClusteringSettings;
+import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;

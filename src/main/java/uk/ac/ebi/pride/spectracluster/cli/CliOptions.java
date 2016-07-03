@@ -23,10 +23,7 @@ public class CliOptions {
         BINARY_TMP_DIR("binary_directory"),
         KEEP_BINARY_FILE("keep_binary_files"),
         REUSE_BINARY_FILES("reuse_binary_files"),
-        CLUSTER_BINARY_FILE("cluster_binary_file"),
-        MERGE_BINARY_RESULTS("merge_binary_results"),
         REMOVE_REPORTER_PEAKS("remove_reporters"),
-        CONVERT_CGF("convert_cgf"),
         FAST_MODE("fast_mode"),
         HELP("help"),
         VERBOSE("verbose"),
@@ -113,22 +110,6 @@ public class CliOptions {
                 .withDescription("if this option is set, the binary files found in the binary file directory will be used for clustering.")
                 .create(OPTIONS.REUSE_BINARY_FILES.getValue());
         options.addOption(reuseBinaryFiles);
-
-        Option clusterBinaryFile = OptionBuilder
-                .withDescription("if this option is set, only the passed binary file will be clustered and the result written to the file specified in '-output_path' in the binary format")
-                .hasArg()
-                .create(OPTIONS.CLUSTER_BINARY_FILE.getValue());
-        options.addOption(clusterBinaryFile);
-
-        Option mergeBinaryResuls = OptionBuilder
-                .withDescription("if this option is set, the passed binary results files are merged into a single .cgf file and written to '-output_path'")
-                .create(OPTIONS.MERGE_BINARY_RESULTS.getValue());
-        options.addOption(mergeBinaryResuls);
-
-        Option convertCgf = OptionBuilder
-                .withDescription("if this option is set the passed CGF file is converted into a .clustering file")
-                .create(OPTIONS.CONVERT_CGF.getValue());
-        options.addOption(convertCgf);
 
         Option fastMode = OptionBuilder
                 .withDescription("if this option is set the 'fast mode' is enabled. In this mode, the radical peak filtering used for the comparison function is already applied during spectrum conversion. Thereby, the clustering and consensus spectrum quality is slightly decreased but speed increases 2-3 fold.")
