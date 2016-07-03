@@ -36,6 +36,10 @@ public class BinaryFileScanner {
             int nCluster = 0;
 
             for (ICluster cluster : clusterIterable) {
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedIOException();
+                }
+
                 if (cluster.getPrecursorMz() < minMz) {
                     minMz = cluster.getPrecursorMz();
                 }

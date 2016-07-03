@@ -69,6 +69,11 @@ public class BinaryFileMergingClusterer {
             allDone = true;
 
             for (int i = 0; i < clusteringFutures.size(); i++) {
+                if (Thread.currentThread().isInterrupted()) {
+                    clusteringExecuteService.shutdownNow();
+                    throw new InterruptedException();
+                }
+
                 if (completedJobs.contains(i))
                     continue;
 
@@ -114,6 +119,11 @@ public class BinaryFileMergingClusterer {
         Collections.sort(binaryFiles);
 
         for (int i = 0; i < binaryFiles.size(); i++) {
+            if (Thread.currentThread().isInterrupted()) {
+                clusteringExecuteService.shutdownNow();
+                return;
+            }
+
             BinaryClusterFileReference binaryClusterFileReference = binaryFiles.get(i);
 
             // ignore the first file since it will not be clustered

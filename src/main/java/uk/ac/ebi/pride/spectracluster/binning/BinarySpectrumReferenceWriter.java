@@ -17,6 +17,7 @@ import uk.ac.ebi.pride.tools.mgf_parser.MgfFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.*;
 
 /**
@@ -56,6 +57,8 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
 
         for (SpectrumReference spectrumReference : spectrumReferences) {
             try {
+                checkInterrupt(outputStream);
+
                 int fileIndex = spectrumReference.getFileId();
 
                 if (fileIndex >= peakListFilenames.length)
@@ -94,6 +97,8 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
                     maxMz = processedSpectrum.getPrecursorMz();
                 }
 
+                checkInterrupt(outputStream);
+
                 // write it to the file
                 ICluster spectrumAsCluster = ClusterUtilities.asCluster(processedSpectrum);
                 BinaryClusterAppender.INSTANCE.appendCluster(objectOutputStream, spectrumAsCluster);
@@ -111,6 +116,13 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
         // notify the listeners
         for (IBinaryClusteringResultListener listener : listeners)
             listener.onNewResultFile(new BinaryClusterFileReference(outputFile, minMz, maxMz, spectrumReferences.size()));
+    }
+
+    private void checkInterrupt(OutputStream outputStream) throws Exception {
+        if (Thread.currentThread().isInterrupted()) {
+            outputStream.close();
+            throw new InterruptedException();
+        }
     }
 
     private JMzReader openFile(String peakListFilename, List<IndexElement> fileIndex) throws Exception {

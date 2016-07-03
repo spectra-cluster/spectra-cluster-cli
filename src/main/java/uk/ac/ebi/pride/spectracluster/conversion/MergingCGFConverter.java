@@ -45,6 +45,12 @@ public class MergingCGFConverter implements IBinaryClusteringResultListener {
             BinaryClusterIterable binaryClusterIterable = new BinaryClusterIterable(objectInputStream);
 
             for (ICluster cluster : binaryClusterIterable) {
+                if (Thread.currentThread().isInterrupted()) {
+                    outputStream.close();
+                    objectInputStream.close();
+                    return;
+                }
+
                 long offset = outputStream.getChannel().position();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
                 CGFClusterAppender.INSTANCE.appendCluster(writer, cluster);

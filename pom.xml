@@ -120,7 +120,7 @@
         <dependency>
             <groupId>uk.ac.ebi.pride.spectracluster</groupId>
             <artifactId>spectra-cluster</artifactId>
-            <version>1.0.7-SNAPSHOT</version>
+            <version>1.0.7</version>
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.pride.tools</groupId>
@@ -177,4 +177,10 @@
             <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo-snapshots</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/spectra-cluster/spectra-cluster-cli.git</connection>
+        <developerConnection>scm:git:https://github.com/spectra-cluster/spectra-cluster-cli.git</developerConnection>
+        <url>scm:git:https://github.com/spectra-cluster/spectra-cluster-cli.git</url>
+    </scm>
 </project>

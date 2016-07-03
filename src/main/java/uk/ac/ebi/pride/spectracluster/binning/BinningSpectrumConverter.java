@@ -70,6 +70,11 @@ public class BinningSpectrumConverter {
             allDone = true;
 
             for (int i = 0; i < writtenBinaryFileFutures.size(); i++) {
+                if (Thread.currentThread().isInterrupted()) {
+                    writingJobsExecutorService.shutdownNow();
+                    throw new InterruptedException();
+                }
+
                 if (completedWritingJobs.contains(i))
                     continue;
 
@@ -92,7 +97,7 @@ public class BinningSpectrumConverter {
         }
 
         // terminate the executor service
-        writingJobsExecutorService.awaitTermination(1, TimeUnit.MINUTES);
+        writingJobsExecutorService.awaitTermination(1, TimeUnit.SECONDS);
     }
 
     private void notifyListeners(BinaryClusterFileReference writtenFile) {

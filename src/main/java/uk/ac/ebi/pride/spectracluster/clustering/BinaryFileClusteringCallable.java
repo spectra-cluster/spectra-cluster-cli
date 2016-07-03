@@ -107,6 +107,12 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
 
                 // do the actual clustering
                 for (ICluster clusterToAdd : clusterIterable) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        outputStream.close();
+                        inputStream.close();
+                        throw new InterruptedException();
+                    }
+
                     if (nRound == 0) {
                         nSpectra++;
                     }
@@ -137,6 +143,12 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
                     }
                 }
 
+                if (Thread.currentThread().isInterrupted()) {
+                    outputStream.close();
+                    inputStream.close();
+                    throw new InterruptedException();
+                }
+
                 // write out the final clusters
                 Collection<ICluster> clusters = incrementalClusteringEngine.getClusters();
                 writeOutClusters(clusters, outputStream);
@@ -152,6 +164,10 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
                 if (outputFile.exists()) {
                     if (!outputFile.delete())
                         throw new Exception("Failed to delete file " + outputFile.toString());
+                }
+
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException();
                 }
 
                 FileUtils.copyFile(tmpOutputfile, outputFile);
@@ -184,11 +200,15 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
         return clusteringEngine;
     }
 
-    protected void writeOutClusters(Collection<ICluster> clusters, ObjectOutputStream outputStream) {
+    protected void writeOutClusters(Collection<ICluster> clusters, ObjectOutputStream outputStream) throws InterruptedException {
         List<ICluster> sortedRemovedClusters = new ArrayList<ICluster>(clusters);
         Collections.sort(sortedRemovedClusters, ClusterMzComparator.INSTANCE);
 
-        for (ICluster c : sortedRemovedClusters)
+        for (ICluster c : sortedRemovedClusters) {
+            if (Thread.currentThread().isInterrupted())
+                throw new InterruptedException();
+
             BinaryClusterAppender.INSTANCE.appendCluster(outputStream, c);
+        }
     }
 }

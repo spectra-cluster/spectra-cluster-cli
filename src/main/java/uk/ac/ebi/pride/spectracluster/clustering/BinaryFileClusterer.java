@@ -53,6 +53,11 @@ public class BinaryFileClusterer {
             allDone = true;
 
             for (int i = 0; i < fileFutures.size(); i++) {
+                if (Thread.currentThread().isInterrupted()) {
+                    clusteringExecuteService.shutdownNow();
+                    throw new InterruptedException();
+                }
+
                 if (completedJobs.contains(i))
                     continue;
 
@@ -109,7 +114,7 @@ public class BinaryFileClusterer {
         }
 
         ProgressUpdate progressUpdate = new ProgressUpdate(
-                String.format("Completed clustering %d spectra (%f.2 m/z to %f.2 m/z)",
+                String.format("Completed clustering %d spectra (%.2f m/z to %.2f m/z)",
                         writtenFile.getnSpectra(), writtenFile.getMinMz(), writtenFile.getMaxMz()),
                 ProgressUpdate.CLUSTERING_STAGE.CLUSTERING, completedJobs, totalJobs);
 
