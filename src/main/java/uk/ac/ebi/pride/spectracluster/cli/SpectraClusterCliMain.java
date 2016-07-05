@@ -230,6 +230,15 @@ public class SpectraClusterCliMain implements IProgressListener {
 
             spectraClusterStandalone.addProgressListener(this);
 
+            // make sure binary files exist
+            if (reUseBinaryFiles) {
+                File binaryFileDirectory = new File(spectraClusterStandalone.getTemporaryDirectory(), "spectra");
+                if (!binaryFileDirectory.isDirectory()) {
+                    reUseBinaryFiles = false;
+                    System.out.println("No binary files found. Re-creating them...");
+                }
+            }
+
             if (reUseBinaryFiles) {
                 spectraClusterStandalone.clusterExistingBinaryFiles(
                         spectraClusterStandalone.getTemporaryDirectory(), thresholds, finalResultFile);

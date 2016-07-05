@@ -13,6 +13,8 @@ import uk.ac.ebi.pride.spectracluster.util.BinaryFileScanner;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
 import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
+import uk.ac.ebi.pride.spectracluster.util.function.Functions;
+import uk.ac.ebi.pride.spectracluster.util.function.spectrum.HighestNSpectrumPeaksFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveReporterIonPeaksFunction;
 
 import java.io.File;
@@ -81,6 +83,15 @@ public class SpectraClusterStandalone {
         throws Exception {
         File binarySpectraDirectory = new File(temporaryDirectory, "spectra");
 
+        if (reporterType != null) {
+            ClusteringSettings.setInitialSpectrumFilter(
+                    Functions.join(new RemoveReporterIonPeaksFunction(Defaults.getFragmentIonTolerance(), reporterType),
+                            ClusteringSettings.getInitialSpectrumFilter(),
+                            new HighestNSpectrumPeaksFunction(70))
+            );
+
+        }
+
         // convert the binary files
         List<BinaryClusterFileReference> binaryFiles = convertInputFiles(peaklistFiles, binarySpectraDirectory);
 
@@ -127,7 +138,7 @@ public class SpectraClusterStandalone {
      */
     public void clusterExistingBinaryFiles(File clusteringDirectory, List<Float> clusteringThresholds, File resultFile)
             throws Exception {
-        File binarySpectraDirectory = new File(temporaryDirectory, "spectra");
+        File binarySpectraDirectory = new File(clusteringDirectory, "spectra");
 
         // pre-scan the binary files
         List<BinaryClusterFileReference> binaryFiles = findExistingBinaryFiles(binarySpectraDirectory);
@@ -403,6 +414,10 @@ public class SpectraClusterStandalone {
         // get the list of files
         File[] existingBinaryFiles = binarySpectraDirectory.listFiles(
                 (FilenameFilter) FileFilterUtils.suffixFileFilter(".cls"));
+
+        if (existingBinaryFiles == null) {
+            throw new Exception("Failed to find binary files in " + binarySpectraDirectory.toString());
+        }
 
         // index the existing files
         // tell the listeners that the scanning has started
