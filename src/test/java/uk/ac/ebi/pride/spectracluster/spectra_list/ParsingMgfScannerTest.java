@@ -31,6 +31,6 @@ public class ParsingMgfScannerTest {
         List<IndexElement> fileIndex = scanner.getFileIndices().get(0);
         Assert.assertEquals(3, fileIndex.size());
 
-
+        Assert.assertEquals(43, fileIndex.get(0).getStart());
     }
 }

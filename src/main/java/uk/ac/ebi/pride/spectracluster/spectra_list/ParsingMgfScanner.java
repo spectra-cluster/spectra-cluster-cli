@@ -67,7 +67,7 @@ public class ParsingMgfScanner implements IPeaklistScanner {
             }
 
             // ignore all header fields
-            if (inHeader && !line.startsWith("BEGIN IONS")) {
+            if (inHeader && line.startsWith("BEGIN IONS")) {
                 inHeader = false;
             }
             if (inHeader) {
