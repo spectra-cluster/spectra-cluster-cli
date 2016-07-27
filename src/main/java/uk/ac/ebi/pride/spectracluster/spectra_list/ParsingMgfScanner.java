@@ -57,12 +57,21 @@ public class ParsingMgfScanner implements IPeaklistScanner {
         long currentStart = 0;
         int spectrumIndex = 1; // 1-based index
         float precursorMz = 0;
+        boolean inHeader = true;
 
 
         while ((line = randomAccessFile.readLine()) != null) {
             if (Thread.currentThread().isInterrupted()) {
                 randomAccessFile.close();
                 throw new InterruptedException();
+            }
+
+            // ignore all header fields
+            if (inHeader && !line.startsWith("BEGIN IONS")) {
+                inHeader = false;
+            }
+            if (inHeader) {
+                currentStart = randomAccessFile.getFilePointer();
             }
 
             // save the end position of a spectrum as the current last position
