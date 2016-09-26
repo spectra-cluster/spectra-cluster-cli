@@ -55,6 +55,8 @@ public class ParsingMgfScanner implements IPeaklistScanner {
         // process the file line by line
         String line;
         long currentStart = 0;
+        // the end position of the last line = the starting position of the current line
+        long lastLineEnd = 0;
         int spectrumIndex = 1; // 1-based index
         float precursorMz = 0;
         boolean inHeader = true;
@@ -67,11 +69,8 @@ public class ParsingMgfScanner implements IPeaklistScanner {
             }
 
             // ignore all header fields
-            if (inHeader && line.startsWith("BEGIN IONS")) {
-                inHeader = false;
-            }
-            if (inHeader) {
-                currentStart = randomAccessFile.getFilePointer();
+            if (line.startsWith("BEGIN IONS")) {
+                currentStart = lastLineEnd;
             }
 
             // save the end position of a spectrum as the current last position
@@ -85,7 +84,6 @@ public class ParsingMgfScanner implements IPeaklistScanner {
                 fileIndex.add(indexElement);
 
                 // move to the next spectrum
-                currentStart = randomAccessFile.getFilePointer();
                 spectrumIndex++;
                 precursorMz = 0; // to detect any problems
             }
@@ -96,6 +94,8 @@ public class ParsingMgfScanner implements IPeaklistScanner {
 
                 precursorMz = Float.parseFloat(fields[0]);
             }
+
+            lastLineEnd = randomAccessFile.getFilePointer();
         }
 
         randomAccessFile.close();

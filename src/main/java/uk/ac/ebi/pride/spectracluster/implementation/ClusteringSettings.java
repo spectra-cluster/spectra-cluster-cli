@@ -116,4 +116,11 @@ public class ClusteringSettings {
     public static void setLoadingSpectrumFilter(IFunction<List<IPeak>, List<IPeak>> loadingSpectrumFilter) {
         ClusteringSettings.loadingSpectrumFilter = loadingSpectrumFilter;
     }
+
+    /**
+     * If this parameter is set to true, support for comment strings
+     * in MGF files is disabled. This increases performance but only
+     * works for MGF files that do not contain any comment strings.
+     */
+    public static boolean disableMGFCommentSupport = false;
 }

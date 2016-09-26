@@ -32,7 +32,8 @@ public class CliOptions {
         ADVANCED_MIN_NUMBER_COMPARISONS("x_min_comparisons"),
         ADVANCED_NUMBER_PREFILTERED_PEAKS("x_n_prefiltered_peaks"),
         ADVANCED_LEARN_CDF("x_learn_cdf"),
-        ADVANCED_LOAD_CDF_FILE("x_load_cdf");
+        ADVANCED_LOAD_CDF_FILE("x_load_cdf"),
+        ADVANCED_DISABLE_MGF_COMMENTS("x_disable_mgf_comments");
 
         private String value;
 
@@ -162,6 +163,11 @@ public class CliOptions {
                 .withDescription("(Experimental option) Set the number of highest peaks that are kept per spectrum during loading.")
                 .create(OPTIONS.ADVANCED_NUMBER_PREFILTERED_PEAKS.getValue());
         options.addOption(xNumberPrefilteredPeaks);
+
+        Option xDisableMgfComments = OptionBuilder
+                .withDescription("(Advanced option) If set, MGF comment strings are NOT supported. This will increase performance but only works for MGF files that do not contain any comments")
+                .create(OPTIONS.ADVANCED_DISABLE_MGF_COMMENTS.getValue());
+        options.addOption(xDisableMgfComments);
     }
 
     public static Options getOptions() {

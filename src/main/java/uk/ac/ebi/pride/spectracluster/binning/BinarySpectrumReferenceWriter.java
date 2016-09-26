@@ -128,7 +128,7 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
     private JMzReader openFile(String peakListFilename, List<IndexElement> fileIndex) throws Exception {
         if (peakListFilename.toLowerCase().endsWith(".mgf")) {
             MgfFile mgfFile = new MgfFile(new File(peakListFilename), fileIndex, true);
-            mgfFile.setDisableCommentSupport(true);
+            mgfFile.setDisableCommentSupport(ClusteringSettings.disableMGFCommentSupport);
 
             return mgfFile;
         }

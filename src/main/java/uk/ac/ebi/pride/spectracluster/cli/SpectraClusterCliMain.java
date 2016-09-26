@@ -180,6 +180,9 @@ public class SpectraClusterCliMain implements IProgressListener {
                 ClusteringSettings.setLoadingSpectrumFilter(new HighestNPeakFunction(nHighestPeaks));
             }
 
+            // MGF COMMENT SUPPORT
+            ClusteringSettings.disableMGFCommentSupport = commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_DISABLE_MGF_COMMENTS.getValue());
+
             /**
              * ------ Learn the CDF if set --------
              */
