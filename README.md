@@ -20,7 +20,7 @@ __WARNING__: This software is still in beta phase. We do expect it to still have
   this newly learned CDF
 * added a list of experimental / advanced parameters (all starting with "-x_"). For
   more information simply launch the application with the "-help" parameter
-* fixed #3 (1db57ae)
+* fixed [#3](https://github.com/spectra-cluster/spectra-cluster-cli/issues/3) see 1db57ae
 
 ## Installation
 The spectra-cluster-cli application is written in Java and therefore runs on Windows, Linux, and Mac OS X. 
