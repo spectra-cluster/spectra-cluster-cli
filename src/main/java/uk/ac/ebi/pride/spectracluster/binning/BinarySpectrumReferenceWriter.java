@@ -74,6 +74,11 @@ public class BinarySpectrumReferenceWriter implements ISpectrumReferenceWriter {
                 // load the spectrum
                 Spectrum spectrum = fileReader.getSpectrumByIndex(spectrumReference.getSpectrumIndex());
 
+                // ignore empty spectra
+                if (spectrum.getPeakList() == null || spectrum.getPeakList().size() < 1) {
+                    continue;
+                }
+
                 // pre-process the spectrum
                 ISpectrum convertedSpectrum = SpectrumConverter.convertJmzReaderSpectrum(spectrum, spectrumReference.getSpectrumId(), peakListFilename);
                 ISpectrum processedSpectrum = ClusteringSettings.getInitialSpectrumFilter().apply(convertedSpectrum);
