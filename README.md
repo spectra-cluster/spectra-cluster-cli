@@ -7,6 +7,9 @@ API and uses a highly similar logic as the Hadoop implementation
 [spectra-cluster-hadoop](https://github.com/spectra-cluster/spectra-cluster-hadoop) 
 used to build the [PRIDE Cluster](https://www.ebi.ac.uk/pride/cluster) resource.
 
+You can find an overview over all our clustering related tools at
+https://spectra-cluster.github.io.
+
 __WARNING__: This software is still in beta phase. We do expect it to still have several bugs. Bug reports are highly welcome! Just submit in [issue](https://github.com/spectra-cluster/spectra-cluster-cli/issues) to let us know.
 
 ## Changelog
@@ -54,13 +57,17 @@ The spectra-cluster-cli generates a .clustering file to store the clustering res
 A specification of this format can be found at the 
 [clustering-file-read page](http://github.com/spectra-cluster/clustering-file-reader)
 
-We currently provide a 
+The 
+[spectra-cluster-py](https://github.com/spectra-cluster/spectra-cluster-py)
+Python library contains a collection of tools to analyse the clustering results.
+You can find a detailed documentation of this library at
+http://spectra-cluster-py.readthedocs.io. Additionally, this library contains
+many classes that should help in writing your own Python scripts to analyse your
+clustering results.
+
+Additionally, we provide a 
 [Java API](http://github.com/spectra-cluster/clustering-file-reader)
 that can be used to develop Java software that reads the .clustering file format.
-
-Additionally, several tools, including a python library, are currently under development
-that will enable to efficient analysis of the clustering results. Unfortunately,
-these tools are not ready yet.
 
 ## Getting help
 
