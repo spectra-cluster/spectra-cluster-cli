@@ -14,6 +14,12 @@ __WARNING__: This software is still in beta phase. We do expect it to still have
 
 ## Changelog
 
+### Version 1.0.2
+
+* Changed to spectra-cluster API version 1.0.9. This fixes issues caused
+  by unknown charge states (as well as 
+  [#2](https://github.com/spectra-cluster/spectra-cluster-cli/issues/2)).
+
 ### Version 1.0.1
 
 * updated to new .clustering format version
