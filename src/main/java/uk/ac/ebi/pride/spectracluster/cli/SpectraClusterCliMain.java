@@ -169,6 +169,7 @@ public class SpectraClusterCliMain implements IProgressListener {
              * Advanced options
              */
             // MIN NUMBER COMPARISONS
+            Defaults.setMinNumberComparisons(10000);
             if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue())) {
                 int minComparisons = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue()));
                 Defaults.setMinNumberComparisons(minComparisons);
