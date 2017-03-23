@@ -25,6 +25,7 @@ public class CliOptions {
         REUSE_BINARY_FILES("reuse_binary_files"),
         REMOVE_REPORTER_PEAKS("remove_reporters"),
         FAST_MODE("fast_mode"),
+        FILTER("filter"),
         HELP("help"),
         VERBOSE("verbose"),
 
@@ -116,6 +117,12 @@ public class CliOptions {
                 .withDescription("if this option is set the 'fast mode' is enabled. In this mode, the radical peak filtering used for the comparison function is already applied during spectrum conversion. Thereby, the clustering and consensus spectrum quality is slightly decreased but speed increases 2-3 fold.")
                 .create(OPTIONS.FAST_MODE.getValue());
         options.addOption(fastMode);
+
+        Option filter = OptionBuilder
+                .hasArg()
+                .withDescription("adds a filter to be applied to the input spectrum. Available values are ['immonium_ions', 'mz_150', 'mz_200']")
+                .create(OPTIONS.FILTER.getValue());
+        options.addOption(filter);
 
         Option verbose = OptionBuilder
                 .withDescription("if set additional status information is printed.")

@@ -14,6 +14,11 @@ __WARNING__: This software is still in beta phase. We do expect it to still have
 
 ## Changelog
 
+### Version 1.0.3
+
+* Changed to spectra-cluster API version 1.0.10 which includes contaminant peak filters
+* Added CLI options to remove contaminant peaks from spectra.
+
 ### Version 1.0.2
 
 * Changed to spectra-cluster API version 1.0.9. This fixes issues caused

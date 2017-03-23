@@ -9,9 +9,12 @@ import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.FractionTICPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.HighestNPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveImpossiblyHighPeaksFunction;
+import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveIonContaminantsPeaksFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemovePrecursorPeaksFunction;
+import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveWindowPeaksFunction;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * This is a (static) class that holds certain user
@@ -19,6 +22,34 @@ import java.util.List;
  * Created by jg on 08.04.16.
  */
 public class ClusteringSettings {
+    /**
+     * Available filters to apply to the spectrum on loading
+     * (added to the initial spectrum filter)
+     */
+    public static enum SPECTRUM_FILTER {
+        IMMONIUM_IONS("immonium_ions", new RemoveIonContaminantsPeaksFunction(0.1F)),
+        MZ_150("mz_150", new RemoveWindowPeaksFunction(150.0F, Float.MAX_VALUE)),
+        MZ_200("mz_200", new RemoveWindowPeaksFunction(200.0F, Float.MAX_VALUE));
+
+        public final String name;
+        public final IFunction<ISpectrum, ISpectrum> filter;
+
+        private SPECTRUM_FILTER(String name, IFunction<ISpectrum, ISpectrum> filter) {
+            this.name = name;
+            this.filter = filter;
+        }
+
+        public static SPECTRUM_FILTER getFilterForName(String name) {
+            for (SPECTRUM_FILTER spectrumFilter : values()) {
+                if (spectrumFilter.name.equals(name)) {
+                    return spectrumFilter;
+                }
+            }
+
+            return null;
+        }
+    }
+
     /**
      * This filter is applied to all spectra as soon as they are loaded from file.
      */
@@ -63,6 +94,15 @@ public class ClusteringSettings {
      */
     public static void setInitialSpectrumFilter(IFunction<ISpectrum, ISpectrum> initialSpectrumFilter) {
         ClusteringSettings.initialSpectrumFilter = initialSpectrumFilter;
+    }
+
+    /**
+     * Adds an additional filter to the current initial spectrum
+     * filter.
+     * @param filter The filter to be added
+     */
+    public static void addIntitalSpectrumFilter(IFunction<ISpectrum, ISpectrum> filter) {
+        ClusteringSettings.initialSpectrumFilter = Functions.join(ClusteringSettings.initialSpectrumFilter, filter);
     }
 
     /**

@@ -27,6 +27,7 @@ import uk.ac.ebi.pride.spectracluster.util.function.peak.HighestNPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveReporterIonPeaksFunction;
 
 import java.io.*;
+import java.security.InvalidParameterException;
 import java.util.*;
 
 /**
@@ -165,6 +166,21 @@ public class SpectraClusterCliMain implements IProgressListener {
             if (!reUseBinaryFiles && peaklistFilenames.length < 1)
                 throw new MissingParameterException("No spectrum files passed. Please list the peak list files to process after the command.");
 
+            // add the filters
+            List<String> addedFilters = new ArrayList<String>();
+            if (commandLine.hasOption(CliOptions.OPTIONS.FILTER.getValue())) {
+                for (String filterName : commandLine.getOptionValues(CliOptions.OPTIONS.FILTER.getValue())) {
+                    ClusteringSettings.SPECTRUM_FILTER filter = ClusteringSettings.SPECTRUM_FILTER.getFilterForName(filterName);
+
+                    if (filter == null) {
+                        throw new InvalidParameterException("Error: Unknown filter name passed: '" + filterName + "'");
+                    }
+
+                    ClusteringSettings.addIntitalSpectrumFilter(filter.filter);
+                    addedFilters.add(filterName);
+                }
+            }
+
             /**
              * Advanced options
              */
@@ -230,7 +246,8 @@ public class SpectraClusterCliMain implements IProgressListener {
              * ------- THE ACTUAL LOGIC STARTS HERE -----------
              */
             printSettings(finalResultFile, paralellJobs, startThreshold, endThreshold, rounds, spectraClusterStandalone.isKeepBinaryFiles(),
-                    spectraClusterStandalone.getTemporaryDirectory(), peaklistFilenames, reUseBinaryFiles, spectraClusterStandalone.isUseFastMode());
+                    spectraClusterStandalone.getTemporaryDirectory(), peaklistFilenames, reUseBinaryFiles, spectraClusterStandalone.isUseFastMode(),
+                    addedFilters);
 
             spectraClusterStandalone.addProgressListener(this);
 
@@ -270,7 +287,8 @@ public class SpectraClusterCliMain implements IProgressListener {
 
     private void printSettings(File finalResultFile, int nMajorPeakJobs, float startThreshold,
                                       float endThreshold, int rounds, boolean keepBinaryFiles, File binaryTmpDirectory,
-                                      String[] peaklistFilenames, boolean reUseBinaryFiles, boolean fastMode) {
+                                      String[] peaklistFilenames, boolean reUseBinaryFiles, boolean fastMode,
+                                      List<String> addedFilters) {
         System.out.println("spectra-cluster API Version 1.0");
         System.out.println("Created by Rui Wang & Johannes Griss\n");
 
@@ -287,6 +305,16 @@ public class SpectraClusterCliMain implements IProgressListener {
         System.out.println("\nOther settings:");
         System.out.println("Precursor tolerance: " + Defaults.getDefaultPrecursorIonTolerance());
         System.out.println("Fragment ion tolerance: " + Defaults.getFragmentIonTolerance());
+
+        // used filters
+        System.out.print("Added filters: ");
+        for (int i = 0; i < addedFilters.size(); i++) {
+            if (i > 0) {
+                System.out.print(", ");
+            }
+            System.out.print(addedFilters.get(i));
+        }
+        System.out.println("");
 
         // only show certain settings if they were changed
         if (Defaults.getMinNumberComparisons() != Defaults.DEFAULT_MIN_NUMBER_COMPARISONS)

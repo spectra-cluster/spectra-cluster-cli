@@ -84,12 +84,9 @@ public class SpectraClusterStandalone {
         File binarySpectraDirectory = new File(temporaryDirectory, "spectra");
 
         if (reporterType != null) {
-            ClusteringSettings.setInitialSpectrumFilter(
-                    Functions.join(new RemoveReporterIonPeaksFunction(Defaults.getFragmentIonTolerance(), reporterType),
-                            ClusteringSettings.getInitialSpectrumFilter(),
-                            new HighestNSpectrumPeaksFunction(70))
+            ClusteringSettings.addIntitalSpectrumFilter(
+                    new RemoveReporterIonPeaksFunction(Defaults.getFragmentIonTolerance(), reporterType)
             );
-
         }
 
         // convert the binary files
