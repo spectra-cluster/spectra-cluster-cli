@@ -1,7 +1,5 @@
 package uk.ac.ebi.pride.spectracluster.implementation;
 
-import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
-import uk.ac.ebi.pride.spectracluster.cluster.ISpectrumHolder;
 import uk.ac.ebi.pride.spectracluster.consensus.IConsensusSpectrumBuilder;
 import uk.ac.ebi.pride.spectracluster.similarity.ISimilarityChecker;
 import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingMgfScanner;
@@ -9,7 +7,6 @@ import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.spectrum.Peak;
 import uk.ac.ebi.pride.spectracluster.spectrum.Spectrum;
-import uk.ac.ebi.pride.spectracluster.util.ClusterUtilities;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.SpectrumConverter;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
@@ -19,9 +16,7 @@ import uk.ac.ebi.pride.tools.mgf_parser.MgfFile;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -34,6 +29,11 @@ import java.util.stream.Stream;
  */
 public class ScoreCalculator {
     public void processClusteringResult(File clusteringFile, File[] mgfPaths) throws Exception {
+        // make sure the input file can be overwritten
+        if (!clusteringFile.canWrite()) {
+            throw new Exception("Cannot write to " + clusteringFile.getName());
+        }
+
         // make sure all MGF files exist and get their paths
         Map<String, Path> mgfPathMap = findMgfFiles(clusteringFile, mgfPaths);
 
@@ -44,8 +44,20 @@ public class ScoreCalculator {
         Path tmpFile = Files.createTempFile(null, ".clustering");
 
         addSimilarityScores(clusteringFile.toPath(), tmpFile, mgfPathMap, mgfFileIndices);
+
+        // replace the original file
+        Files.move(tmpFile, clusteringFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
+    /**
+     * Add the similarity scores to the .clustering file.
+     *
+     * @param clusteringIn .clustering file to create the similarity scores for
+     * @param clusteringOut Path to the newly created .clustering file.
+     * @param pathMap A Map with the MGF filename as key and the complete Path as value
+     * @param fileIndices A Map with the MGF filename as key and the List of Indices as value
+     * @throws Exception
+     */
     protected void addSimilarityScores(Path clusteringIn, Path clusteringOut, Map<String, Path> pathMap, Map<String,
             List<IndexElement>> fileIndices) throws Exception {
         // process the .clustering file line by line
@@ -56,7 +68,7 @@ public class ScoreCalculator {
             List<Float> mz = null;
             List<Float> intens = null;
             ISpectrum consensus = null;
-            // TODO: test what fragment ion tolerance is used
+
             ISimilarityChecker similarityChecker = Defaults.getDefaultSimilarityChecker();
 
             // process the file line by line

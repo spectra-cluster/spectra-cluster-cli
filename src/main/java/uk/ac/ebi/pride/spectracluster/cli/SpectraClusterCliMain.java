@@ -16,6 +16,7 @@ import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusterer;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
 import uk.ac.ebi.pride.spectracluster.conversion.MergingCGFConverter;
 import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
+import uk.ac.ebi.pride.spectracluster.implementation.ScoreCalculator;
 import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
 import uk.ac.ebi.pride.spectracluster.io.CGFSpectrumIterable;
 import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
@@ -271,6 +272,21 @@ public class SpectraClusterCliMain implements IProgressListener {
                 }
 
                 spectraClusterStandalone.clusterPeaklistFiles(peaklistFiles, thresholds, finalResultFile);
+            }
+
+            // add the scores if set
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADD_SCORES.getValue())) {
+                // get the directories of the MGF files
+                Set<File> directories = new HashSet<>();
+                for (String peakListFile : peaklistFilenames) {
+                    directories.add(new File(peakListFile).getParentFile());
+                }
+                File[] mgfDirs = new File[directories.size()];
+                directories.toArray(mgfDirs);
+
+                System.out.println("Adding scores to output file...");
+                ScoreCalculator scoreCalculator = new ScoreCalculator();
+                scoreCalculator.processClusteringResult(finalResultFile, mgfDirs);
             }
         } catch (MissingParameterException e) {
             System.out.println("Error: " + e.getMessage() + "\n\n");

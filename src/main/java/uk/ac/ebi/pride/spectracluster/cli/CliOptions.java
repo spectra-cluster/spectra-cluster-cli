@@ -25,6 +25,7 @@ public class CliOptions {
         REUSE_BINARY_FILES("reuse_binary_files"),
         REMOVE_REPORTER_PEAKS("remove_reporters"),
         FAST_MODE("fast_mode"),
+        ADD_SCORES("add_scores"),
         FILTER("filter"),
         HELP("help"),
         VERBOSE("verbose"),
@@ -135,6 +136,12 @@ public class CliOptions {
                 .withDescription("remove reporter ion peaks in quantitation experiments. Possible QUANTIATION TYPES are 'ITRAQ', 'TMT' and 'ALL' ('TMT' and 'ITRAQ' peaks are removed.")
                 .create(OPTIONS.REMOVE_REPORTER_PEAKS.getValue());
         options.addOption(removeReporters);
+
+        Option addScores = OptionBuilder
+                .withDescription("if set, the similarity scores of each spectrum to the cluster's consensus spectrum is" +
+                        "added to the output file.")
+                .create(OPTIONS.ADD_SCORES.getValue());
+        options.addOption(addScores);
 
         Option help = new Option(
                 OPTIONS.HELP.toString(),
