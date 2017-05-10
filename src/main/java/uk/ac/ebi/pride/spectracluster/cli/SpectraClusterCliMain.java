@@ -283,7 +283,7 @@ public class SpectraClusterCliMain implements IProgressListener {
             // add the scores if set
             if (commandLine.hasOption(CliOptions.OPTIONS.ADD_SCORES.getValue())) {
                 // get the directories of the MGF files
-                Set<File> directories = new HashSet<>();
+                Set<File> directories = new HashSet<File>();
                 for (String peakListFile : peaklistFilenames) {
                     directories.add(new File(peakListFile).getParentFile());
                 }
