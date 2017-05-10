@@ -197,6 +197,12 @@ public class SpectraClusterCliMain implements IProgressListener {
                 ClusteringSettings.setLoadingSpectrumFilter(new HighestNPeakFunction(nHighestPeaks));
             }
 
+            // MIN CONSENSUS PEAKS TO KEEP
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP.getValue())) {
+                Defaults.setDefaultConsensusMinPeaks(Integer.parseInt(
+                        commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP.getValue())));
+            }
+
             // MGF COMMENT SUPPORT
             ClusteringSettings.disableMGFCommentSupport = commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_DISABLE_MGF_COMMENTS.getValue());
 

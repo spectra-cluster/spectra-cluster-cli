@@ -34,7 +34,8 @@ public class CliOptions {
         ADVANCED_NUMBER_PREFILTERED_PEAKS("x_n_prefiltered_peaks"),
         ADVANCED_LEARN_CDF("x_learn_cdf"),
         ADVANCED_LOAD_CDF_FILE("x_load_cdf"),
-        ADVANCED_DISABLE_MGF_COMMENTS("x_disable_mgf_comments");
+        ADVANCED_DISABLE_MGF_COMMENTS("x_disable_mgf_comments"),
+        ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP("x_min_consensus_peaks_to_keep");
 
         private String value;
 
@@ -175,6 +176,15 @@ public class CliOptions {
                 .withDescription("(Advanced option) If set, MGF comment strings are NOT supported. This will increase performance but only works for MGF files that do not contain any comments")
                 .create(OPTIONS.ADVANCED_DISABLE_MGF_COMMENTS.getValue());
         options.addOption(xDisableMgfComments);
+
+        Option xMinConsensusPeaksToKeep = OptionBuilder
+                .withDescription("(Advanced option) Sets the minimum number of peaks to keep in a consensus spectrum. If" +
+                        " the consensus spectrum contains fewer than these peaks, the noise filtering which retains N" +
+                        " peaks per M m/z is not used but all peaks are kept")
+                .hasArg()
+                .withArgName("number peaks")
+                .create(OPTIONS.ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP.getValue());
+        options.addOption(xMinConsensusPeaksToKeep);
     }
 
     public static Options getOptions() {
