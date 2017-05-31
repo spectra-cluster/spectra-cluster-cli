@@ -8,6 +8,7 @@ import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.CvParam;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.ParamGroup;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.UserParam;
+import uk.ac.ebi.pride.tools.mgf_parser.model.Ms2Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +97,14 @@ public final class SpectrumConverter {
                     convertedSpectrum.setProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY, userParam.getValue());
                     break;
                 }
+            }
+        }
+
+        // add the retention time if known
+        if (Ms2Query.class.isInstance(jmzReaderSpectrum)) {
+            Ms2Query query = (Ms2Query) jmzReaderSpectrum;
+            if (query.getRetentionTime() != null) {
+                convertedSpectrum.setProperty(KnownProperties.RETENTION_TIME, query.getRetentionTime());
             }
         }
 
