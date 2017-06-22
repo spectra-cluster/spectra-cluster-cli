@@ -12,6 +12,7 @@ import uk.ac.ebi.pride.tools.mgf_parser.model.Ms2Query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jg on 13.05.15.
@@ -105,6 +106,25 @@ public final class SpectrumConverter {
             Ms2Query query = (Ms2Query) jmzReaderSpectrum;
             if (query.getRetentionTime() != null) {
                 convertedSpectrum.setProperty(KnownProperties.RETENTION_TIME, query.getRetentionTime());
+            }
+
+            // add the new PRIDE fields
+            Map<Integer, String> userTags = query.getUserTags();
+
+            if (userTags != null && userTags.size() > 0) {
+                if (userTags.containsKey(3)) {
+                    String value = userTags.get(3);
+                    if (value.contains("USER03=")) {
+                        value = value.substring(7);
+                    }
+                    convertedSpectrum.setProperty(KnownProperties.MODIFICATION_KEY, value);
+                }
+                if (userTags.containsKey(5)) {
+                    convertedSpectrum.setProperty(KnownProperties.PSM_DECOY_STATUS, userTags.get(5));
+                }
+                if (userTags.containsKey(6)) {
+                    convertedSpectrum.setProperty(KnownProperties.PSM_FDR_SCORES, userTags.get(6));
+                }
             }
         }
 

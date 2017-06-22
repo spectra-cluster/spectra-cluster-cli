@@ -161,6 +161,10 @@ public class ClusteringSettings {
      * If this parameter is set to true, support for comment strings
      * in MGF files is disabled. This increases performance but only
      * works for MGF files that do not contain any comment strings.
+     *
+     * Comment support has been disabled since its strict interpretation
+     * also treats ';' as comment characters which breaks some of the
+     * PRIDE special fields.
      */
-    public static boolean disableMGFCommentSupport = false;
+    public static boolean disableMGFCommentSupport = true;
 }
