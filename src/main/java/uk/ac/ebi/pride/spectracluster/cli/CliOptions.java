@@ -15,6 +15,7 @@ public class CliOptions {
     public enum OPTIONS {
         OUTPUT_PATH("output_path"),
         PRECURSOR_TOLERANCE("precursor_tolerance"),
+        PRECURSOR_TOELRANCE_UNIT("precursor_tolerance_unit"),
         FRAGMENT_TOLERANCE("fragment_tolerance"),
         MAJOR_PEAK_JOBS("major_peak_jobs"),
         START_THRESHOLD("threshold_start"),
@@ -65,9 +66,17 @@ public class CliOptions {
 
         Option precursorTolerance = OptionBuilder
                 .hasArg()
-                .withDescription("precursor tolerance (clustering window size) in m/z used during matching.")
+                .withDescription("precursor tolerance (clustering window size) in m/z (default) or ppm used during matching." +
+                        " The unit can be changed by setting the -" + OPTIONS.PRECURSOR_TOELRANCE_UNIT.getValue() + " parameter")
                 .create(OPTIONS.PRECURSOR_TOLERANCE.getValue());
         options.addOption(precursorTolerance);
+
+        Option precursorToleranceUnit = OptionBuilder
+                .hasArg()
+                .withDescription("sets the precursor tolerance unit. Allowed values are \"mz\" and \"ppm\". " +
+                                "Default is \"mz\".")
+                .create(OPTIONS.PRECURSOR_TOELRANCE_UNIT.getValue());
+        options.addOption(precursorToleranceUnit);
 
         Option outputPath = OptionBuilder
                 .hasArg()

@@ -13,7 +13,10 @@ import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
+import uk.ac.ebi.pride.spectracluster.util.predicate.ComparisonPredicates;
 import uk.ac.ebi.pride.spectracluster.util.predicate.IComparisonPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.Predicates;
+import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.ClusterPpmPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.ClusterShareMajorPeakPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.IsKnownComparisonsPredicate;
 
@@ -189,6 +192,12 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
     }
 
     private IIncrementalClusteringEngine createIncrementalClusteringEngine(double clusteringPrecision, IComparisonPredicate<ICluster> comparisonPredicate) {
+        // if the threshold is set in ppm, add a PPM predicate
+        if (ClusteringSettings.ppmThreshold != null) {
+            comparisonPredicate = ComparisonPredicates.and(comparisonPredicate,
+                    new ClusterPpmPredicate(ClusteringSettings.ppmThreshold));
+        }
+
         IIncrementalClusteringEngine clusteringEngine = new GreedyIncrementalClusteringEngine(
                 SIMILARITY_CHECKER,
                 Defaults.getDefaultSpectrumComparator(),

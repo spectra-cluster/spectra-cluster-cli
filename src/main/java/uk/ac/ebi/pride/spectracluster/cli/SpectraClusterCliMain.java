@@ -101,6 +101,23 @@ public class SpectraClusterCliMain implements IProgressListener {
                 Defaults.setDefaultPrecursorIonTolerance(precursorTolerance);
             }
 
+            // PRECURSOR TOLERANCE UNIT
+            if (commandLine.hasOption(CliOptions.OPTIONS.PRECURSOR_TOELRANCE_UNIT.getValue())) {
+                String unit = commandLine.getOptionValue(CliOptions.OPTIONS.PRECURSOR_TOELRANCE_UNIT.getValue()).toLowerCase();
+
+                if ("ppm".equals(unit)) {
+                    // adapt the precursor tolerance
+                    float userTolerance = Defaults.getDefaultPrecursorIonTolerance();
+                    float ppmFraction = userTolerance / 1000000;
+
+                    // set the "precursor" tolerance based on a high m/z
+                    Defaults.setDefaultPrecursorIonTolerance(ppmFraction * 3500);
+
+                    // set the actual ppm tolerance
+                    ClusteringSettings.ppmThreshold = userTolerance;
+                }
+            }
+
             // FRAGMENT ION TOLERANCE
             if (commandLine.hasOption(CliOptions.OPTIONS.FRAGMENT_TOLERANCE.getValue())) {
                 float fragmentTolerance = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.FRAGMENT_TOLERANCE.getValue()));
@@ -325,7 +342,11 @@ public class SpectraClusterCliMain implements IProgressListener {
         System.out.println("Using fast mode: " + (fastMode ? "yes" : "no"));
 
         System.out.println("\nOther settings:");
-        System.out.println("Precursor tolerance: " + Defaults.getDefaultPrecursorIonTolerance());
+        if (ClusteringSettings.ppmThreshold != null)
+            System.out.println("Precursor tolerance: " + ClusteringSettings.ppmThreshold + " ppm");
+        else
+            System.out.println("Precursor tolerance: " + Defaults.getDefaultPrecursorIonTolerance() + " m/z");
+
         System.out.println("Fragment ion tolerance: " + Defaults.getFragmentIonTolerance());
 
         // used filters
