@@ -34,7 +34,7 @@ __WARNING__: This software is still in beta phase. We do expect it to still have
   this newly learned CDF
 * added a list of experimental / advanced parameters (all starting with "-x_"). For
   more information simply launch the application with the "-help" parameter
-* Note:** For small datasets (<100 MS runs), the option "-x_min_comparisons" should be set to 10,000.
+* __Note:__ For small datasets (<100 MS runs), the option `-x_min_comparisons` should be set to 10,000.
 * fixed [#3](https://github.com/spectra-cluster/spectra-cluster-cli/issues/3) see 1db57ae
 
 ## Installation
