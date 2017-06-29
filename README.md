@@ -45,7 +45,9 @@ __Java__: needs to be installed on your system for the spectra-cluster-cli to wo
 To install the spectra-cluster-cli simply download the latest [release](https://github.com/spectra-cluster/spectra-cluster-cli/releases) and extract the zip file.
 
 ## Usage
-The spectra-cluster-cli currently only provides a command line interface (CLI). 
+The spectra-cluster-cli tool is a command-line only tool. If you prefer to use a graphical use interface, please use the [spectra-cluster-gui](https://github.com/spectra-cluster/spectra-cluster-gui) tool. A detailed tutorial on how to prepare your files for clustering can be found at https://spectra-cluster.github.io.
+
+To use the spectra-cluster-cli tool, follow these steps: 
 
 Open a command line and navigate to the folder where you extracted the spectra-cluster-cli to. The following example assumes that you are already in this folder.
 
@@ -57,7 +59,9 @@ __Note__: You need to replace the spectra-cluster-cli-1.0.3.jar with the name of
 $ java -jar spectra-cluster-cli-1.0.3.jar -filter immonium_ions -output_path my_clustering_result.clustering C:\my_first_file.mgf C:\my_second_file.mgf
 ```
 
-To improve the clustering accuracy in small datasets (< 100 MS runs) the default value for `-x_min_comparisons` is set to 10,000 (changed in version 1.0.3). When clustering a repository scale dataset, a value of 5,000 is used. Additionally, we recommend to always either use the `immonium_ions` filter, or even filter all peaks below 150 m/z ("-filter mz_150") or even below 200 m/z ("-filter mz_200").
+To improve the clustering accuracy in small datasets (< 100 MS runs) the default value for `-x_min_comparisons` was changed to 10,000 (changed in version 1.0.3). When clustering a repository scale dataset, a value of 5,000 is used (default value in the Hadoop version). 
+
+Additionally, we recommend to always either use the `immonium_ions` filter, or even filter all peaks below 150 m/z ("-filter mz_150") or even below 200 m/z ("-filter mz_200").
 
 The full list of options is printed through the -help parameter:
 
@@ -70,7 +74,7 @@ $ java -jar spectra-cluster-cli-1.0-SNAPSHOT.jar -help
 
 The spectra-cluster-cli generates a .clustering file to store the clustering results.
 A specification of this format can be found at the 
-[clustering-file-read page](http://github.com/spectra-cluster/clustering-file-reader)
+[clustering-file-reader page](http://github.com/spectra-cluster/clustering-file-reader)
 
 The 
 [spectra-cluster-py](https://github.com/spectra-cluster/spectra-cluster-py)
@@ -114,7 +118,7 @@ These clustering results are presented in the
 For more information see the recent paper
 [Griss et al., Recognizing millions of consistently unidentified 
 spectra across hundreds of shotgun proteomics datasets., 
-Nat. Meth. 2016 Aug;13(8):651-656 (free version)](http://rdcu.be/i1Sa).
+Nat. Meth. 2016 Aug;13(8):651-656](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4968634/).
 
 Additionally, if you are able to use our algorithm for your own project, please
 cite the above reference.
