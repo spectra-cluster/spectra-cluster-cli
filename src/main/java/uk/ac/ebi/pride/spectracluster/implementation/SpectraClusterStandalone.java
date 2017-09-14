@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -488,6 +489,35 @@ public class SpectraClusterStandalone {
     }
 
     /**
+     * Merge existing binary files that were created through a previous clustering
+     * process.
+     * @param binaryFilenames
+     * @param thresholds
+     * @param finalResultFile
+     */
+    public void mergeBinaryFiles(String[] binaryFilenames, List<Float> thresholds, File finalResultFile) throws Exception{
+        // convert into an array of FileS
+        File[] binaryFiles = new File[binaryFilenames.length];
+        for (int i = 0; i < binaryFilenames.length; i++) {
+            binaryFiles[i] = new File(binaryFilenames[i]);
+        }
+
+        // scan binary files
+        notifyProgressListeners(new ProgressUpdate(
+                String.format("Scanning %d binary files...", binaryFilenames.length),
+                ProgressUpdate.CLUSTERING_STAGE.MERGING
+        ));
+
+        List<BinaryClusterFileReference> binaryFileReferences = BinaryFileScanner.scanBinaryFiles(binaryFiles);
+
+        // merge the files
+        File combinedResultFile = mergeClusteringResults(binaryFileReferences, thresholds);
+
+        // create the output file
+        convertCgfToClustering(combinedResultFile, finalResultFile, thresholds.get(thresholds.size() - 1));
+    }
+
+    /**
      * Merges the result files (clusters at the borders of two result files are re-processed based on the precursor
      * tolerance). The resulting clustering are automatically merged into a single CGF file.
      * @param clusteredFiles Clustered (binary) files to merge.
@@ -510,6 +540,13 @@ public class SpectraClusterStandalone {
         BinaryFileMergingClusterer mergingClusterer = new BinaryFileMergingClusterer(parallelJobs, mergedResultsDirectory,
                 clusteringThresholds, useFastMode, Defaults.getDefaultPrecursorIonTolerance(), deleteTemporaryFiles,
                 mergedResultsDirectoryTmp);
+
+        // if verbose mode is enabled add the progress listeners to receive all updates
+        if (verbose) {
+            for (IProgressListener progressListener : progressListeners) {
+                mergingClusterer.addProgressListener(progressListener);
+            }
+        }
 
         // create the combined output file as soon as a job is done
         File combinedResultFile = File.createTempFile("combined_clustering_results", ".cgf", temporaryDirectory);

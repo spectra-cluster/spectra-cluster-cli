@@ -36,7 +36,8 @@ public class CliOptions {
         ADVANCED_LEARN_CDF("x_learn_cdf"),
         ADVANCED_LOAD_CDF_FILE("x_load_cdf"),
         ADVANCED_DISABLE_MGF_COMMENTS("x_disable_mgf_comments"),
-        ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP("x_min_consensus_peaks_to_keep");
+        ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP("x_min_consensus_peaks_to_keep"),
+        ADVANCED_MERGE_BINARY_FILES("x_merge_binary_files");
 
         private String value;
 
@@ -192,6 +193,14 @@ public class CliOptions {
                 .withArgName("number peaks")
                 .create(OPTIONS.ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP.getValue());
         options.addOption(xMinConsensusPeaksToKeep);
+
+        Option xMergeBinaryfiles = OptionBuilder
+                .withDescription("(Advanced option) If this option is set, the input files should be binary" +
+                                " result files from the clustering process. In this mode, the spectra-cluster-cli " +
+                                "only merges the binary files and creates the final output file.")
+                .create(OPTIONS.ADVANCED_MERGE_BINARY_FILES.getValue());
+
+        options.addOption(xMergeBinaryfiles);
     }
 
     public static Options getOptions() {

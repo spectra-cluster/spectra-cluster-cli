@@ -4,32 +4,28 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
 import uk.ac.ebi.pride.spectracluster.cdf.CdfLearner;
 import uk.ac.ebi.pride.spectracluster.cdf.CdfResult;
 import uk.ac.ebi.pride.spectracluster.cdf.CumulativeDistributionFunction;
-import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
-import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
-import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusterer;
-import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
-import uk.ac.ebi.pride.spectracluster.conversion.MergingCGFConverter;
 import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.implementation.ScoreCalculator;
 import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
-import uk.ac.ebi.pride.spectracluster.io.CGFSpectrumIterable;
-import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
-import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
-import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
-import uk.ac.ebi.pride.spectracluster.util.*;
-import uk.ac.ebi.pride.spectracluster.util.function.Functions;
+import uk.ac.ebi.pride.spectracluster.util.Defaults;
+import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
+import uk.ac.ebi.pride.spectracluster.util.MissingParameterException;
+import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.HighestNPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveReporterIonPeaksFunction;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -126,6 +122,7 @@ public class SpectraClusterCliMain implements IProgressListener {
             // VERBOSE
             if (commandLine.hasOption(CliOptions.OPTIONS.VERBOSE.getValue())) {
                 spectraClusterStandalone.setVerbose(true);
+                Defaults.setSaveDebugInformation(true);
             }
 
             // REMOVE QUANT PEAKS
@@ -207,6 +204,9 @@ public class SpectraClusterCliMain implements IProgressListener {
             // MGF COMMENT SUPPORT
             ClusteringSettings.disableMGFCommentSupport = commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_DISABLE_MGF_COMMENTS.getValue());
 
+            // MERGE BINARY FILES
+            boolean mergeBinaryFilesMode = commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MERGE_BINARY_FILES.getValue());
+
             /**
              * ------ Learn the CDF if set --------
              */
@@ -258,6 +258,19 @@ public class SpectraClusterCliMain implements IProgressListener {
 
             spectraClusterStandalone.addProgressListener(this);
 
+            // merge mode
+            if (mergeBinaryFilesMode) {
+                System.out.println("Binary file merging mode set.");
+
+                if (commandLine.hasOption(CliOptions.OPTIONS.ADD_SCORES.getValue())) {
+                    System.out.println("Error: Scores cannot be added in binary file merging mode");
+                    System.exit(1);
+                }
+
+                spectraClusterStandalone.mergeBinaryFiles(peaklistFilenames, thresholds, finalResultFile);
+                System.exit(0);
+            }
+
             // make sure binary files exist
             if (reUseBinaryFiles) {
                 File binaryFileDirectory = new File(spectraClusterStandalone.getTemporaryDirectory(), "spectra");
@@ -283,7 +296,7 @@ public class SpectraClusterCliMain implements IProgressListener {
             // add the scores if set
             if (commandLine.hasOption(CliOptions.OPTIONS.ADD_SCORES.getValue())) {
                 // get the directories of the MGF files
-                Set<File> directories = new HashSet<File>();
+                Set<File> directories = new HashSet<>();
                 for (String peakListFile : peaklistFilenames) {
                     directories.add(new File(peakListFile).getParentFile());
                 }
