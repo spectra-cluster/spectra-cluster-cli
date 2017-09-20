@@ -37,7 +37,8 @@ public class CliOptions {
         ADVANCED_LOAD_CDF_FILE("x_load_cdf"),
         ADVANCED_DISABLE_MGF_COMMENTS("x_disable_mgf_comments"),
         ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP("x_min_consensus_peaks_to_keep"),
-        ADVANCED_MERGE_BINARY_FILES("x_merge_binary_files");
+        ADVANCED_MERGE_BINARY_FILES("x_merge_binary_files"),
+        ADVANCED_CONVERT_CGF("x_convert_cgf");
 
         private String value;
 
@@ -199,6 +200,12 @@ public class CliOptions {
                                 " result files from the clustering process. In this mode, the spectra-cluster-cli " +
                                 "only merges the binary files and creates the final output file.")
                 .create(OPTIONS.ADVANCED_MERGE_BINARY_FILES.getValue());
+
+        Option xConvertCgf = OptionBuilder
+                .withDescription("(Advanced option) It this option is set, the input file in CGF format will be " +
+                        "converted to the .clustering file. No other processing will be performed.")
+                .create(OPTIONS.ADVANCED_CONVERT_CGF.getValue());
+        options.addOption(xConvertCgf);
 
         options.addOption(xMergeBinaryfiles);
     }

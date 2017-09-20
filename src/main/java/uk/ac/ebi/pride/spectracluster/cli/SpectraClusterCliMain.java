@@ -208,6 +208,14 @@ public class SpectraClusterCliMain implements IProgressListener {
             boolean mergeBinaryFilesMode = commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MERGE_BINARY_FILES.getValue());
 
             /**
+             * ------ Convert CLS mode ----
+             */
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_CONVERT_CGF.getValue())) {
+                convertToCgf(peaklistFilenames, finalResultFile);
+                return;
+            }
+
+            /**
              * ------ Learn the CDF if set --------
              */
             if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_LEARN_CDF.getValue())) {
@@ -318,6 +326,23 @@ public class SpectraClusterCliMain implements IProgressListener {
 
             System.exit(1);
         }
+    }
+
+    /**
+     * Convert the passed files from the .cgf format to the .clustering format.
+     * @param inputFiles
+     * @param outputFile
+     */
+    private void convertToCgf(String[] inputFiles, File outputFile) throws Exception {
+        SpectraClusterStandalone spectraClusterStandalone = new SpectraClusterStandalone();
+        spectraClusterStandalone.addProgressListener(this);
+
+        if (inputFiles.length != 1) {
+            System.out.println("Error: Only one cgf file can be converted to one .clustering file");
+            return;
+        }
+
+        spectraClusterStandalone.convertCgfToClustering(new File(inputFiles[0]), outputFile, 0.99F);
     }
 
     private void printSettings(File finalResultFile, int nMajorPeakJobs, float startThreshold,

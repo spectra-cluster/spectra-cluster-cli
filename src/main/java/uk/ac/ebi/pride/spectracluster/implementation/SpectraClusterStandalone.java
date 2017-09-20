@@ -590,7 +590,7 @@ public class SpectraClusterStandalone {
      *                        as metadata in the header of the .clustering file.
      * @throws Exception
      */
-    private void convertCgfToClustering(File cgfResultFile, File clusteringOutputFile, float targetThreshold) throws Exception {
+    public void convertCgfToClustering(File cgfResultFile, File clusteringOutputFile, float targetThreshold) throws Exception {
         FileInputStream fileInputStream = new FileInputStream(cgfResultFile);
         FileWriter writer = new FileWriter(clusteringOutputFile);
 
@@ -605,6 +605,12 @@ public class SpectraClusterStandalone {
         for (ICluster cluster : iterable) {
             DotClusterClusterAppender.INSTANCE.appendCluster(writer, cluster);
             nClusterWritten++;
+
+            if (nClusterWritten % 10000 == 0 && isVerbose()) {
+                notifyProgressListeners(new ProgressUpdate(
+                        String.format("%d clusters successfully written to %s", nClusterWritten, clusteringOutputFile.toString()),
+                        ProgressUpdate.CLUSTERING_STAGE.OUTPUT));
+            }
         }
 
         writer.close();
