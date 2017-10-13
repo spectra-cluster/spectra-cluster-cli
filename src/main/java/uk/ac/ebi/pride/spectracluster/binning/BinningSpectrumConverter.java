@@ -1,11 +1,9 @@
 package uk.ac.ebi.pride.spectracluster.binning;
 
-import uk.ac.ebi.pride.spectracluster.binning.BinarySpectrumReferenceWriterCallable;
-import uk.ac.ebi.pride.spectracluster.binning.ISpectrumReferenceBinner;
-import uk.ac.ebi.pride.spectracluster.binning.ReferenceMzBinner;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.spectra_list.IPeaklistScanner;
+import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingClusteringScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingMgfScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
@@ -29,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class BinningSpectrumConverter {
     private ISpectrumReferenceBinner spectrumReferenceBinner = new ReferenceMzBinner();
     private IPeaklistScanner peaklistScanner = new ParsingMgfScanner();
+    private ParsingClusteringScanner clusteringScanner = new ParsingClusteringScanner();
 
     private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
     private List<IProgressListener> progressListeners = new ArrayList<IProgressListener>();
@@ -48,14 +47,38 @@ public class BinningSpectrumConverter {
     }
 
     public void processPeaklistFiles(String[] filenames) throws Exception {
+        // process MGF and .clustering files separately
+        List<String> mgfFilenames = new ArrayList<>(filenames.length);
+        List<String> clusteringFilenames = new ArrayList<>(filenames.length);
+
+        for (String filename : filenames) {
+            if (filename.toLowerCase().endsWith(".mgf")) {
+                mgfFilenames.add(filename);
+            }
+            else if (filename.toLowerCase().endsWith(".clustering")) {
+                clusteringFilenames.add(filename);
+            }
+            else {
+                throw new Exception("Unsupported filetype in " + filename);
+            }
+        }
+
         // pre-scan the spectrum references
-        spectrumReferences = peaklistScanner.getSpectrumReferences(filenames);
+        spectrumReferences = new ArrayList<>();
+        if (mgfFilenames.size() > 0) {
+            spectrumReferences.addAll(
+                    peaklistScanner.getSpectrumReferences(mgfFilenames.toArray(new String[mgfFilenames.size()])));
+        }
+        if (clusteringFilenames.size() > 0) {
+            spectrumReferences.addAll(
+                    clusteringScanner.getSpectrumReferences(clusteringFilenames.toArray(new String[clusteringFilenames.size()])));
+        }
 
         // bin the references
         List<List<SpectrumReference>> binnedSpectrumReferences = spectrumReferenceBinner.binSpectrumReferences(spectrumReferences);
 
         // create the files
-        launchFileWritingJobs(binnedSpectrumReferences, filenames);
+        launchFileWritingJobs(binnedSpectrumReferences, mgfFilenames, clusteringFilenames);
 
         // wait for the completed jobs
         waitForCompletedJobs();
@@ -120,7 +143,8 @@ public class BinningSpectrumConverter {
         }
     }
 
-    private void launchFileWritingJobs(List<List<SpectrumReference>> binnedSpectrumReferences, String[] filenames) throws Exception {
+    private void launchFileWritingJobs(List<List<SpectrumReference>> binnedSpectrumReferences, List<String> peaklistFilenames,
+                                       List<String> clusteringFilenames) throws Exception {
         if (outputDirectory == null || !outputDirectory.exists() || !outputDirectory.isDirectory())
             throw new Exception("Invalid output directory for converted spectra set");
 
@@ -134,8 +158,10 @@ public class BinningSpectrumConverter {
 
             BinarySpectrumReferenceWriterCallable writerCallable =
                     new BinarySpectrumReferenceWriterCallable(
-                            filenames,
+                            peaklistFilenames,
+                            clusteringFilenames,
                             peaklistScanner.getFileIndices(),
+                            clusteringScanner.getClusteringFileIndices(),
                             spectrumReferences,
                             outputFile,
                             fastMode);

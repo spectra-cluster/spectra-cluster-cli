@@ -349,7 +349,7 @@ public class SpectraClusterCliMain implements IProgressListener {
                                       float endThreshold, int rounds, boolean keepBinaryFiles, File binaryTmpDirectory,
                                       String[] peaklistFilenames, boolean reUseBinaryFiles, boolean fastMode,
                                       List<String> addedFilters) {
-        System.out.println("spectra-cluster API Version 1.0");
+        System.out.println("spectra-cluster API Version 1.0.11");
         System.out.println("Created by Rui Wang & Johannes Griss\n");
 
         System.out.println("-- Settings --");
@@ -386,7 +386,7 @@ public class SpectraClusterCliMain implements IProgressListener {
     private void printUsage() {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("Spectra Cluster - Clusterer",
-                "Clusters the spectra found in an MGF file and writes the results in a text-based file.\n",
+                "Clusters the spectra found in a MGF files or .clustering files and writes the results in a text-based file.\n",
                 CliOptions.getOptions(), "\n\n", true);
     }
 

@@ -1,5 +1,13 @@
 package uk.ac.ebi.pride.spectracluster.util;
 
+import uk.ac.ebi.pride.spectracluster.cluster.GreedySpectralCluster;
+import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
+import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ClusteringFileSpectrumReference;
+import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ISpectrumReference;
+import uk.ac.ebi.pride.spectracluster.consensus.ConsensusSpectrum;
+import uk.ac.ebi.pride.spectracluster.consensus.GreedyConsensusSpectrum;
+import uk.ac.ebi.pride.spectracluster.consensus.IConsensusSpectrumBuilder;
+import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.spectrum.KnownProperties;
@@ -11,6 +19,7 @@ import uk.ac.ebi.pride.tools.jmzreader.model.impl.UserParam;
 import uk.ac.ebi.pride.tools.mgf_parser.model.Ms2Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +29,121 @@ import java.util.Map;
 public final class SpectrumConverter {
     private SpectrumConverter() {
 
+    }
+
+    /**
+     * Convert a cluster read from a .clustering file using the ClusteringFileReader class
+     * to a spectra-cluster API cluster object. Currently, this function only creates
+     * GreedyClusters.
+     *
+     * @param readerCluster The cluster read using the ClusteringFileReader class.
+     * @return An ICluster object.
+     */
+    public static ICluster convertClusteringFileReaderCluster(uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ICluster readerCluster) throws Exception {
+        // indicates whether the .clustering file contains peak lists
+        boolean hasPeakList = false;
+
+        // create the list of spectra
+        List<ISpectrum> clusteredSpectra = new ArrayList<>(readerCluster.getSpecCount());
+
+        for (ISpectrumReference specRef : readerCluster.getSpectrumReferences()) {
+            List<IPeak> peakList = convertClusteringFileReaderPeaklist(specRef);
+            ISpectrum spectrum = new uk.ac.ebi.pride.spectracluster.spectrum.Spectrum(
+                    specRef.getSpectrumId(), specRef.getCharge(), specRef.getPrecursorMz(),
+                    Defaults.getDefaultQualityScorer(), peakList);
+
+            if (!hasPeakList && specRef.hasPeaks()) {
+                hasPeakList = true;
+            }
+
+            clusteredSpectra.add(spectrum);
+        }
+
+        // get the consensus spectrum  - force the creation of GreedyConsensusSpectrumBuilder
+        IConsensusSpectrumBuilder consensusSpectrum = getClusterFileReaderConsensusSpectrum(readerCluster, false);
+
+        GreedySpectralCluster greedyCluster = new GreedySpectralCluster(
+                readerCluster.getId(), clusteredSpectra, (GreedyConsensusSpectrum) consensusSpectrum,
+                Collections.emptyList());
+
+        return greedyCluster;
+    }
+
+    /**
+     * Create the ConsensusSpectrumBuilder object representing the ClusteringFileReader's cluster's consensus spectrum.
+     * @param readerCluster An ICluster object from the ClusteringFileReader.
+     * @param hasPeaklist Indicates whether the cluster stores peak lists.
+     * @return
+     * @throws Exception If the .clustering file does not contain any consensus peak counts
+     */
+    private static IConsensusSpectrumBuilder getClusterFileReaderConsensusSpectrum(uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ICluster readerCluster, boolean hasPeaklist) throws Exception {
+        IConsensusSpectrumBuilder consensusSpectrumBuilder = null;
+
+        // create the peaklist
+        List<IPeak> peaklist = new ArrayList<>(readerCluster.getConsensusMzValues().size());
+
+        for (int i = 0; i < readerCluster.getConsensusMzValues().size(); i++) {
+            int count = 1;
+            if (readerCluster.getConsensusCountValues().size() > 0) {
+                count = readerCluster.getConsensusCountValues().get(i);
+            } else {
+                throw new Exception("Missing consensus spectrum peak frequency in .clustering file. Available since spectra-cluster API version 1.0.11");
+            }
+
+            IPeak peak = new Peak(readerCluster.getConsensusMzValues().get(i),
+                    readerCluster.getConsensusIntensValues().get(i),
+                    count);
+
+            peaklist.add(peak);
+        }
+
+        // get the sum of the charges
+        int sumCharge = 0;
+
+        for (ISpectrumReference specRef : readerCluster.getSpectrumReferences()) {
+            sumCharge += specRef.getCharge();
+        }
+
+        if (hasPeaklist) {
+            consensusSpectrumBuilder = new ConsensusSpectrum(readerCluster.getId(),
+                    readerCluster.getSpecCount(),
+                    readerCluster.getAvPrecursorMz() * readerCluster.getSpecCount(),
+                    readerCluster.getAvPrecursorIntens() * readerCluster.getSpecCount(),
+                    sumCharge,
+                    peaklist,
+                    Defaults.getFragmentIonTolerance());
+        } else {
+            consensusSpectrumBuilder = new GreedyConsensusSpectrum(
+                    Defaults.getFragmentIonTolerance(),
+                    readerCluster.getId(),
+                    readerCluster.getSpecCount(),
+                    readerCluster.getAvPrecursorMz() * readerCluster.getSpecCount(),
+                    readerCluster.getAvPrecursorIntens() * readerCluster.getSpecCount(),
+                    sumCharge,
+                    peaklist);
+        }
+
+        return consensusSpectrumBuilder;
+    }
+
+    /**
+     * Convert a list of ClusteringFileReader peaks into a list of IPeakS
+     * @param specRef The SpectrumReference which peaks should be converted
+     * @return
+     */
+    private static List<IPeak> convertClusteringFileReaderPeaklist(ISpectrumReference specRef) {
+        if (!specRef.hasPeaks()) {
+            return Collections.emptyList();
+        }
+
+        List<IPeak> peaklist = new ArrayList<>(specRef.getPeaks().size());
+
+        for (ClusteringFileSpectrumReference.Peak readerPeak : specRef.getPeaks()) {
+            IPeak peak = new Peak(readerPeak.getMz(), readerPeak.getIntensity());
+            peaklist.add(peak);
+        }
+
+        return peaklist;
     }
 
     public static ISpectrum convertJmzReaderSpectrum(Spectrum jmzReaderSpectrum, String spectrumId, String peakListFilename) {
