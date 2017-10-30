@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.spectracluster.util;
 
+import uk.ac.ebi.pride.spectracluster.cdf.SpectraPerBinNumberComparisonAssessor;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
@@ -25,6 +26,20 @@ public class BinaryFileScanner {
      * @return
      */
     public static List<BinaryClusterFileReference> scanBinaryFiles(File... inputFiles) throws IOException {
+        return scanBinaryFiles(null, inputFiles);
+    }
+
+    /**
+     * Scans the passed binary clustering files and returns
+     * the matching CLusteringResultS with the associated
+     * metadata. Since this function is primarily dependent
+     * on the disk I/O speed it should not run in parallel.
+     * @param spectraPerBinNumberComparisonAssessor If set, the found cluster are counted as spectra per bin.
+     * @param inputFiles
+     * @return
+     */
+    public static List<BinaryClusterFileReference> scanBinaryFiles(SpectraPerBinNumberComparisonAssessor spectraPerBinNumberComparisonAssessor,
+                                                                   File... inputFiles) throws IOException {
         List<BinaryClusterFileReference> binaryClusterFileReferences = new ArrayList<BinaryClusterFileReference>(inputFiles.length);
 
         for (File currentInputFile : inputFiles) {
@@ -46,6 +61,11 @@ public class BinaryFileScanner {
                 if (cluster.getPrecursorMz() > maxMz) {
                     maxMz = cluster.getPrecursorMz();
                 }
+
+                if (spectraPerBinNumberComparisonAssessor != null) {
+                    spectraPerBinNumberComparisonAssessor.countSpectrum(cluster.getPrecursorMz());
+                }
+
                 nCluster++;
             }
 

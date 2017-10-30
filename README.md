@@ -14,6 +14,16 @@ __WARNING__: This software is still in beta phase. We do expect it to still have
 
 ## Changelog
 
+### Version 1.0.4
+
+* Updated to spectra-cluster API version 1.0.11. Changes include:
+  * New version of the .clustering file format which stores how often a consensus spectrum peak 
+    was observed.
+  * Option to add debug information to spectra such as the score when the spectrum was merged to a cluster.
+* Added support for **incremental clustering**. The spectra-cluster-cli tool can
+  now process MGF files and .clustering files. This only works with .clustering files
+  created with the spectra-cluster-cli tool version >= 1.0.4.
+
 ### Version 1.0.3
 
 * Changed to spectra-cluster API version 1.0.10 which includes contaminant peak filters

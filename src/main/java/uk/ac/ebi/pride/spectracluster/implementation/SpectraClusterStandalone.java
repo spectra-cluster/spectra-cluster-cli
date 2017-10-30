@@ -2,6 +2,7 @@ package uk.ac.ebi.pride.spectracluster.implementation;
 
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
+import uk.ac.ebi.pride.spectracluster.cdf.SpectraPerBinNumberComparisonAssessor;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusterer;
@@ -9,6 +10,7 @@ import uk.ac.ebi.pride.spectracluster.conversion.MergingCGFConverter;
 import uk.ac.ebi.pride.spectracluster.io.CGFSpectrumIterable;
 import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
 import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
+import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.util.BinaryFileScanner;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
@@ -399,6 +401,16 @@ public class SpectraClusterStandalone {
 
         binningSpectrumConverter.processPeaklistFiles(peakListFilenameArray);
 
+        // count the spectra per bin
+        if (Defaults.getNumberOfComparisonAssessor().getClass() == SpectraPerBinNumberComparisonAssessor.class) {
+            SpectraPerBinNumberComparisonAssessor assessor = (SpectraPerBinNumberComparisonAssessor) Defaults.getNumberOfComparisonAssessor();
+            List<SpectrumReference> specRefs = binningSpectrumConverter.getSpectrumReferences();
+
+            for (SpectrumReference specRef : specRefs) {
+                assessor.countSpectrum(specRef.getPrecursorMz());
+            }
+        }
+
         return binningSpectrumConverter.getWrittenFiles();
     }
 
@@ -423,7 +435,13 @@ public class SpectraClusterStandalone {
                 String.format("Scanning %d binary files...", existingBinaryFiles.length),
                 ProgressUpdate.CLUSTERING_STAGE.CONVERSION));
 
-        return BinaryFileScanner.scanBinaryFiles(existingBinaryFiles);
+        // count the spectra per bin while scanning the files
+        SpectraPerBinNumberComparisonAssessor spectraPerBinNumberComparisonAssessor = null;
+        if (Defaults.getNumberOfComparisonAssessor().getClass() == SpectraPerBinNumberComparisonAssessor.class) {
+            spectraPerBinNumberComparisonAssessor = (SpectraPerBinNumberComparisonAssessor) Defaults.getNumberOfComparisonAssessor();
+        }
+
+        return BinaryFileScanner.scanBinaryFiles(spectraPerBinNumberComparisonAssessor, existingBinaryFiles);
     }
 
     /**

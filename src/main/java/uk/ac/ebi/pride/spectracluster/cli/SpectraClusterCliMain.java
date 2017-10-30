@@ -4,9 +4,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
-import uk.ac.ebi.pride.spectracluster.cdf.CdfLearner;
-import uk.ac.ebi.pride.spectracluster.cdf.CdfResult;
-import uk.ac.ebi.pride.spectracluster.cdf.CumulativeDistributionFunction;
+import uk.ac.ebi.pride.spectracluster.cdf.*;
 import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.implementation.ScoreCalculator;
 import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
@@ -183,10 +181,12 @@ public class SpectraClusterCliMain implements IProgressListener {
              * Advanced options
              */
             // MIN NUMBER COMPARISONS
-            Defaults.setMinNumberComparisons(10000);
+            // By default, use the SpectraPerBinNumberComparisonAssessor
+            // if the command line option is set, use the MinNumberComparisonAssessor instead.
+            Defaults.setNumberOfComparisonAssessor(new SpectraPerBinNumberComparisonAssessor(Defaults.getDefaultPrecursorIonTolerance()));
             if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue())) {
                 int minComparisons = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue()));
-                Defaults.setMinNumberComparisons(minComparisons);
+                Defaults.setNumberOfComparisonAssessor(new MinNumberComparisonsAssessor(minComparisons));
             }
 
             // N HIGHEST PEAKS
@@ -376,9 +376,12 @@ public class SpectraClusterCliMain implements IProgressListener {
         }
         System.out.println("");
 
-        // only show certain settings if they were changed
-        if (Defaults.getMinNumberComparisons() != Defaults.DEFAULT_MIN_NUMBER_COMPARISONS)
-            System.out.println("Minimum number of comparisons: " + Defaults.getMinNumberComparisons());
+        if (Defaults.getNumberOfComparisonAssessor().getClass() == MinNumberComparisonsAssessor.class) {
+            MinNumberComparisonsAssessor assessor = (MinNumberComparisonsAssessor) Defaults.getNumberOfComparisonAssessor();
+            System.out.println("Minimum number of comparisons: " + assessor.getMinNumberComparisons());
+        } else {
+            System.out.println("Minimum number of comparisons: adaptive");
+        }
 
         System.out.println();
     }
