@@ -167,4 +167,9 @@ public class ClusteringSettings {
      * PRIDE special fields.
      */
     public static boolean disableMGFCommentSupport = true;
+
+    /**
+     * If this option is set to a value, this value is used as a PPM threshold.
+     */
+    public static Float ppmThreshold = null;
 }
