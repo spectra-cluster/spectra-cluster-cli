@@ -13,6 +13,15 @@ import java.util.Map;
  */
 public class ParsingMgfScanner implements IPeaklistScanner {
     private List<List<IndexElement>> fileIndices;
+    private boolean ignoreEmptySpectra;
+
+    public ParsingMgfScanner(boolean ignoreEmptySpectra) {
+        this.ignoreEmptySpectra = ignoreEmptySpectra;
+    }
+
+    public ParsingMgfScanner() {
+        this(true);
+    }
 
     @Override
     public Map<Integer, List<SpectrumReference>> getSpectraPerMajorPeaks(String[] filenames, int nMajorPeaks) throws Exception {
@@ -60,6 +69,7 @@ public class ParsingMgfScanner implements IPeaklistScanner {
         int spectrumIndex = 1; // 1-based index
         float precursorMz = 0;
         boolean inHeader = true;
+        boolean hasPeaks = false;
 
 
         while ((line = randomAccessFile.readLine()) != null) {
@@ -76,16 +86,20 @@ public class ParsingMgfScanner implements IPeaklistScanner {
             // save the end position of a spectrum as the current last position
             if (line.startsWith("END IONS")) {
                 // save the spectrum reference
-                SpectrumReference spectrumReference = new SpectrumReference(fileId, spectrumIndex, precursorMz);
-                spectrumReferences.add(spectrumReference);
+                if (hasPeaks || !this.ignoreEmptySpectra) {
+                    SpectrumReference spectrumReference = new SpectrumReference(fileId, spectrumIndex, precursorMz);
+                    spectrumReferences.add(spectrumReference);
 
-                // save the index element
-                IndexElement indexElement = new IndexElementImpl(currentStart, (int) (randomAccessFile.getFilePointer() - currentStart));
-                fileIndex.add(indexElement);
+
+                    // save the index element
+                    IndexElement indexElement = new IndexElementImpl(currentStart, (int) (randomAccessFile.getFilePointer() - currentStart));
+                    fileIndex.add(indexElement);
+                }
 
                 // move to the next spectrum
                 spectrumIndex++;
                 precursorMz = 0; // to detect any problems
+                hasPeaks = false;
             }
             else if (line.startsWith("PEPMASS=")) {
                 int index = line.indexOf("=");
@@ -93,6 +107,9 @@ public class ParsingMgfScanner implements IPeaklistScanner {
                 String[] fields = value.split("\\s+");
 
                 precursorMz = Float.parseFloat(fields[0]);
+            }
+            else if (line.length() > 0 && Character.isDigit(line.charAt(0))) {
+                hasPeaks = true;
             }
 
             lastLineEnd = randomAccessFile.getFilePointer();
