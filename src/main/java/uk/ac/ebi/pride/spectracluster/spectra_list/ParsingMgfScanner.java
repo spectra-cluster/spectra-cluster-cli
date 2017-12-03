@@ -85,19 +85,19 @@ public class ParsingMgfScanner implements IPeaklistScanner {
 
             // save the end position of a spectrum as the current last position
             if (line.startsWith("END IONS")) {
-                // save the spectrum reference
+                // save the index element - the index has to be complete
+                IndexElement indexElement = new IndexElementImpl(currentStart, (int) (randomAccessFile.getFilePointer() - currentStart));
+                fileIndex.add(indexElement);
+
+                // save the spectrum reference only if defined
                 if (hasPeaks || !this.ignoreEmptySpectra) {
                     SpectrumReference spectrumReference = new SpectrumReference(fileId, spectrumIndex, precursorMz);
                     spectrumReferences.add(spectrumReference);
-
-
-                    // save the index element
-                    IndexElement indexElement = new IndexElementImpl(currentStart, (int) (randomAccessFile.getFilePointer() - currentStart));
-                    fileIndex.add(indexElement);
                 }
 
                 // move to the next spectrum
                 spectrumIndex++;
+
                 precursorMz = 0; // to detect any problems
                 hasPeaks = false;
             }
