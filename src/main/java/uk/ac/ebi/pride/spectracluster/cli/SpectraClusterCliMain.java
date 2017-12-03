@@ -201,10 +201,17 @@ public class SpectraClusterCliMain implements IProgressListener {
             // MIN NUMBER COMPARISONS
             // By default, use the SpectraPerBinNumberComparisonAssessor
             // if the command line option is set, use the MinNumberComparisonAssessor instead.
-            Defaults.setNumberOfComparisonAssessor(new SpectraPerBinNumberComparisonAssessor(Defaults.getDefaultPrecursorIonTolerance()));
             if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue())) {
                 int minComparisons = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue()));
                 Defaults.setNumberOfComparisonAssessor(new MinNumberComparisonsAssessor(minComparisons));
+            }
+            // adaptive version with a min number of spectra set
+            else if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MIN_ADAPTIVE_COMPARISONS.getValue())) {
+                int minComparisons = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_MIN_ADAPTIVE_COMPARISONS.getValue()));
+                Defaults.setNumberOfComparisonAssessor(new SpectraPerBinNumberComparisonAssessor(Defaults.getDefaultPrecursorIonTolerance(),
+                        minComparisons));
+            } else {
+                Defaults.setNumberOfComparisonAssessor(new SpectraPerBinNumberComparisonAssessor(Defaults.getDefaultPrecursorIonTolerance()));
             }
 
             // N HIGHEST PEAKS

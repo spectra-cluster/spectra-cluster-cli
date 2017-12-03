@@ -33,6 +33,7 @@ public class CliOptions {
 
         // Advanced options
         ADVANCED_MIN_NUMBER_COMPARISONS("x_min_comparisons"),
+        ADVANCED_MIN_ADAPTIVE_COMPARISONS("x_min_adapt_comparisons"),
         ADVANCED_NUMBER_PREFILTERED_PEAKS("x_n_prefiltered_peaks"),
         ADVANCED_LEARN_CDF("x_learn_cdf"),
         ADVANCED_LOAD_CDF_FILE("x_load_cdf"),
@@ -168,6 +169,12 @@ public class CliOptions {
                 .hasArg()
                 .create(OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue());
         options.addOption(xMinComparisons);
+
+        Option xMinAdaptComparisons = OptionBuilder
+                .withDescription("(Experimental option) Uses an adaptive function for the minimum comparisons together with a minimum number always to return.")
+                .hasArg()
+                .create(OPTIONS.ADVANCED_MIN_ADAPTIVE_COMPARISONS.getValue());
+        options.addOption(xMinAdaptComparisons);
 
         Option xLearnCdf = OptionBuilder
                 .hasArg()
