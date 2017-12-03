@@ -73,12 +73,12 @@ public class SpectraClusterCliMain implements IProgressListener {
             }
 
             // NUMBER OF ROUNDS
-            int rounds = 4;
+            int rounds = 5;
             if (commandLine.hasOption(CliOptions.OPTIONS.ROUNDS.getValue()))
                 rounds = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ROUNDS.getValue()));
 
             // START THRESHOLD
-            float startThreshold = 0.999F;
+            float startThreshold = 1F;
             if (commandLine.hasOption(CliOptions.OPTIONS.START_THRESHOLD.getValue()))
                 startThreshold = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.START_THRESHOLD.getValue()));
 
@@ -138,6 +138,7 @@ public class SpectraClusterCliMain implements IProgressListener {
             if (commandLine.hasOption(CliOptions.OPTIONS.VERBOSE.getValue())) {
                 spectraClusterStandalone.setVerbose(true);
                 Defaults.setSaveDebugInformation(true);
+                Defaults.setSaveAddingScore(true);
             }
 
             // REMOVE QUANT PEAKS
