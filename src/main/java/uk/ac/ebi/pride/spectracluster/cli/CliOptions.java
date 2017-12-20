@@ -40,7 +40,8 @@ public class CliOptions {
         ADVANCED_DISABLE_MGF_COMMENTS("x_disable_mgf_comments"),
         ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP("x_min_consensus_peaks_to_keep"),
         ADVANCED_MERGE_BINARY_FILES("x_merge_binary_files"),
-        ADVANCED_CONVERT_CGF("x_convert_cgf");
+        ADVANCED_CONVERT_CGF("x_convert_cgf"),
+        ADVANCED_FILTER_PEAKS_PER_MZ("x_filter_peaks_mz");
 
         private String value;
 
@@ -222,6 +223,11 @@ public class CliOptions {
                         "converted to the .clustering file. No other processing will be performed.")
                 .create(OPTIONS.ADVANCED_CONVERT_CGF.getValue());
         options.addOption(xConvertCgf);
+
+        Option xFilterPeaksMz = OptionBuilder
+                .withDescription("(Advanced option) If this option is set, the top 10 peaks per 100 m/z are retained instead of the top N peaks overall.")
+                .create(OPTIONS.ADVANCED_FILTER_PEAKS_PER_MZ.getValue());
+        options.addOption(xFilterPeaksMz);
 
         options.addOption(xMergeBinaryfiles);
     }

@@ -12,6 +12,7 @@ import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
 import uk.ac.ebi.pride.spectracluster.util.MissingParameterException;
 import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
+import uk.ac.ebi.pride.spectracluster.util.function.peak.BinnedHighestNPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.HighestNPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveReporterIonPeaksFunction;
 
@@ -220,6 +221,11 @@ public class SpectraClusterCliMain implements IProgressListener {
                 ClusteringSettings.setLoadingSpectrumFilter(new HighestNPeakFunction(nHighestPeaks));
             }
 
+            // FILTER PEAKS PER MZ
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_FILTER_PEAKS_PER_MZ.getValue())) {
+                ClusteringSettings.setLoadingSpectrumFilter(new BinnedHighestNPeakFunction(10, 100, 30));
+            }
+
             // MIN CONSENSUS PEAKS TO KEEP
             if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP.getValue())) {
                 Defaults.setDefaultConsensusMinPeaks(Integer.parseInt(
@@ -395,6 +401,14 @@ public class SpectraClusterCliMain implements IProgressListener {
 
         System.out.println("Fragment ion tolerance: " + Defaults.getFragmentIonTolerance());
 
+        // loading peak filter
+        if (ClusteringSettings.getLoadingSpectrumFilter().getClass() == HighestNPeakFunction.class) {
+            System.out.println("Loading filter: Filtering top N peaks per spectrum");
+        }
+        if (ClusteringSettings.getLoadingSpectrumFilter().getClass() == BinnedHighestNPeakFunction.class) {
+            System.out.println("Loading filter: Filtering top 10 peaks / 100 m/z");
+        }
+
         // used filters
         System.out.print("Added filters: ");
         for (int i = 0; i < addedFilters.size(); i++) {
@@ -405,6 +419,7 @@ public class SpectraClusterCliMain implements IProgressListener {
         }
         System.out.println("");
 
+        // number of comparisons
         if (Defaults.getNumberOfComparisonAssessor().getClass() == MinNumberComparisonsAssessor.class) {
             MinNumberComparisonsAssessor assessor = (MinNumberComparisonsAssessor) Defaults.getNumberOfComparisonAssessor();
             System.out.println("Minimum number of comparisons: " + assessor.getMinNumberComparisons());

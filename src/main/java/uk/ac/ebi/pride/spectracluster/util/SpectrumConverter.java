@@ -4,6 +4,7 @@ import uk.ac.ebi.pride.spectracluster.cluster.GreedySpectralCluster;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ClusteringFileSpectrumReference;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ISpectrumReference;
+import uk.ac.ebi.pride.spectracluster.consensus.BinnedGreedyConsensusSpectrum;
 import uk.ac.ebi.pride.spectracluster.consensus.ConsensusSpectrum;
 import uk.ac.ebi.pride.spectracluster.consensus.GreedyConsensusSpectrum;
 import uk.ac.ebi.pride.spectracluster.consensus.IConsensusSpectrumBuilder;
@@ -12,6 +13,7 @@ import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.spectrum.KnownProperties;
 import uk.ac.ebi.pride.spectracluster.spectrum.Peak;
+import uk.ac.ebi.pride.spectracluster.util.function.spectrum.BinSpectrumMaxFunction;
 import uk.ac.ebi.pride.tools.jmzreader.model.Spectrum;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.CvParam;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.ParamGroup;
@@ -63,7 +65,7 @@ public final class SpectrumConverter {
         IConsensusSpectrumBuilder consensusSpectrum = getClusterFileReaderConsensusSpectrum(readerCluster, false);
 
         GreedySpectralCluster greedyCluster = new GreedySpectralCluster(
-                readerCluster.getId(), clusteredSpectra, (GreedyConsensusSpectrum) consensusSpectrum,
+                readerCluster.getId(), clusteredSpectra, (BinnedGreedyConsensusSpectrum) consensusSpectrum,
                 Collections.emptyList());
 
         return greedyCluster;
@@ -113,14 +115,15 @@ public final class SpectrumConverter {
                     peaklist,
                     Defaults.getFragmentIonTolerance());
         } else {
-            consensusSpectrumBuilder = new GreedyConsensusSpectrum(
+            consensusSpectrumBuilder = new BinnedGreedyConsensusSpectrum(
                     Defaults.getFragmentIonTolerance(),
                     readerCluster.getId(),
                     readerCluster.getSpecCount(),
                     readerCluster.getAvPrecursorMz() * readerCluster.getSpecCount(),
                     readerCluster.getAvPrecursorIntens() * readerCluster.getSpecCount(),
                     sumCharge,
-                    peaklist);
+                    peaklist,
+                    new BinSpectrumMaxFunction(Defaults.getFragmentIonTolerance()));
         }
 
         return consensusSpectrumBuilder;
