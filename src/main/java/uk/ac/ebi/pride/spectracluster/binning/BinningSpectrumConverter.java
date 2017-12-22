@@ -46,6 +46,11 @@ public class BinningSpectrumConverter {
         this.fastMode = fastMode;
     }
 
+    public BinningSpectrumConverter(File outputDirectory, int nJobs, boolean fastMode, ISpectrumReferenceBinner spectrumReferenceBinner) {
+        this(outputDirectory, nJobs, fastMode);
+        this.spectrumReferenceBinner = spectrumReferenceBinner;
+    }
+
     public void processPeaklistFiles(String[] filenames) throws Exception {
         // process MGF and .clustering files separately
         List<String> mgfFilenames = new ArrayList<>(filenames.length);
