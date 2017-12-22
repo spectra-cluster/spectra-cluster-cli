@@ -15,7 +15,7 @@ public class ReferenceMzBinner implements ISpectrumReferenceBinner {
     private final int[] WINDOW_SIZES;
     private final int MAXIMAL_SPECTRA;
 
-    ReferenceMzBinner() {
+    public ReferenceMzBinner() {
         MAXIMAL_SPECTRA = 50000;
         WINDOW_SIZES = new int[3];
         WINDOW_SIZES[0] = 25;
@@ -29,7 +29,7 @@ public class ReferenceMzBinner implements ISpectrumReferenceBinner {
      * @param windowSizes The window sizes to use in decreasing size. The size is given in m/z.
      * @param maxSpectra The maximum number of spectra per window before decreasing it.
      */
-    ReferenceMzBinner(int[] windowSizes, int maxSpectra) {
+    public ReferenceMzBinner(int[] windowSizes, int maxSpectra) {
         MAXIMAL_SPECTRA = maxSpectra;
         WINDOW_SIZES = windowSizes;
     }
