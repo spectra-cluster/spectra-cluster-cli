@@ -159,7 +159,12 @@ public class BinningSpectrumConverter {
         // launch the jobs
         for (int i = 0; i < binnedSpectrumReferences.size(); i++) {
             List<SpectrumReference> spectrumReferences = binnedSpectrumReferences.get(i);
-            File outputFile = generateOutputfile(i);
+
+            if (spectrumReferences.size() < 1) {
+                continue;
+            }
+
+            File outputFile = generateOutputfile(spectrumReferences);
 
             BinarySpectrumReferenceWriterCallable writerCallable =
                     new BinarySpectrumReferenceWriterCallable(
@@ -178,23 +183,21 @@ public class BinningSpectrumConverter {
         writingJobsExecutorService.shutdown();
     }
 
-    public File generateOutputfile(int bin) {
-        String binString;
+    public File generateOutputfile(List<SpectrumReference> spectrumReferences) {
+        float minMz = (float) spectrumReferences.stream()
+                .mapToDouble(SpectrumReference::getPrecursorMz)
+                .min()
+                .orElse(0.0);
+        float maxMz = (float) spectrumReferences.stream()
+                .mapToDouble(SpectrumReference::getPrecursorMz)
+                .max()
+                .orElse(9999.0);
 
-        if (bin >= 1000) {
-            binString = String.valueOf(bin);
-        }
-        else if (bin >= 100) {
-            binString = "0" + String.valueOf(bin);
-        }
-        else if (bin >= 10) {
-            binString = "00" + String.valueOf(bin);
-        }
-        else {
-            binString = "000" + String.valueOf(bin);
-        }
+        String filename = String.format("convertedSpectra_%04d_%04d.cls",
+                (int) Math.floor(minMz),
+                (int) Math.ceil(maxMz));
 
-        return new File(outputDirectory, "convertedSpectra_" + binString + ".cls");
+        return new File(outputDirectory, filename);
     }
 
     public void addWrittenFileListener(IBinaryClusteringResultListener listener) {
