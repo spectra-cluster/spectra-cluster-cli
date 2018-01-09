@@ -11,6 +11,8 @@ import uk.ac.ebi.pride.spectracluster.io.CGFSpectrumIterable;
 import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
 import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
+import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
+import uk.ac.ebi.pride.spectracluster.spectrum.KnownProperties;
 import uk.ac.ebi.pride.spectracluster.util.BinaryFileScanner;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
@@ -18,6 +20,8 @@ import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
 import uk.ac.ebi.pride.spectracluster.util.function.Functions;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.HighestNSpectrumPeaksFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveReporterIonPeaksFunction;
+import uk.ac.ebi.pride.spectracluster.util.predicate.IPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.spectrum.IdentifiedPredicate;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,6 +57,14 @@ public class SpectraClusterStandalone {
     private RemoveReporterIonPeaksFunction.REPORTER_TYPE reporterType = null;
     private int parallelJobs;
     private boolean useFastMode = false;
+
+    public enum LOADING_MODE {
+        ALL,
+        ONLY_IDENTIFIED,
+        ONLY_UNIDENTIFIED
+    }
+
+    private LOADING_MODE loadingMode = LOADING_MODE.ALL;
 
     /**
      * This variable only exists for debugging purposes. If set to false, temporary files
@@ -328,7 +340,7 @@ public class SpectraClusterStandalone {
      * @return A File object pointing to the newly created temporary directory.
      * @throws Exception
      */
-    private File createTemporaryDirectory(String prefix) throws Exception {
+    public static File createTemporaryDirectory(String prefix) throws Exception {
         return createTemporaryDirectory(prefix, null);
     }
 
@@ -340,7 +352,7 @@ public class SpectraClusterStandalone {
      * @return A File object pointing to the newly created temporary directory.
      * @throws Exception
      */
-    private File createTemporaryDirectory(String prefix, File tmpDirectory) throws Exception {
+    public static File createTemporaryDirectory(String prefix, File tmpDirectory) throws Exception {
         // first a temporary file is created. This is then deleted and the generated name re-used
         // to create the directory.
         File tmpFile;
@@ -380,6 +392,8 @@ public class SpectraClusterStandalone {
 
         BinningSpectrumConverter binningSpectrumConverter = new BinningSpectrumConverter(binarySpectraDirectory,
                 parallelJobs, useFastMode);
+
+        binningSpectrumConverter.setLoadingMode(loadingMode);
 
         // if verbose mode is enabled, send all progress updates to the progress listeners
         if (verbose) {
@@ -441,7 +455,22 @@ public class SpectraClusterStandalone {
             spectraPerBinNumberComparisonAssessor = (SpectraPerBinNumberComparisonAssessor) Defaults.getNumberOfComparisonAssessor();
         }
 
-        return BinaryFileScanner.scanBinaryFiles(spectraPerBinNumberComparisonAssessor, existingBinaryFiles);
+        IPredicate<ICluster> loadingPredicate = null;
+
+        if (loadingMode == LOADING_MODE.ONLY_IDENTIFIED) {
+            loadingPredicate = cluster ->
+                    cluster.getClusteredSpectra()
+                    .stream()
+                    .anyMatch(spectrum -> spectrum.getProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY) != null);
+        }
+        else if (loadingMode == LOADING_MODE.ONLY_UNIDENTIFIED) {
+            loadingPredicate = cluster ->
+                    cluster.getClusteredSpectra()
+                            .stream()
+                            .anyMatch(spectrum -> spectrum.getProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY) == null);
+        }
+
+        return BinaryFileScanner.scanBinaryFiles(spectraPerBinNumberComparisonAssessor, loadingPredicate, existingBinaryFiles);
     }
 
     /**
@@ -665,5 +694,21 @@ public class SpectraClusterStandalone {
         for (IProgressListener progressListener : progressListeners) {
             progressListener.onProgressUpdate(progressUpdate);
         }
+    }
+
+    /**
+     * Defines whether all, or only identified oy unidentified spectra should be processed.
+     * @return
+     */
+    public LOADING_MODE getLoadingMode() {
+        return loadingMode;
+    }
+
+    /**
+     * Defines whether all, or only identified and unidentified spectra should be processed.
+     * @param loadingMode
+     */
+    public void setLoadingMode(LOADING_MODE loadingMode) {
+        this.loadingMode = loadingMode;
     }
 }

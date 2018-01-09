@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.spectracluster.spectra_list;
 
+import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
 import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
 import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.IndexElementImpl;
@@ -14,6 +15,8 @@ import java.util.Map;
 public class ParsingMgfScanner implements IPeaklistScanner {
     private List<List<IndexElement>> fileIndices;
     private boolean ignoreEmptySpectra;
+    private SpectraClusterStandalone.LOADING_MODE loadingMode = SpectraClusterStandalone.LOADING_MODE.ALL;
+
 
     public ParsingMgfScanner(boolean ignoreEmptySpectra) {
         this.ignoreEmptySpectra = ignoreEmptySpectra;
@@ -70,6 +73,7 @@ public class ParsingMgfScanner implements IPeaklistScanner {
         float precursorMz = 0;
         boolean inHeader = true;
         boolean hasPeaks = false;
+        boolean isIdentified = false;
 
 
         while ((line = randomAccessFile.readLine()) != null) {
@@ -81,6 +85,12 @@ public class ParsingMgfScanner implements IPeaklistScanner {
             // ignore all header fields
             if (line.startsWith("BEGIN IONS")) {
                 currentStart = lastLineEnd;
+                isIdentified = false;
+            }
+
+            // check whether the spectrum is identified
+            if (line.startsWith("SEQ=")) {
+                isIdentified = true;
             }
 
             // save the end position of a spectrum as the current last position
@@ -89,8 +99,17 @@ public class ParsingMgfScanner implements IPeaklistScanner {
                 IndexElement indexElement = new IndexElementImpl(currentStart, (int) (randomAccessFile.getFilePointer() - currentStart));
                 fileIndex.add(indexElement);
 
+                boolean saveSpectrum = hasPeaks || !this.ignoreEmptySpectra;
+
+                if (loadingMode == SpectraClusterStandalone.LOADING_MODE.ONLY_IDENTIFIED && !isIdentified) {
+                    saveSpectrum = false;
+                }
+                if (loadingMode == SpectraClusterStandalone.LOADING_MODE.ONLY_UNIDENTIFIED && isIdentified) {
+                    saveSpectrum = false;
+                }
+
                 // save the spectrum reference only if defined
-                if (hasPeaks || !this.ignoreEmptySpectra) {
+                if (saveSpectrum) {
                     SpectrumReference spectrumReference = new SpectrumReference(fileId, spectrumIndex, precursorMz);
                     spectrumReferences.add(spectrumReference);
                 }
@@ -105,6 +124,10 @@ public class ParsingMgfScanner implements IPeaklistScanner {
                 int index = line.indexOf("=");
                 String value = line.substring(index + 1);
                 String[] fields = value.split("\\s+");
+
+                if (fields[0].length() < 1) {
+                    throw new Exception("Invalid PEPMASS= line encountered: " + line + " (" + filename + "@" + String.valueOf(spectrumIndex) + ")");
+                }
 
                 precursorMz = Float.parseFloat(fields[0]);
             }
@@ -122,5 +145,21 @@ public class ParsingMgfScanner implements IPeaklistScanner {
 
     public List<List<IndexElement>> getFileIndices() {
         return fileIndices;
+    }
+
+    /**
+     * Get the current mode for loading spectra.
+     * @return
+     */
+    public SpectraClusterStandalone.LOADING_MODE getLoadingMode() {
+        return loadingMode;
+    }
+
+    /**
+     * Set the mode for loading spectra (all, only identified, only unidentified)
+     * @param loadingMode
+     */
+    public void setLoadingMode(SpectraClusterStandalone.LOADING_MODE loadingMode) {
+        this.loadingMode = loadingMode;
     }
 }

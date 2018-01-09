@@ -30,6 +30,8 @@ public class CliOptions {
         FILTER("filter"),
         HELP("help"),
         VERBOSE("verbose"),
+        ONLY_IDENTIFIED("only_identified"),
+        ONLY_UNIDENTIFIED("only_unidentified"),
 
         // Advanced options
         ADVANCED_MIN_NUMBER_COMPARISONS("x_min_comparisons"),
@@ -156,6 +158,16 @@ public class CliOptions {
                         "added to the output file.")
                 .create(OPTIONS.ADD_SCORES.getValue());
         options.addOption(addScores);
+
+        Option onlyIdentified = OptionBuilder
+                .withDescription("if set, only identified spectra are considered for clustering.")
+                .create(OPTIONS.ONLY_IDENTIFIED.getValue());
+        options.addOption(onlyIdentified);
+
+        Option onlyUnidentified = OptionBuilder
+                .withDescription("if set, only unidentified spectra are considered for clustering.")
+                .create(OPTIONS.ONLY_UNIDENTIFIED.getValue());
+        options.addOption(onlyUnidentified);
 
         Option help = new Option(
                 OPTIONS.HELP.toString(),

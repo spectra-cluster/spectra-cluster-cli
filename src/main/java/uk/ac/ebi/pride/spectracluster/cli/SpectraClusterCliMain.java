@@ -135,6 +135,8 @@ public class SpectraClusterCliMain implements IProgressListener {
                 spectraClusterStandalone.setUseFastMode(true);
             }
 
+            // TODO: Add only identified and only unidentified
+
             // VERBOSE
             if (commandLine.hasOption(CliOptions.OPTIONS.VERBOSE.getValue())) {
                 spectraClusterStandalone.setVerbose(true);

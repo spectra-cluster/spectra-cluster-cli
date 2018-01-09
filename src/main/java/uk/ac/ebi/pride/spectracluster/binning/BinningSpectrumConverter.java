@@ -2,6 +2,7 @@ package uk.ac.ebi.pride.spectracluster.binning;
 
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
+import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
 import uk.ac.ebi.pride.spectracluster.spectra_list.IPeaklistScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingClusteringScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingMgfScanner;
@@ -40,6 +41,8 @@ public class BinningSpectrumConverter {
     private List<BinaryClusterFileReference> writtenFiles;
     private List<SpectrumReference> spectrumReferences;
 
+    private SpectraClusterStandalone.LOADING_MODE loadingMode = SpectraClusterStandalone.LOADING_MODE.ALL;
+
     public BinningSpectrumConverter(File outputDirectory, int nJobs, boolean fastMode) {
         this.outputDirectory = outputDirectory;
         this.nJobs = nJobs;
@@ -55,6 +58,8 @@ public class BinningSpectrumConverter {
         // process MGF and .clustering files separately
         List<String> mgfFilenames = new ArrayList<>(filenames.length);
         List<String> clusteringFilenames = new ArrayList<>(filenames.length);
+
+        ((ParsingMgfScanner) peaklistScanner).setLoadingMode(loadingMode);
 
         for (String filename : filenames) {
             if (filename.toLowerCase().endsWith(".mgf")) {
@@ -218,5 +223,13 @@ public class BinningSpectrumConverter {
 
     public void addProgressListener(IProgressListener listener) {
         progressListeners.add(listener);
+    }
+
+    public SpectraClusterStandalone.LOADING_MODE getLoadingMode() {
+        return loadingMode;
+    }
+
+    public void setLoadingMode(SpectraClusterStandalone.LOADING_MODE loadingMode) {
+        this.loadingMode = loadingMode;
     }
 }
