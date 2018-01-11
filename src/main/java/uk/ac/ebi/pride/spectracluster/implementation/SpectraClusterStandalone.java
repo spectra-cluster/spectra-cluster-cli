@@ -58,14 +58,6 @@ public class SpectraClusterStandalone {
     private int parallelJobs;
     private boolean useFastMode = false;
 
-    public enum LOADING_MODE {
-        ALL,
-        ONLY_IDENTIFIED,
-        ONLY_UNIDENTIFIED
-    }
-
-    private LOADING_MODE loadingMode = LOADING_MODE.ALL;
-
     /**
      * This variable only exists for debugging purposes. If set to false, temporary files
      * (ie. intermediate files created during merging) are kept.
@@ -393,7 +385,7 @@ public class SpectraClusterStandalone {
         BinningSpectrumConverter binningSpectrumConverter = new BinningSpectrumConverter(binarySpectraDirectory,
                 parallelJobs, useFastMode);
 
-        binningSpectrumConverter.setLoadingMode(loadingMode);
+        binningSpectrumConverter.setLoadingMode(ClusteringSettings.getLoadingMode());
 
         // if verbose mode is enabled, send all progress updates to the progress listeners
         if (verbose) {
@@ -457,13 +449,13 @@ public class SpectraClusterStandalone {
 
         IPredicate<ICluster> loadingPredicate = null;
 
-        if (loadingMode == LOADING_MODE.ONLY_IDENTIFIED) {
+        if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED) {
             loadingPredicate = cluster ->
                     cluster.getClusteredSpectra()
                     .stream()
                     .anyMatch(spectrum -> spectrum.getProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY) != null);
         }
-        else if (loadingMode == LOADING_MODE.ONLY_UNIDENTIFIED) {
+        else if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED) {
             loadingPredicate = cluster ->
                     cluster.getClusteredSpectra()
                             .stream()
@@ -694,21 +686,5 @@ public class SpectraClusterStandalone {
         for (IProgressListener progressListener : progressListeners) {
             progressListener.onProgressUpdate(progressUpdate);
         }
-    }
-
-    /**
-     * Defines whether all, or only identified oy unidentified spectra should be processed.
-     * @return
-     */
-    public LOADING_MODE getLoadingMode() {
-        return loadingMode;
-    }
-
-    /**
-     * Defines whether all, or only identified and unidentified spectra should be processed.
-     * @param loadingMode
-     */
-    public void setLoadingMode(LOADING_MODE loadingMode) {
-        this.loadingMode = loadingMode;
     }
 }

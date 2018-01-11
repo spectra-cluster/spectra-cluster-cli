@@ -135,7 +135,17 @@ public class SpectraClusterCliMain implements IProgressListener {
                 spectraClusterStandalone.setUseFastMode(true);
             }
 
-            // TODO: Add only identified and only unidentified
+            // LOADING MODE
+            if (commandLine.hasOption(CliOptions.OPTIONS.ONLY_IDENTIFIED.getValue()) && commandLine.hasOption(CliOptions.OPTIONS.ONLY_UNIDENTIFIED.getValue())) {
+                throw new Exception(CliOptions.OPTIONS.ONLY_IDENTIFIED.getValue() + " and " + CliOptions.OPTIONS.ONLY_UNIDENTIFIED.getValue() +
+                " cannot be used together");
+            }
+            if (commandLine.hasOption(CliOptions.OPTIONS.ONLY_IDENTIFIED.getValue())) {
+                ClusteringSettings.setLoadingMode(ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED);
+            }
+            if (commandLine.hasOption(CliOptions.OPTIONS.ONLY_UNIDENTIFIED.getValue())) {
+                ClusteringSettings.setLoadingMode(ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED);
+            }
 
             // VERBOSE
             if (commandLine.hasOption(CliOptions.OPTIONS.VERBOSE.getValue())) {
@@ -394,6 +404,12 @@ public class SpectraClusterCliMain implements IProgressListener {
         System.out.println("Reuse binary files: " + (reUseBinaryFiles ? "true" : "false"));
         System.out.println("Input files: " + peaklistFilenames.length);
         System.out.println("Using fast mode: " + (fastMode ? "yes" : "no"));
+        if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED) {
+            System.out.println("Loading only identified spectra");
+        }
+        if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED) {
+            System.out.println("Loading only unidentified spectra");
+        }
 
         System.out.println("\nOther settings:");
         if (ClusteringSettings.ppmThreshold != null)

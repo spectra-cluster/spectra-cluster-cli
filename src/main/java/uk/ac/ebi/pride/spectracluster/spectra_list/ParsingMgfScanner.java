@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.spectracluster.spectra_list;
 
+import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
 import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
 import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
@@ -15,7 +16,7 @@ import java.util.Map;
 public class ParsingMgfScanner implements IPeaklistScanner {
     private List<List<IndexElement>> fileIndices;
     private boolean ignoreEmptySpectra;
-    private SpectraClusterStandalone.LOADING_MODE loadingMode = SpectraClusterStandalone.LOADING_MODE.ALL;
+    private ClusteringSettings.LOADING_MODE loadingMode = ClusteringSettings.DEFAULT_LOADING_MODE;
 
 
     public ParsingMgfScanner(boolean ignoreEmptySpectra) {
@@ -101,10 +102,10 @@ public class ParsingMgfScanner implements IPeaklistScanner {
 
                 boolean saveSpectrum = hasPeaks || !this.ignoreEmptySpectra;
 
-                if (loadingMode == SpectraClusterStandalone.LOADING_MODE.ONLY_IDENTIFIED && !isIdentified) {
+                if (loadingMode == ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED && !isIdentified) {
                     saveSpectrum = false;
                 }
-                if (loadingMode == SpectraClusterStandalone.LOADING_MODE.ONLY_UNIDENTIFIED && isIdentified) {
+                if (loadingMode == ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED && isIdentified) {
                     saveSpectrum = false;
                 }
 
@@ -151,7 +152,7 @@ public class ParsingMgfScanner implements IPeaklistScanner {
      * Get the current mode for loading spectra.
      * @return
      */
-    public SpectraClusterStandalone.LOADING_MODE getLoadingMode() {
+    public ClusteringSettings.LOADING_MODE getLoadingMode() {
         return loadingMode;
     }
 
@@ -159,7 +160,7 @@ public class ParsingMgfScanner implements IPeaklistScanner {
      * Set the mode for loading spectra (all, only identified, only unidentified)
      * @param loadingMode
      */
-    public void setLoadingMode(SpectraClusterStandalone.LOADING_MODE loadingMode) {
+    public void setLoadingMode(ClusteringSettings.LOADING_MODE loadingMode) {
         this.loadingMode = loadingMode;
     }
 }

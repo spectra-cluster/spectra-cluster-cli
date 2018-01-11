@@ -2,6 +2,7 @@ package uk.ac.ebi.pride.spectracluster.binning;
 
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
+import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
 import uk.ac.ebi.pride.spectracluster.spectra_list.IPeaklistScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingClusteringScanner;
@@ -41,7 +42,7 @@ public class BinningSpectrumConverter {
     private List<BinaryClusterFileReference> writtenFiles;
     private List<SpectrumReference> spectrumReferences;
 
-    private SpectraClusterStandalone.LOADING_MODE loadingMode = SpectraClusterStandalone.LOADING_MODE.ALL;
+    private ClusteringSettings.LOADING_MODE loadingMode = ClusteringSettings.DEFAULT_LOADING_MODE;
 
     public BinningSpectrumConverter(File outputDirectory, int nJobs, boolean fastMode) {
         this.outputDirectory = outputDirectory;
@@ -225,11 +226,11 @@ public class BinningSpectrumConverter {
         progressListeners.add(listener);
     }
 
-    public SpectraClusterStandalone.LOADING_MODE getLoadingMode() {
+    public ClusteringSettings.LOADING_MODE getLoadingMode() {
         return loadingMode;
     }
 
-    public void setLoadingMode(SpectraClusterStandalone.LOADING_MODE loadingMode) {
+    public void setLoadingMode(ClusteringSettings.LOADING_MODE loadingMode) {
         this.loadingMode = loadingMode;
     }
 }
