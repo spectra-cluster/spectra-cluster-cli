@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.spectracluster.implementation;
 
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.math3.ml.clustering.Cluster;
 import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
 import uk.ac.ebi.pride.spectracluster.cdf.SpectraPerBinNumberComparisonAssessor;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
@@ -21,6 +22,8 @@ import uk.ac.ebi.pride.spectracluster.util.function.Functions;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.HighestNSpectrumPeaksFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveReporterIonPeaksFunction;
 import uk.ac.ebi.pride.spectracluster.util.predicate.IPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyIdentifiedPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyUnidentifiedPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.spectrum.IdentifiedPredicate;
 
 import java.io.File;
@@ -450,16 +453,10 @@ public class SpectraClusterStandalone {
         IPredicate<ICluster> loadingPredicate = null;
 
         if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED) {
-            loadingPredicate = cluster ->
-                    cluster.getClusteredSpectra()
-                    .stream()
-                    .anyMatch(spectrum -> spectrum.getProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY) != null);
+            loadingPredicate = new ClusterOnlyIdentifiedPredicate();
         }
         else if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED) {
-            loadingPredicate = cluster ->
-                    cluster.getClusteredSpectra()
-                            .stream()
-                            .anyMatch(spectrum -> spectrum.getProperty(KnownProperties.IDENTIFIED_PEPTIDE_KEY) == null);
+            loadingPredicate = new ClusterOnlyUnidentifiedPredicate();
         }
 
         return BinaryFileScanner.scanBinaryFiles(spectraPerBinNumberComparisonAssessor, loadingPredicate, existingBinaryFiles);
@@ -483,9 +480,18 @@ public class SpectraClusterStandalone {
         File clusteringResultDirectory = createTemporaryDirectory("clustering_results", temporaryDirectory);
         File tmpClusteringResultDirectory = createTemporaryDirectory("clustering_results_tmp", temporaryDirectory);
 
+        IPredicate<ICluster> clusterPredicate = null;
+
+        if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED) {
+            clusterPredicate = new ClusterOnlyIdentifiedPredicate();
+        }
+        if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED) {
+            clusterPredicate = new ClusterOnlyUnidentifiedPredicate();
+        }
+
         // cluster the files
         BinaryFileClusterer binaryFileClusterer = new BinaryFileClusterer(parallelJobs, clusteringResultDirectory,
-                clusteringThresholds, useFastMode, tmpClusteringResultDirectory);
+                clusteringThresholds, useFastMode, tmpClusteringResultDirectory, clusterPredicate);
 
         // if verbose mode is enabled add the progress listeners to receive all updates
         if (verbose) {

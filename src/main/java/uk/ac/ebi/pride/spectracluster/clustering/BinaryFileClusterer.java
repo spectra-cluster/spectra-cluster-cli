@@ -1,8 +1,10 @@
 package uk.ac.ebi.pride.spectracluster.clustering;
 
+import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
 import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
 import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.IPredicate;
 
 import java.io.File;
 import java.util.*;
@@ -28,12 +30,19 @@ public class BinaryFileClusterer {
 
     private List<BinaryClusterFileReference> resultFiles;
 
-    public BinaryFileClusterer(int nJobs, File outputDirectory, List<Float> thresholds, boolean fastMode, File temporaryDirectory) {
+    /**
+     * If this predicate is set, only clusters that do not fulfill this predicate
+     * are being ignored and will not be reported.
+     */
+    private final IPredicate<ICluster> clusterPredicate;
+
+    public BinaryFileClusterer(int nJobs, File outputDirectory, List<Float> thresholds, boolean fastMode, File temporaryDirectory, IPredicate<ICluster> clusterPredicate) {
         this.nJobs = nJobs;
         this.outputDirectory = outputDirectory;
         this.thresholds = thresholds;
         this.fastMode = fastMode;
         this.temporaryDirectory = temporaryDirectory;
+        this.clusterPredicate = clusterPredicate;
     }
 
     public void clusterFiles(List<BinaryClusterFileReference> binaryFiles) throws Exception {
@@ -92,7 +101,7 @@ public class BinaryFileClusterer {
     private void launchClusteringJobs(List<BinaryClusterFileReference> binaryFiles) {
         clusteringExecuteService = Executors.newFixedThreadPool(nJobs);
         clusteringProcessLauncher = new ClusteringProcessLauncher(clusteringExecuteService, outputDirectory,
-                thresholds, fastMode, temporaryDirectory);
+                thresholds, fastMode, temporaryDirectory, clusterPredicate);
 
         for (BinaryClusterFileReference binaryFile : binaryFiles) {
             if (Thread.currentThread().isInterrupted()) {

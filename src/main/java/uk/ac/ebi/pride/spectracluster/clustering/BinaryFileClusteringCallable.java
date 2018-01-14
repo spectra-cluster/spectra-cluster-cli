@@ -15,6 +15,7 @@ import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
 import uk.ac.ebi.pride.spectracluster.util.predicate.ComparisonPredicates;
 import uk.ac.ebi.pride.spectracluster.util.predicate.IComparisonPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.IPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.Predicates;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.ClusterPpmPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.ClusterShareMajorPeakPredicate;
@@ -43,10 +44,16 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
     private final float minMz;
     private final float maxMz;
 
+    private final IPredicate<ICluster> clusterPredicate;
+
     private final File temporaryDirectory;
 
     public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds, boolean fastMode, File temporaryDirectory) {
-        this(outputFile, inputFile, thresholds, fastMode, -1, -1, temporaryDirectory);
+        this(outputFile, inputFile, thresholds, fastMode, -1, -1, temporaryDirectory, null);
+    }
+
+    public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds, boolean fastMode, File temporaryDirectory, IPredicate<ICluster> clusterPredicate) {
+        this(outputFile, inputFile, thresholds, fastMode, -1, -1, temporaryDirectory, clusterPredicate);
     }
 
     /**
@@ -59,14 +66,17 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
      * @param maxMz All clusters above the set m/z will be ignored and simply written to the output file. If set to -1
      *              the value is ignored.
      * @param temporaryDirectory The directory where temporary clustering files should be stored
+     * @param clusterPredicate If set, clusters that do not fulfill this predicate are being ignored.
      */
-    public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds, boolean fastMode, float minMz, float maxMz, File temporaryDirectory) {
+    public BinaryFileClusteringCallable(File outputFile, File inputFile, List<Float> thresholds, boolean fastMode, float minMz, float maxMz, File temporaryDirectory,
+                                        IPredicate<ICluster> clusterPredicate) {
         this.minMz = minMz;
         this.maxMz = maxMz;
         this.outputFile = outputFile;
         this.inputFile = inputFile;
         this.thresholds = thresholds;
         this.temporaryDirectory = temporaryDirectory;
+        this.clusterPredicate = clusterPredicate;
 
         if (fastMode) {
             peakFilterFunction = null;
@@ -114,6 +124,11 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
                         outputStream.close();
                         inputStream.close();
                         throw new InterruptedException();
+                    }
+
+                    // ignore any cluster that does not fulfill the predicate
+                    if (nRound == 0 && clusterPredicate != null && !clusterPredicate.apply(clusterToAdd)) {
+                        continue;
                     }
 
                     if (nRound == 0) {
