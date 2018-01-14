@@ -153,7 +153,7 @@ public class BinaryFileMergingClusterer {
                 File outputFile = new File(outputDirectory, binaryClusterFileReference.getResultFile().getName());
                 BinaryFileClusteringCallable clusteringCallable =
                         new BinaryFileClusteringCallable(outputFile, binaryClusterFileReference.getResultFile(),
-                                thresholds, fastMode, 0, (float) maxMz, temporaryDirectory);
+                                thresholds, fastMode, 0, (float) maxMz, temporaryDirectory, null);
                 Future<ClusteringJobReference> resultFileFuture = clusteringExecuteService.submit(clusteringCallable);
                 clusteringFutures.add(resultFileFuture);
             }
