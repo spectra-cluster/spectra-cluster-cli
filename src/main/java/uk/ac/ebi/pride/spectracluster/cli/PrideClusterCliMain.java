@@ -1,30 +1,34 @@
 package uk.ac.ebi.pride.spectracluster.cli;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.*;
+import org.apache.commons.math3.ml.clustering.Cluster;
+import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
+import uk.ac.ebi.pride.spectracluster.binning.FixedReferenceMzBinner;
+import uk.ac.ebi.pride.spectracluster.binning.ReferenceMzBinner;
 import uk.ac.ebi.pride.spectracluster.cdf.*;
+import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
+import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
+import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusterer;
 import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.implementation.ScoreCalculator;
 import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
-import uk.ac.ebi.pride.spectracluster.util.Defaults;
-import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
-import uk.ac.ebi.pride.spectracluster.util.MissingParameterException;
-import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
+import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
+import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
+import uk.ac.ebi.pride.spectracluster.io.CGFClusterAppender;
+import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
+import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
+import uk.ac.ebi.pride.spectracluster.util.*;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.BinnedHighestNPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.HighestNPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveReporterIonPeaksFunction;
+import uk.ac.ebi.pride.spectracluster.util.predicate.IPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyIdentifiedPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyUnidentifiedPredicate;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,13 +37,36 @@ import java.util.Set;
  * Time: 11:19 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SpectraClusterCliMain implements IProgressListener {
+public class PrideClusterCliMain implements IProgressListener {
+    public enum OPTIONS {
+        WRITE_BINARY_FILE("write_binary"),
+        MERGE_BINARY_FILE("merge_binary"),
+        CLUSTER_BINARY_FILE("cluster_binary"),
+        CONVERT_BINARY_FILE("convert_binary"),
+        CLUSTER_MERGE_BINARY_FILES("cluster_merge_binary");
+
+        private String value;
+
+        OPTIONS(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
     public static final boolean DELETE_TEMPORARY_CLUSTERING_RESULTS = true;
 
     private boolean verbose;
 
     public static void main(String[] args) {
-        SpectraClusterCliMain instance = new SpectraClusterCliMain();
+        PrideClusterCliMain instance = new PrideClusterCliMain();
         instance.run(args);
     }
 
@@ -47,6 +74,24 @@ public class SpectraClusterCliMain implements IProgressListener {
         CommandLineParser parser = new GnuParser();
 
         try {
+            // Add custom PRIDE Cluster command line options
+            Options orgOptions = CliOptions.getOptions();
+
+            orgOptions.addOption(OptionBuilder.withDescription("Create binary files").create(OPTIONS.WRITE_BINARY_FILE.getValue()));
+            orgOptions.addOption(OptionBuilder
+                    .withDescription("Merge binary files. Input files are treated as binary result files. Output path " +
+                            "is used as the name of the merged file")
+                    .create(OPTIONS.MERGE_BINARY_FILE.getValue()));
+            orgOptions.addOption(OptionBuilder
+                    .withDescription("Cluster binary files")
+                    .create(OPTIONS.CLUSTER_BINARY_FILE.getValue()));
+            orgOptions.addOption(OptionBuilder
+                    .withDescription("Converts the passed binary files to the specified result file in the .clustering format")
+                    .create(OPTIONS.CONVERT_BINARY_FILE.getValue()));
+            orgOptions.addOption(OptionBuilder
+                    .withDescription("Performs the clustering merging step on the passed binary files.")
+                    .create(OPTIONS.CLUSTER_MERGE_BINARY_FILES.getValue()));
+
             CommandLine commandLine = parser.parse(CliOptions.getOptions(), args);
 
             // HELP
@@ -62,9 +107,6 @@ public class SpectraClusterCliMain implements IProgressListener {
             if (!commandLine.hasOption(CliOptions.OPTIONS.OUTPUT_PATH.getValue()))
                 throw new MissingParameterException("Missing required option " + CliOptions.OPTIONS.OUTPUT_PATH.getValue());
             File finalResultFile = new File(commandLine.getOptionValue(CliOptions.OPTIONS.OUTPUT_PATH.getValue()));
-
-            if (finalResultFile.exists())
-                throw new Exception("Result file " + finalResultFile + " already exists");
 
             // NUMBER OF JOBS
             int paralellJobs = 4;
@@ -133,6 +175,18 @@ public class SpectraClusterCliMain implements IProgressListener {
             // FAST MODE
             if (commandLine.hasOption(CliOptions.OPTIONS.FAST_MODE.getValue())) {
                 spectraClusterStandalone.setUseFastMode(true);
+            }
+
+            // LOADING MODE
+            if (commandLine.hasOption(CliOptions.OPTIONS.ONLY_IDENTIFIED.getValue()) && commandLine.hasOption(CliOptions.OPTIONS.ONLY_UNIDENTIFIED.getValue())) {
+                throw new Exception(CliOptions.OPTIONS.ONLY_IDENTIFIED.getValue() + " and " + CliOptions.OPTIONS.ONLY_UNIDENTIFIED.getValue() +
+                        " cannot be used together");
+            }
+            if (commandLine.hasOption(CliOptions.OPTIONS.ONLY_UNIDENTIFIED.getValue())) {
+                ClusteringSettings.setLoadingMode(ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED);
+            }
+            if (commandLine.hasOption(CliOptions.OPTIONS.ONLY_UNIDENTIFIED.getValue())) {
+                ClusteringSettings.setLoadingMode(ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED);
             }
 
             // VERBOSE
@@ -289,6 +343,39 @@ public class SpectraClusterCliMain implements IProgressListener {
             }
 
             /**
+             * ------- PRIDE Cluster specific methods ---------
+             */
+            if (commandLine.hasOption(OPTIONS.WRITE_BINARY_FILE.getValue())) {
+                System.out.println("Creating binary files...");
+                createBinaryFiles(peaklistFilenames, finalResultFile, paralellJobs);
+                System.exit(0);
+            }
+
+            if (commandLine.hasOption(OPTIONS.MERGE_BINARY_FILE.getValue())) {
+                System.out.println("Merging binary files...");
+                mergeBinaryFiles(peaklistFilenames, finalResultFile);
+                System.exit(0);
+            }
+
+            if (commandLine.hasOption(OPTIONS.CLUSTER_BINARY_FILE.getValue())) {
+                System.out.println("Clustering files...");
+                clusterBinaryFile(peaklistFilenames, finalResultFile, paralellJobs, thresholds, spectraClusterStandalone.isVerbose());
+                System.exit(0);
+            }
+
+            if (commandLine.hasOption(OPTIONS.CONVERT_BINARY_FILE.getValue())) {
+                System.out.println("Converting binary files...");
+                convertBinaryFiles(peaklistFilenames, finalResultFile);
+                System.exit(0);
+            }
+
+            if (commandLine.hasOption(OPTIONS.CLUSTER_MERGE_BINARY_FILES.getValue())) {
+                System.out.println("Clustering and merging binary files...");
+                mergeClusterBinaryFiles(peaklistFilenames, finalResultFile, paralellJobs, thresholds, spectraClusterStandalone.isVerbose());
+                System.exit(0);
+            }
+
+            /**
              * ------- THE ACTUAL LOGIC STARTS HERE -----------
              */
             printSettings(finalResultFile, paralellJobs, startThreshold, endThreshold, rounds, spectraClusterStandalone.isKeepBinaryFiles(),
@@ -357,6 +444,226 @@ public class SpectraClusterCliMain implements IProgressListener {
 
             System.exit(1);
         }
+    }
+
+    /**
+     * Merges and cluster the passed binary files.
+     * @param peaklistFilenames Names of the binary files to process
+     * @param finalResultFile Path to the final result file
+     * @param paralellJobs Number of parallel jobs
+     * @param thresholds List of thresholds to use
+     * @param verbose Indicates whether verbose output should be used.
+     */
+    private void mergeClusterBinaryFiles(String[] peaklistFilenames, File finalResultFile, int paralellJobs, List<Float> thresholds, boolean verbose) throws Exception {
+        if (!finalResultFile.isDirectory()) {
+            throw new Exception("Error: Result file must be a directory.");
+        }
+
+        // add max verbosity to the result files
+        Defaults.setSaveAddingScore(true);
+        Defaults.setSaveDebugInformation(true);
+
+        // create the temporary directory
+        File tmpDir = SpectraClusterStandalone.createTemporaryDirectory("spectra_cluster_cli");
+
+        // count the spectra per bin while scanning the files
+        SpectraPerBinNumberComparisonAssessor spectraPerBinNumberComparisonAssessor = null;
+        if (Defaults.getNumberOfComparisonAssessor().getClass() == SpectraPerBinNumberComparisonAssessor.class) {
+            spectraPerBinNumberComparisonAssessor = (SpectraPerBinNumberComparisonAssessor) Defaults.getNumberOfComparisonAssessor();
+        }
+
+        // scan the binary files
+        List<File> filenames = Arrays.stream(peaklistFilenames).map(File::new).collect(Collectors.toList());
+        List<BinaryClusterFileReference> clusterReferences = BinaryFileScanner.scanBinaryFiles(
+                spectraPerBinNumberComparisonAssessor,
+                null,
+                filenames.toArray(new File[filenames.size()]));
+
+        // Create the merger
+        BinaryFileMergingClusterer merger = new BinaryFileMergingClusterer(paralellJobs, finalResultFile, thresholds,
+                false, Defaults.getDefaultPrecursorIonTolerance(), false, tmpDir);
+
+        if (verbose)
+            merger.addProgressListener(this);
+
+        // launch the merging
+        merger.clusterFiles(clusterReferences);
+
+        System.out.println("Result files written to " + finalResultFile.toString());
+    }
+
+    /**
+     * Converts the passed binary files to the cgf format
+     * @param peaklistFilenames
+     * @param finalResultFile
+     */
+    private void convertBinaryFiles(String[] peaklistFilenames, File finalResultFile) throws Exception {
+        FileWriter writer = new FileWriter(finalResultFile);
+
+        String[] options = {"PrideCluster 2.0"};
+
+        DotClusterClusterAppender.INSTANCE.appendStart(writer, options);
+
+        for (String binaryFile : peaklistFilenames) {
+            System.out.println("Converting " + binaryFile + "...");
+
+            BinaryClusterIterable binaryClusterIterable = new BinaryClusterIterable(new ObjectInputStream(new FileInputStream(binaryFile)));
+
+            for (ICluster cluster : binaryClusterIterable) {
+                DotClusterClusterAppender.INSTANCE.appendCluster(writer, cluster);
+            }
+        }
+
+        DotClusterClusterAppender.INSTANCE.appendEnd(writer);
+
+        System.out.println("Result written to " + finalResultFile.toString());
+    }
+
+    /**
+     * Only cluster the passed binary files without merging them.
+     * @param peaklistFilenames
+     * @param finalResultFile
+     */
+    private void clusterBinaryFile(String[] peaklistFilenames, File finalResultFile, int nJobs, List<Float> clusteringThresholds, boolean verbose) throws Exception {
+        if (!finalResultFile.isDirectory()) {
+            throw new Exception("Error: Result file must be a directory.");
+        }
+
+        // add max verbosity to the result files
+        Defaults.setSaveAddingScore(true);
+        Defaults.setSaveDebugInformation(true);
+
+        // create the temporary directory
+        File tmpDir = SpectraClusterStandalone.createTemporaryDirectory("spectra_cluster_cli");
+
+        // count the spectra per bin while scanning the files
+        SpectraPerBinNumberComparisonAssessor spectraPerBinNumberComparisonAssessor = null;
+        if (Defaults.getNumberOfComparisonAssessor().getClass() == SpectraPerBinNumberComparisonAssessor.class) {
+            spectraPerBinNumberComparisonAssessor = (SpectraPerBinNumberComparisonAssessor) Defaults.getNumberOfComparisonAssessor();
+        }
+
+        // scan the binary files
+        List<File> filenames = Arrays.stream(peaklistFilenames).map(File::new).collect(Collectors.toList());
+        List<BinaryClusterFileReference> clusterReferences = BinaryFileScanner.scanBinaryFiles(
+                spectraPerBinNumberComparisonAssessor,
+                null,
+                filenames.toArray(new File[filenames.size()]));
+
+        // set the cluster predicate
+        IPredicate<ICluster> clusterPredicate;
+
+        switch (ClusteringSettings.getLoadingMode()) {
+            case ONLY_IDENTIFIED:
+                clusterPredicate = new ClusterOnlyIdentifiedPredicate();
+                break;
+            case ONLY_UNIDENTIFIED:
+                clusterPredicate = new ClusterOnlyUnidentifiedPredicate();
+                break;
+            default:
+                clusterPredicate = null;
+                break;
+        }
+
+        BinaryFileClusterer binaryFileClusterer = new BinaryFileClusterer(nJobs, finalResultFile,
+                clusteringThresholds, false, tmpDir, clusterPredicate);
+
+        System.out.println(String.format("Clustering %d binary files...", peaklistFilenames.length));
+
+        if (verbose) {
+            System.out.println("Verbose mode active");
+            binaryFileClusterer.addProgressListener(this);
+        }
+
+        // start the clustering
+        binaryFileClusterer.clusterFiles(clusterReferences);
+
+        // TODO: delete temporary directory
+    }
+
+    /**
+     * Merge the passed binary result files into a single binary file.
+     * @param peaklistFilenames
+     * @param finalResultFile
+     */
+    private void mergeBinaryFiles(String[] peaklistFilenames, File finalResultFile) throws Exception {
+        // Create the output file
+        ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(finalResultFile));
+
+        // open the files
+        List<Iterator<ICluster>> clusterIterables = new ArrayList<>(peaklistFilenames.length);
+
+        for (String filename : peaklistFilenames) {
+            clusterIterables.add(new BinaryClusterIterable(new ObjectInputStream(new FileInputStream(filename))).iterator());
+        }
+
+        // read the first clusters from the files
+        Map<Integer, ICluster> currentClusters = new HashMap<>(peaklistFilenames.length);
+
+        for (int i = 0; i < clusterIterables.size(); i++) {
+            Iterator<ICluster> iterator = clusterIterables.get(i);
+            currentClusters.put(i, iterator.next());
+        }
+
+        // always write the lowest cluster to the output file
+        while (true) {
+            int currentLowestIndex = -1;
+            float currentLowestMz = Float.MAX_VALUE;
+
+            for (int i = 0; i < currentClusters.size(); i++) {
+                ICluster cluster = currentClusters.get(i);
+
+                if (cluster == null) {
+                    continue;
+                }
+
+                if (cluster.getPrecursorMz() < currentLowestMz) {
+                    currentLowestIndex = i;
+                    currentLowestMz = cluster.getPrecursorMz();
+                }
+            }
+
+            // if the currentLowestIndex wasn't updated, all iterators are done
+            if (currentLowestIndex == -1) {
+                break;
+            }
+
+            // write the lowest cluster and read the next cluster from that file
+            BinaryClusterAppender.INSTANCE.appendCluster(outputStream, currentClusters.get(currentLowestIndex));
+
+            Iterator<ICluster> iterator = clusterIterables.get(currentLowestIndex);
+            currentClusters.put(currentLowestIndex, iterator.hasNext() ? iterator.next() : null);
+        }
+
+        BinaryClusterAppender.INSTANCE.appendEnd(outputStream);
+        outputStream.close();
+    }
+
+    /**
+     * Convert MGF files into the binary format (first stage of clustering)
+     * @param peaklistFilenames
+     * @param temporaryDirectory
+     */
+    private void createBinaryFiles(String[] peaklistFilenames, File temporaryDirectory, int nJobs) throws Exception {
+        if (!temporaryDirectory.isDirectory()) {
+            throw new Exception("Error: Output path must be set to a directory");
+        }
+
+        // if the binary spectra directory doesn't exist, create it
+        if (!temporaryDirectory.exists()) {
+            if (!temporaryDirectory.mkdir()) {
+                throw new Exception("Failed to create temporary binary directory: " + temporaryDirectory);
+            }
+        }
+
+        // always bin to 2 m/z wide bins
+        int windowSize = 2;
+
+        BinningSpectrumConverter binningSpectrumConverter = new BinningSpectrumConverter(temporaryDirectory,
+                nJobs, false, new FixedReferenceMzBinner(windowSize));
+
+        binningSpectrumConverter.processPeaklistFiles(peaklistFilenames);
+
+        System.out.println("Binary files written to " + temporaryDirectory.toString());
     }
 
     /**
