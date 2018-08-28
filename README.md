@@ -14,6 +14,19 @@ __WARNING__: This software is still in beta phase. We do expect it to still have
 
 ## Changelog
 
+### Version 1.1.0
+
+* Updated to spectra-cluster API version 1.1 Therefore, the following new features are available
+  * Automatically detect the number of comparison to use. This no longer has to be
+    set by the user.
+  * A new command line option was added (`-x_min_adapt_comparison`) that sets a minimum number of
+    comparisons that will always be used (as a correction factor) in case the number learned from the
+    data is smaller. This feature is only recommended when clustering very small datasets.
+* New command line option `-add_scores` was added. This then outputs additional scores to the generated
+  .clustering file. These additional properties are stored as JSON encoded strings.
+* Added command line options to only cluster identified or only cluster unidentified spectra.
+* For a complete list of command line options, please refer to the output of the `-help` option
+
 ### Version 1.0.4
 
 * Updated to spectra-cluster API version 1.0.11. Changes include:
@@ -61,10 +74,10 @@ Open a command line and navigate to the folder where you extracted the spectra-c
 
 This command launches the clustering job using the default values (as used for the [PRIDE Cluster](https://www.ebi.ac.uk/pride/cluster) resource) all available CPU cores and writes the results to my_clustering_result.clustering.
 
-__Note__: You need to replace the spectra-cluster-cli-1.0.3.jar with the name of the downloaded version.
+__Note__: You need to replace the spectra-cluster-cli-1.1.0.jar with the name of the downloaded version.
 
 ```bash
-$ java -jar spectra-cluster-cli-1.0.3.jar -filter immonium_ions -output_path my_clustering_result.clustering C:\my_first_file.mgf C:\my_second_file.mgf
+$ java -jar spectra-cluster-cli-1.1.0.jar -filter immonium_ions -output_path my_clustering_result.clustering C:\my_first_file.mgf C:\my_second_file.mgf
 ```
 
 To improve the clustering accuracy in small datasets (< 100 MS runs) the default value for `-x_min_comparisons` is set to 10,000 (changed in version 1.0.3). When clustering a repository scale dataset, a value of 5,000 is used. Additionally, we recommend to always either use the `immonium_ions` filter, or even filter all peaks below 150 m/z ("-filter mz_150") or even below 200 m/z ("-filter mz_200").
@@ -72,7 +85,7 @@ To improve the clustering accuracy in small datasets (< 100 MS runs) the default
 The full list of options is printed through the -help parameter:
 
 ```bash
-$ java -jar spectra-cluster-cli-1.0-SNAPSHOT.jar -help
+$ java -jar spectra-cluster-cli-1.1.0.jar -help
 ```
 
 
