@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.spectracluster.implementation;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import uk.ac.ebi.pride.spectracluster.normalizer.IIntensityNormalizer;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
@@ -49,6 +50,18 @@ public class ClusteringSettings {
             return null;
         }
     }
+
+    /**
+     * Determines which spectra are loaded for clustering.
+     */
+    public enum LOADING_MODE {
+        ALL,
+        ONLY_IDENTIFIED,
+        ONLY_UNIDENTIFIED
+    }
+
+    public static final LOADING_MODE DEFAULT_LOADING_MODE = LOADING_MODE.ALL;
+    private static LOADING_MODE loadingMode = DEFAULT_LOADING_MODE;
 
     /**
      * This filter is applied to all spectra as soon as they are loaded from file.
@@ -161,6 +174,31 @@ public class ClusteringSettings {
      * If this parameter is set to true, support for comment strings
      * in MGF files is disabled. This increases performance but only
      * works for MGF files that do not contain any comment strings.
+     *
+     * Comment support has been disabled since its strict interpretation
+     * also treats ';' as comment characters which breaks some of the
+     * PRIDE special fields.
      */
-    public static boolean disableMGFCommentSupport = false;
+    public static boolean disableMGFCommentSupport = true;
+
+    /**
+     * If this option is set to a value, this value is used as a PPM threshold.
+     */
+    public static Float ppmThreshold = null;
+
+    /**
+     * Determines which kind of spectra should be loaded for clustering.
+     * @return
+     */
+    public static LOADING_MODE getLoadingMode() {
+        return loadingMode;
+    }
+
+    /**
+     * Determines which type of spectra should be loaded for clustering.
+     * @param loadingMode
+     */
+    public static void setLoadingMode(LOADING_MODE loadingMode) {
+        ClusteringSettings.loadingMode = loadingMode;
+    }
 }

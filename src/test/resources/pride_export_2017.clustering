@@ -1,0 +1,996 @@
+name=GreedyClustering_0.99
+similarity_method=CombinedFisherIntensityTest
+version=1.0.1-SNAPSHOT
+threshold=0.99
+fdr=0
+description=GreedyClustering_0.99
+
+=Cluster=
+id=c8ada97f-094d-409b-8651-3d2efc77dbea
+av_precursor_mz=400.000
+av_precursor_intens=1.0
+sequence=[GLPFILILLAK:1]
+consensus_mz=156.971,187.048,200.770,227.554,241.427,269.934,292.427,300.949,327.677,377.559,378.637,382.087,453.115,490.149,496.113,498.120,499.080,503.184,506.181,548.707,557.202,595.162,622.178,625.538,631.302,634.209,670.392,700.178,716.200
+consensus_intens=13.20,13.67,14.48,14.90,22.59,44.44,38.34,67.05,33.67,59.00,80.64,74.11,84.25,71.08,78.90,143.08,108.33,44.95,197.08,99.23,98.06,38.26,18.03,20.37,40.36,37.55,31.00,15.26,13.38
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000879.mgf#id=index=730133#title=id=PXD000879;Mouse 8_OMSSA.xml;spectrum=1595	true	GLPFILILLAK	400.0	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=64.00369022128015"}
+=Cluster=
+id=f06baf7a-9dc8-4c9b-98ab-51fa3c7ecde9
+av_precursor_mz=400.000
+av_precursor_intens=1.0
+sequence=[AGVPG:1]
+consensus_mz=173.227,201.100,244.321,253.972,271.075,299.439,365.240,366.177,388.811,390.648,391.386
+consensus_intens=63.75,47.48,16.38,16.70,20.97,33.16,422.68,159.73,101.30,73.85,109.09
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4687655#title=id=PXD001383;44274.xml;spectrum=52581	true	AGVPG	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3257921507652215E-4"}
+=Cluster=
+id=cfcc2945-ec19-4afd-9c2c-44dac3ed6365
+av_precursor_mz=400.000
+av_precursor_intens=1.0
+sequence=[TIAP:1]
+consensus_mz=162.271,177.110,191.325,192.507,199.105,214.639,221.355,236.502,258.767,299.175,324.132,337.118,358.928,377.754,391.351
+consensus_intens=11.56,42.73,17.78,19.32,58.31,78.76,61.35,53.24,80.89,94.20,81.66,164.29,67.06,55.07,212.03
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4994117#title=id=PXD001383;44278.xml;spectrum=15005	true	TIAP	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.6570733405097613E-4"}
+=Cluster=
+id=82f28805-860e-4b36-9118-f6bfdd69dee0
+av_precursor_mz=400.000
+av_precursor_intens=1.0
+sequence=[VEPG:2]
+consensus_mz=161.157,171.064,172.274,183.269,184.253,229.204,230.058,256.410,285.151,299.274,334.274,357.390,376.997,390.843,391.449,401.211
+consensus_intens=3.11,6.24,6.76,35.36,8.31,2804.74,227.54,15.84,25.70,38.78,259.13,165.60,295.17,859.78,276.05,24.94
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=2062006#title=id=PXD003924;46251.xml;spectrum=42905	true	VEPG	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.191157918344217E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=952088#title=id=PXD003924;46241.xml;spectrum=42905	true	VEPG	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.191157918344217E-4"}
+=Cluster=
+id=e9a8cfd0-3658-45e4-8685-76e73b3610e2
+av_precursor_mz=400.000
+av_precursor_intens=1.0
+sequence=[EGVP:2]
+consensus_mz=159.094,160.103,175.329,187.122,188.154,228.573,282.213,287.269,288.541,298.857,312.822,371.651,384.864,388.230,393.519
+consensus_intens=368.47,40.37,33.03,708.01,85.11,123.60,61.80,253.02,62.83,192.65,511.48,308.46,162.75,202.23,500.13
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=2116077#title=id=PXD003924;46251.xml;spectrum=97337	true	EGVP	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.1304030166065908E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1006159#title=id=PXD003924;46241.xml;spectrum=97337	true	EGVP	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.1304030166065908E-4"}
+=Cluster=
+id=fda05ea9-dbac-44c9-89b7-9d9f6bf190a2
+av_precursor_mz=400.000
+av_precursor_intens=1.0
+sequence=[EVGP:1]
+consensus_mz=174.436,175.269,199.078,201.267,202.541,229.134,298.189,299.079,342.246,384.870,390.662,391.452,393.477
+consensus_intens=7.73,12.04,13.11,18.88,19.16,18.91,49.21,43.09,93.65,246.83,336.34,275.34,114.25
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1768330#title=id=PXD003924;46249.xml;spectrum=409	true	EVGP	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3189955056942156E-4"}
+=Cluster=
+id=8e205fcc-a965-4c27-a9a4-4dfc895e304f
+av_precursor_mz=400.000
+av_precursor_intens=1.0
+sequence=[SPPT:1]
+consensus_mz=157.378,175.267,178.256,185.309,186.430,204.389,233.538,249.293,265.301,277.242,336.120,361.088,387.775,390.883,393.343
+consensus_intens=17.74,19.12,8.63,41.52,19.40,23.52,25.92,43.59,57.34,51.94,169.03,178.37,79.64,414.99,73.98
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=2528782#title=id=PXD003924;46255.xml;spectrum=32549	true	SPPT	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.049107118470215E-4"}
+=Cluster=
+id=6563a03f-256d-4349-851a-394813969fa5
+av_precursor_mz=400.000
+av_precursor_intens=1.0
+sequence=[GAPVG:1]
+consensus_mz=155.293,165.239,166.587,175.205,185.166,231.296,274.216,275.130,282.214,289.309,369.858,378.392,379.237,388.220,391.440
+consensus_intens=5.16,6.46,3.68,8.61,7.58,31.44,455.04,119.95,11.00,13.36,32.82,873.98,75.31,101.99,339.81
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3286006#title=id=PXD003924;46821.xml;spectrum=47881	true	GAPVG	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.5638529656529515E-4"}
+=Cluster=
+id=c10e9a74-9407-4d26-8fe5-5ff23d151a15
+av_precursor_mz=400.000
+av_precursor_intens=1.0
+sequence=[GAPR:1]
+consensus_mz=187.106,188.073,189.082,190.204,199.119,288.253,289.140,295.131,296.078,297.078,300.270,359.291,360.171,360.806,390.714
+consensus_intens=39.00,28.19,29.95,18.83,12.39,331.85,196.11,353.41,206.90,101.14,25.07,74.67,93.35,64.87,23.85
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3498369#title=id=PXD003924;46823.xml;spectrum=11385	true	GAPR	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.1568757550334842E-4"}
+=Cluster=
+id=1734e762-35fe-442d-82b7-736525e28289
+av_precursor_mz=400.000
+av_precursor_intens=1.0
+sequence=[EMNIPPAHMK:1,ENYPMK:1,GVPGA:1,KVAMIQGSPVHRMK:1]
+consensus_mz=167.067,175.265,180.029,199.155,253.214,261.248,294.072,295.215,299.163,367.920,379.660,382.121,383.259,391.009,468.287,476.082,489.053,494.747,499.036,505.382,526.415,538.507,539.430,543.493,652.592,685.368
+consensus_intens=5.94,77.50,178.21,81.40,79.18,80.08,274.76,88.37,182.01,302.70,275.65,316.99,269.66,356.88,60.15,61.56,93.83,85.38,194.75,104.73,68.60,163.55,74.88,88.94,64.11,135.26
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5360486#title=id=PXD001383;44282.xml;spectrum=55174	true	ENYPMK	400.00003	2		5-UNIMOD:35	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.817648727173469E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5360485#title=id=PXD001383;44282.xml;spectrum=55173	true	GVPGA	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=5.549710161600216E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5360488#title=id=PXD001383;44282.xml;spectrum=55176	true	KVAMIQGSPVHRMK	400.00018	4		13-UNIMOD:35	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=8.671041121094679E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5360487#title=id=PXD001383;44282.xml;spectrum=55175	true	EMNIPPAHMK	400.00012	3		2-UNIMOD:35,9-UNIMOD:35	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.3291533304625232E-4"}
+=Cluster=
+id=ffa1039b-21ed-429a-85c3-7f552cb3a1fe
+av_precursor_mz=400.001
+av_precursor_intens=1.0
+sequence=[QAYAYTKSHK:1,VSPPFPPG:1]
+consensus_mz=159.200,173.100,175.200,186.000,187.100,201.200,268.300,283.200,286.300,290.300,321.200,354.200,381.300,382.200,383.200,457.800,458.800,465.000,485.800,496.400,556.400,598.300,599.300,610.400,611.200,612.300
+consensus_intens=71.49,119.92,47.89,25.79,34.11,106.28,36.43,279.14,60.03,35.06,169.59,72.45,83.36,250.95,176.14,312.43,82.54,24.29,31.79,22.51,21.28,276.00,66.44,31.38,128.25,44.34
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2265825#title=id=PXD001383;37536.xml;spectrum=2493	true	QAYAYTKSHK	400.00052	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3411368961047126E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2265824#title=id=PXD001383;37536.xml;spectrum=2492	true	VSPPFPPG	400.00052	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=4.2799704893166547E-4"}
+=Cluster=
+id=34332476-4b22-4c39-8262-89c0383ac392
+av_precursor_mz=400.001
+av_precursor_intens=1.0
+sequence=[NKYVGVSLVGK:1]
+consensus_mz=173.128,228.183,244.179,251.068,266.179,291.215,347.711,348.238,378.247,383.248,397.245,425.756,426.257,447.306,461.293,475.290,509.801,510.302,510.804,518.806,519.308,605.343,666.426,694.413,793.480,850.507,851.510,874.496,949.571,1018.594,1019.599
+consensus_intens=15.05,14.69,12.42,16.65,16.43,77.34,62.68,311.68,82.46,47.47,66.99,166.37,71.33,90.67,63.49,64.22,157.04,90.08,21.56,71.07,36.00,13.65,8.75,17.80,11.97,37.37,16.31,8.19,10.07,18.89,6.79
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD006536.mgf#id=index=11412#title=id=PXD006536;Bart_Rice_iTRAQ_09_FT_19May16_Pippin_16-03-37.mgf;index=11664	true	NKYVGVSLVGK	400.0008	4		0-214,2-214,11-214	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.006340514697397975"}
+=Cluster=
+id=9afa6f09-4bc6-46a0-81d1-60ed957b3ee1
+av_precursor_mz=400.001
+av_precursor_intens=1.0
+sequence=[ELRAEIARLK:1,QNAPSRK:1]
+consensus_mz=173.100,175.100,199.100,225.100,242.100,286.200,293.100,299.200,373.200,381.200,383.200,384.900,390.400,401.100,427.200,428.400,444.200,474.100,558.100,559.200,571.300,585.300,597.200,653.200,669.300,671.300,686.200,687.300
+consensus_intens=25.29,18.55,27.21,76.00,202.97,63.49,40.54,131.10,100.73,110.76,174.53,95.65,326.79,67.89,37.79,19.52,50.71,37.11,638.19,177.41,28.58,27.90,41.50,21.16,41.36,35.73,117.09,42.60
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1963073#title=id=PXD001383;36522.xml;spectrum=483	true	ELRAEIARLK	400.00113	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.0097132658631302E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1963072#title=id=PXD001383;36522.xml;spectrum=482	true	QNAPSRK	400.00113	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.1802721883314478E-4"}
+=Cluster=
+id=ba749d37-89ee-409f-b002-f82796986306
+av_precursor_mz=400.001
+av_precursor_intens=1.0
+sequence=[NLLHPNEKAK:1]
+consensus_mz=158.093,159.092,175.119,183.113,200.139,228.162,259.153,291.215,293.675,332.056,332.682,351.723,362.253,399.420,446.403,478.765,480.469,484.425,485.055,501.786,502.283,527.311,555.828,556.335,600.348,612.373,612.870,617.363,653.881,1079.632
+consensus_intens=15.02,10.67,61.68,10.65,51.40,153.20,35.57,51.89,47.06,135.51,972.96,29.79,70.92,8447.15,327.29,193.91,169.99,851.71,258.86,33.96,19.24,23.56,19.48,15.40,28.80,66.63,28.72,13.74,16.44,12.44
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD006536.mgf#id=index=143020#title=id=PXD006536;Bart_Rice_iTRAQ_05_FT_19May16_Pippin_16-03-37.mgf;index=9139	true	NLLHPNEKAK	400.0015	4		0-214,8-214,10-214	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.3473543054473202"}
+=Cluster=
+id=038aa580-ad74-4493-8536-21f042ad32b8
+av_precursor_mz=400.002
+av_precursor_intens=1.0
+sequence=[DLCVPAFLSCLFK:1,GVPGA:1,ISPLSPGK:1,VIAILSLALRK:1]
+consensus_mz=185.020,191.241,194.615,199.282,203.089,219.035,283.649,291.714,298.899,343.282,371.590,388.147,390.824,391.733,411.380,421.440,424.314,477.308,479.100,578.453,579.580,588.384,596.339,597.383,652.501,685.468
+consensus_intens=46.14,49.79,2.30,86.98,750.05,88.11,58.51,56.80,130.79,561.04,217.46,201.81,1759.55,142.12,136.90,74.51,83.91,111.68,61.19,173.60,71.81,69.73,938.83,334.87,39.27,42.85
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3829842#title=id=PXD003924;46825.xml;spectrum=99993	true	GVPGA	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=7.824722262209651E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3829843#title=id=PXD003924;46825.xml;spectrum=99994	true	ISPLSPGK	400.0018	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.560938922063405E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3829845#title=id=PXD003924;46825.xml;spectrum=99996	true	DLCVPAFLSCLFK	400.00195	4		3-UNIMOD:4,10-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.395080195253262E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3829844#title=id=PXD003924;46825.xml;spectrum=99995	true	VIAILSLALRK	400.0019	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.508390880201933E-5"}
+=Cluster=
+id=1469183a-5bb3-41b2-892d-04d7b96335cc
+av_precursor_mz=400.002
+av_precursor_intens=1.0
+sequence=[HISILKDNPK:1]
+consensus_mz=163.119,173.129,175.119,179.065,194.638,228.183,234.633,241.646,282.169,291.216,301.200,381.235,388.270,389.273,399.227,401.412,445.271,464.274,482.285,484.459,501.316,501.815,502.319,526.841,577.359,601.872,615.353,617.338,701.430,745.437,858.519,951.576
+consensus_intens=95.04,24.10,26.05,48.29,66.28,33.38,85.29,64.29,114.74,162.01,77.25,23.18,183.05,32.84,11.03,139.69,58.42,81.90,48.16,118.93,44.64,67.23,55.72,30.64,29.90,11.63,14.53,11.96,16.78,10.93,11.32,12.03
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD006536.mgf#id=index=141015#title=id=PXD006536;Bart_Rice_iTRAQ_05_FT_19May16_Pippin_16-03-37.mgf;index=7097	true	HISILKDNPK	400.0018	4		0-214,6-214,10-214	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.4519095443794E-6"}
+=Cluster=
+id=0e6d21ab-a6a0-43ee-b62f-722823214ca0
+av_precursor_mz=400.002
+av_precursor_intens=1.0
+sequence=[NVTLPAVFK:3]
+consensus_mz=153.117,169.102,187.146,255.262,268.189,282.506,289.369,299.806,301.228,310.271,357.899,366.885,383.280,419.265,433.446,450.809,451.346,489.963,500.385,518.305,522.322,540.414,598.393,601.369,619.385,635.457,636.467,697.458,704.457,714.449,732.511,768.495,865.550,900.575
+consensus_intens=136.66,203.32,25.31,77.43,101.96,58.02,457.64,210.02,156.54,110.30,636.69,181.04,101.71,300.35,1231.02,50.37,384.98,141.98,112.82,138.32,24.58,78.67,295.27,207.67,163.53,9.35,14.61,96.39,6.63,37.25,233.54,63.08,9.90,47.00
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000445.mgf#id=index=211550#title=id=PXD000445;PRIDE_Exp_Complete_Ac_31035.xml;spectrum=44254	true	NVTLPAVFK	400.00137	4		0-UNIMOD:730,9-UNIMOD:730	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.0010600126444557266"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000445.mgf#id=index=176022#title=id=PXD000445;PRIDE_Exp_Complete_Ac_31033.xml;spectrum=43921	true	NVTLPAVFK	400.00238	4		0-UNIMOD:730,9-UNIMOD:730	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.884633854608161E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000445.mgf#id=index=158835#title=id=PXD000445;PRIDE_Exp_Complete_Ac_31032.xml;spectrum=45212	true	NVTLPAVFK	400.00198	4		0-UNIMOD:730,9-UNIMOD:730	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.1565680716342691E-4"}
+=Cluster=
+id=a482c00a-318c-4916-bfe8-2e67dd2ff5ed
+av_precursor_mz=400.002
+av_precursor_intens=1.0
+sequence=[DPTTVTTLRVP:1,LNSPSPGK:1]
+consensus_mz=158.100,175.100,185.200,213.100,244.400,293.900,298.600,350.500,379.900,381.300,382.300,393.400,414.900,450.600,484.700,485.500,494.300,502.400,526.900,527.900,543.800,591.100,615.500
+consensus_intens=29.65,110.03,38.12,37.95,104.43,156.88,21.18,150.20,227.81,227.98,116.52,370.48,86.33,177.41,83.64,162.40,161.54,32.73,82.10,33.92,59.94,57.45,49.88
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=571465#title=id=PXD000593;33750.xml;spectrum=6940	true	DPTTVTTLRVP	400.002	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.2321303964123817E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=571464#title=id=PXD000593;33750.xml;spectrum=6939	true	LNSPSPGK	400.002	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.4213556563516407E-4"}
+=Cluster=
+id=c0865576-1d82-4bcc-bb7e-55f02916279b
+av_precursor_mz=400.002
+av_precursor_intens=1.0
+sequence=[AVPD:1,FSHLFDNEST:1,M*SESVET:1,NIELSLELTLGNDAP:1]
+consensus_mz=159.232,175.184,187.176,199.049,207.137,208.382,235.054,236.236,269.424,357.708,376.705,381.285,390.400,391.090,450.158,451.224,470.863,488.290,494.930,550.479,563.311,564.302,565.502,566.402,613.366,615.337,650.442,651.498,652.693
+consensus_intens=5.93,5.49,4.67,3.76,149.50,119.00,388.84,223.10,147.52,272.17,288.34,252.79,434.88,341.19,207.43,132.64,90.16,131.28,80.64,63.60,558.09,343.95,77.94,66.69,90.02,6.26,229.38,93.35,50.74
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=2236774#title=id=PXD003924;46252.xml;spectrum=98323	true	FSHLFDNEST	400.00284	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.0949257572786927E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=2236775#title=id=PXD003924;46252.xml;spectrum=98324	true	NIELSLELTLGNDAP	400.0029	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.089971848113702E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=2236772#title=id=PXD003924;46252.xml;spectrum=98321	true	AVPD	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.4417905664728523E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=2236773#title=id=PXD003924;46252.xml;spectrum=98322	true	M*SESVET	400.00275	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.0957940216830361E-4"}
+=Cluster=
+id=2e7f0877-cc63-41c1-81b9-1a93a33e2e40
+av_precursor_mz=400.003
+av_precursor_intens=1.0
+sequence=[KYGLVLMVNK:1,LMFLISILFLAR:1,TSLMLRIHPIK:1,WPLRFVIIHK:1]
+consensus_mz=161.118,162.118,163.120,164.123,183.113,200.139,228.144,248.653,262.651,274.152,376.214,376.715,387.235,388.231,389.234,432.756,457.289,458.292,496.299,497.302,522.290,524.294,525.297,526.299,580.357,609.384,637.379,638.382,751.421,752.423,864.506
+consensus_intens=64.67,37.03,2149.82,84.93,60.54,177.35,2263.33,336.87,242.12,243.37,806.28,303.02,316.88,1527.67,260.52,84.83,263.88,61.27,244.23,54.70,21.48,576.01,142.64,30.93,26.67,1.68,61.83,14.70,95.34,34.58,5.23
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003656.mgf#id=index=4788398#title=id=PXD003656;FN15_Mouseretina_set1_180min_10ug_C1_100715_PEMMR.mgf;index=58392	true	WPLRFVIIHK	400.00317	4		0-214,10-214	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.5809455323266353"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003656.mgf#id=index=5984488#title=id=PXD003656;FN14_Mouseretina_set2_180min_10ug_C1_091213_PEMMR.mgf;index=67078	true	KYGLVLMVNK	400.0033	4		0-214,1-214,10-214	0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.5014033305712223"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003656.mgf#id=index=2058358#title=id=PXD003656;FN15_Mouseretina_set3_180min_10ug_C2_101015_PEMMR.mgf;index=58943	true	LMFLISILFLAR	400.0	4		0-214,2-35	0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.5329848929619818"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003656.mgf#id=index=4788993#title=id=PXD003656;FN15_Mouseretina_set1_180min_10ug_C1_100715_PEMMR.mgf;index=59091	true	TSLMLRIHPIK	400.00317	4		0-214,11-214	0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.5706356631160541"}
+=Cluster=
+id=bcf33053-448a-40c8-8185-5e8f43ee3147
+av_precursor_mz=400.003
+av_precursor_intens=1.0
+sequence=[SSKRVFSLLK:1]
+consensus_mz=171.113,199.126,234.620,247.194,247.695,291.209,292.219,319.673,320.175,362.217,376.216,376.716,404.300,405.303,468.233,483.264,483.764,517.385,518.388,553.315,579.305,581.317,638.340,639.337,662.359,723.432,751.422,752.429,965.511,966.518
+consensus_intens=11.24,91.73,23.39,59.69,42.14,1357.37,38.29,211.13,57.04,135.25,97.17,45.28,280.67,49.97,108.52,279.77,135.44,20.99,6.18,9.66,5.21,40.91,95.44,33.07,5.69,6.06,28.98,7.79,30.80,21.69
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD006536.mgf#id=index=227951#title=id=PXD006536;Bart_Rice_iTRAQ_02_FT_19May16_Pippin_16-03-37.mgf;index=27120	true	SSKRVFSLLK	400.0031	4		0-214,3-214,10-214	0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.1952934505245251"}
+=Cluster=
+id=3a15de20-2d7e-4863-8a02-f7b5ea913e7b
+av_precursor_mz=400.003
+av_precursor_intens=1.0
+sequence=[EPRDPW:1,FGWGDIASTFV:1,HSGT:1,TIHTASETNGMGPPEG:1]
+consensus_mz=152.281,175.182,177.261,185.045,187.240,205.058,222.232,287.283,293.296,299.060,338.158,377.064,378.760,383.204,384.277,418.163,454.388,494.418,497.590,498.764,518.752,526.005,526.939,527.546,528.242,745.889,808.477,810.429
+consensus_intens=3.56,39.50,137.43,5.21,4.59,221.77,63.53,46.15,38.82,7.22,137.33,133.76,632.90,107.82,133.94,88.25,72.81,91.43,1142.35,81.66,51.56,3640.04,350.59,109.46,42.30,2.38,38.82,8.56
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1881659#title=id=PXD003924;46249.xml;spectrum=114353	true	HSGT	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3358859701459753E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1881660#title=id=PXD003924;46249.xml;spectrum=114354	true	EPRDPW	400.00357	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.2582516280500213E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1881661#title=id=PXD003924;46249.xml;spectrum=114355	true	FGWGDIASTFV	400.00366	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.2120826752150095E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1881662#title=id=PXD003924;46249.xml;spectrum=114356	true	TIHTASETNGMGPPEG	400.00372	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.1854101102810607E-4"}
+=Cluster=
+id=e075098d-875e-4359-b71b-35ebcf124a02
+av_precursor_mz=400.004
+av_precursor_intens=1.0
+sequence=[NLPGVFTLK:4]
+consensus_mz=153.110,155.082,163.045,187.134,193.064,201.185,219.193,221.146,254.150,282.702,305.210,376.867,382.169,397.758,399.177,419.254,420.257,450.318,451.317,452.319,524.325,532.339,533.335,533.835,564.403,665.447,666.449,669.384,686.415,687.415,757.485,785.480,786.485,794.509,812.516,813.518,932.543,933.552,968.610,1046.335,1088.681,1166.688
+consensus_intens=411.17,156.63,171.02,21.10,39.41,96.17,155.52,43.80,76.21,76.37,99.42,86.06,303.05,60.99,1165.70,755.70,66.91,87.88,1034.39,80.78,137.69,636.75,898.72,192.73,250.71,115.96,22.23,16.32,227.70,40.04,3.02,226.34,44.09,10.09,34.84,17.96,15.18,6.36,2.57,21.22,19.16,19.77
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000264.mgf#id=index=38415#title=id=PXD000264;PRIDE_Exp_Complete_Ac_29554.xml;spectrum=59413	true	NLPGVFTLK	400.0029	4		0-UNIMOD:730,9-UNIMOD:730	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=4.4284063284688414E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000264.mgf#id=index=60668#title=id=PXD000264;PRIDE_Exp_Complete_Ac_29555.xml;spectrum=35019	true	NLPGVFTLK	400.005	4		0-UNIMOD:730,9-UNIMOD:730	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=5.716660896395063E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000264.mgf#id=index=80917#title=id=PXD000264;PRIDE_Exp_Complete_Ac_29556.xml;spectrum=35107	true	NLPGVFTLK	400.00485	4		0-UNIMOD:730,9-UNIMOD:730	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=5.2770016186157955E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000264.mgf#id=index=142906#title=id=PXD000264;PRIDE_Exp_Complete_Ac_29559.xml;spectrum=69825	true	NLPGVFTLK	400.00046	4		0-UNIMOD:730,9-UNIMOD:730	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=4.7240558493311536E-5"}
+=Cluster=
+id=f12cfb67-85bf-45ae-8284-e24b1c53ea40
+av_precursor_mz=400.004
+av_precursor_intens=1.0
+sequence=[ALKDVKGQIGAP:1,IAELESH:1]
+consensus_mz=155.100,157.000,175.200,185.000,199.200,200.100,215.200,243.200,272.200,273.200,313.300,314.200,327.700,372.300,383.300,427.200,473.800,483.800,485.300,486.300,506.200,507.100,517.200,542.700,596.300,614.300,615.400,634.200,635.300,675.100,747.500
+consensus_intens=194.51,241.94,29.48,169.84,14.57,29.59,33.60,56.74,153.92,41.90,49.94,32.92,42.99,50.23,54.25,102.50,71.33,78.84,148.95,48.14,670.34,93.33,191.33,57.61,56.07,420.23,131.93,56.92,40.95,108.13,15.18
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2486664#title=id=PXD001383;37554.xml;spectrum=3824	true	ALKDVKGQIGAP	400.00366	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.869383723970148E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2486663#title=id=PXD001383;37554.xml;spectrum=3823	true	IAELESH	400.00366	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.510556586654495E-4"}
+=Cluster=
+id=6a3a4de6-2b7f-4f76-9f53-9265a5035dc4
+av_precursor_mz=400.004
+av_precursor_intens=1.0
+sequence=[AGAAGPEPK:1,KRLEEASLLH:1]
+consensus_mz=158.100,175.100,200.100,226.200,244.100,245.200,271.300,319.800,328.400,383.300,386.100,390.400,407.200,412.300,426.300,430.300,455.200,527.200,528.200,529.200,554.300,555.200,651.400,652.400,655.400,656.300,669.400,700.500
+consensus_intens=29.03,32.88,43.37,160.05,364.23,59.32,47.98,37.56,178.22,38.52,40.34,79.87,45.22,40.06,14.31,11.44,11.26,1110.42,326.44,93.37,429.50,142.60,52.83,20.07,133.80,63.99,55.53,25.11
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2158167#title=id=PXD001383;37222.xml;spectrum=398	true	AGAAGPEPK	400.00388	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.5651904733526985E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2158168#title=id=PXD001383;37222.xml;spectrum=399	true	KRLEEASLLH	400.00388	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.675655311752297E-4"}
+=Cluster=
+id=b84aadc6-cc27-4f82-bd25-c422cb25d83f
+av_precursor_mz=400.004
+av_precursor_intens=1.0
+sequence=[GAPGV:1,HFVASMEEALHRR:1,INRGSPSLLIK:1,QPSPSGPK:1]
+consensus_mz=155.166,175.222,194.139,211.241,228.239,244.226,272.202,297.210,382.152,383.059,388.029,391.045,393.045,409.454,478.775,479.739,484.828,485.705,508.793,528.507,555.543,572.258,573.482,669.505
+consensus_intens=3.58,112.03,4.57,84.15,159.71,227.68,158.74,83.80,219.31,515.63,353.24,508.04,341.76,76.34,62.79,96.87,141.82,86.88,151.12,85.99,87.64,610.85,195.28,40.19
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5121896#title=id=PXD001383;44280.xml;spectrum=552	true	HFVASMEEALHRR	400.0049	4		6-UNIMOD:35	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.956435636601157E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5121894#title=id=PXD001383;44280.xml;spectrum=550	true	QPSPSGPK	400.00476	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.8096271290012422E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5121893#title=id=PXD001383;44280.xml;spectrum=549	true	GAPGV	400.0	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.9824195793730136E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5121895#title=id=PXD001383;44280.xml;spectrum=551	true	INRGSPSLLIK	400.00485	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.5612965928228138E-4"}
+=Cluster=
+id=d1bc3f83-c4e6-48cf-a047-7a40be550d1e
+av_precursor_mz=400.004
+av_precursor_intens=1.0
+sequence=[LLGGLAVR:1,RQCLCCFK:1]
+consensus_mz=171.200,175.100,187.100,197.100,199.200,215.100,227.200,279.100,286.100,294.200,345.200,371.300,381.300,382.200,383.300,409.200,454.400,455.400,458.400,459.300,507.200,522.200,572.200,573.300,574.300,616.500,624.400,637.300,685.400,686.500
+consensus_intens=22.55,17.57,16.28,22.60,403.58,196.18,407.99,121.10,126.00,211.61,91.45,42.68,69.84,44.31,49.36,22.40,47.90,15.73,21.72,11.95,139.48,258.96,1030.21,303.95,27.82,14.33,10.99,74.40,29.74,16.39
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=931055#title=id=PXD000593;35964.xml;spectrum=7928	true	RQCLCCFK	400.00443	3		3-UNIMOD:4,5-UNIMOD:4,6-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.3000711207632603E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=931054#title=id=PXD000593;35964.xml;spectrum=7927	true	LLGGLAVR	400.00443	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.4763603182932684E-4"}
+=Cluster=
+id=d83cb99a-7726-4ad2-b55b-c2cbe7c22edc
+av_precursor_mz=400.005
+av_precursor_intens=1.0
+sequence=[GAACYSALSGVAK:1]
+consensus_mz=215.729,233.761,245.928,247.819,256.825,322.982,351.180,381.961,385.047,388.782,448.101,449.054,452.168,464.177,499.685,513.221,543.112,547.997,556.085,574.097,613.179,626.206,652.189,669.263,670.500,840.179,870.348
+consensus_intens=49.46,28.19,21.71,138.48,67.20,144.76,52.43,49.04,95.12,113.47,120.69,83.77,78.62,73.47,130.57,95.66,90.51,36.91,48.96,48.82,42.35,20.57,27.95,41.42,24.63,23.49,51.07
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000876.mgf#id=index=86374#title=id=PXD000876;163_OMSSA.xml;spectrum=160331	true	GAACYSALSGVAK	400.005	3			0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=65681.52563032396"}
+=Cluster=
+id=4f8d4fce-c0f6-4f56-9616-4ef94d316e28
+av_precursor_mz=400.006
+av_precursor_intens=1.0
+sequence=[LQTNGAVP:1,QRKLIQQGPK:1]
+consensus_mz=152.200,175.200,187.200,188.200,197.100,215.100,216.200,260.200,263.600,286.200,325.300,336.000,383.300,391.000,392.100,444.300,445.300,456.400,457.400,470.300,525.300,558.400,567.500,584.400,585.400,639.400,652.500,685.500,686.400,695.500
+consensus_intens=16.77,18.85,179.06,18.71,24.06,262.20,39.05,23.20,15.06,23.93,111.32,47.46,66.61,75.36,48.97,51.36,49.24,322.67,74.30,19.86,120.18,140.20,135.08,833.03,268.10,56.37,49.48,249.18,130.94,47.07
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=195133#title=id=PXD001383;28294.xml;spectrum=3034	true	LQTNGAVP	400.00595	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=7.07524401292684E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=195134#title=id=PXD001383;28294.xml;spectrum=3035	true	QRKLIQQGPK	400.00595	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.48932886101906E-5"}
+=Cluster=
+id=d9aaa64c-a9f0-44f1-b1a8-1c6a40f7412e
+av_precursor_mz=400.006
+av_precursor_intens=1.0
+sequence=[KTGTALPGGEGPL:1,QTVSPAVP:1]
+consensus_mz=158.300,175.100,195.100,213.100,230.200,231.200,286.200,299.200,335.800,369.100,377.900,378.700,390.900,425.500,470.200,483.600,484.400,494.000,569.300,582.200,586.400,588.300,596.300,607.400,608.400,626.300,627.300,670.200,760.500
+consensus_intens=21.70,25.43,31.83,27.17,112.62,50.30,28.40,28.04,128.58,131.86,726.67,79.31,103.46,61.30,92.61,197.45,59.97,44.26,51.06,53.37,30.55,23.84,44.05,106.22,40.93,445.10,138.30,48.97,22.21
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=192785#title=id=PXD001383;28294.xml;spectrum=680	true	KTGTALPGGEGPL	400.00607	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.882211684169737E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=192784#title=id=PXD001383;28294.xml;spectrum=679	true	QTVSPAVP	400.00607	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=7.426658976222922E-5"}
+=Cluster=
+id=2ab8e0c8-d6ea-48cd-aae1-7610bf273aa8
+av_precursor_mz=400.006
+av_precursor_intens=1.0
+sequence=[QVVIANR:2,AALAAARILAEK:1,ATGEVDRFFR:1]
+consensus_mz=175.061,252.181,255.264,256.244,272.300,288.245,341.835,353.179,361.581,362.461,370.411,440.436,454.518,468.565,469.438,473.026,500.573,512.436,526.416,554.338,573.465,628.339
+consensus_intens=149.02,61.72,148.35,104.35,152.34,200.94,325.97,119.34,170.67,139.00,356.35,195.41,71.78,59.51,189.52,46.16,33.39,48.08,91.54,34.43,127.96,33.57
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000090.mgf#id=index=398676#title=id=PXD000090;PRIDE_Exp_Complete_Ac_27998.xml;spectrum=2520	true	QVVIANR	400.00034	2			0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.6608410493827162"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000090.mgf#id=index=398677#title=id=PXD000090;PRIDE_Exp_Complete_Ac_27998.xml;spectrum=2521	true	AALAAARILAEK	400.00046	3			0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.5455966649296509"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000090.mgf#id=index=398647#title=id=PXD000090;PRIDE_Exp_Complete_Ac_27998.xml;spectrum=2491	true	QVVIANR	400.01035	2			0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.78615522608558"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000090.mgf#id=index=398648#title=id=PXD000090;PRIDE_Exp_Complete_Ac_27998.xml;spectrum=2492	true	ATGEVDRFFR	400.01044	3			0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.4794344473007712"}
+=Cluster=
+id=d605d83c-eba5-46e4-bff0-85be8475e702
+av_precursor_mz=400.007
+av_precursor_intens=1.0
+sequence=[LGEHNID:1,LLVGAPLLMDR:1]
+consensus_mz=171.100,172.200,226.200,228.100,244.100,247.100,299.400,310.400,318.800,332.800,381.300,390.500,407.300,408.200,437.200,438.200,498.300,500.200,551.200,552.200,555.200,556.200,664.300,665.300,666.300,670.400,684.300
+consensus_intens=45.12,16.23,46.79,46.99,52.68,73.53,37.29,55.90,379.37,89.99,54.96,145.95,52.50,15.30,70.45,33.95,20.51,33.03,171.16,71.46,243.90,91.29,737.94,295.41,94.14,124.81,201.05
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2071041#title=id=PXD001383;36762.xml;spectrum=2536	true	LLVGAPLLMDR	400.00677	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.7535899380695514E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2071040#title=id=PXD001383;36762.xml;spectrum=2535	true	LGEHNID	400.00677	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.770898249950515E-4"}
+=Cluster=
+id=de7835b9-d9f4-46d2-87b8-55f96d97f69e
+av_precursor_mz=400.007
+av_precursor_intens=1.0
+sequence=[HPLFER:1,HRAGDPSQCR:1]
+consensus_mz=158.100,175.100,176.100,183.100,184.200,210.300,211.300,212.200,235.100,236.200,330.300,331.400,348.500,390.900,391.900,451.300,452.300,453.400,487.600,495.500,526.400,543.400,564.400,565.400,566.400,606.400,624.500,661.400,662.500,663.500,740.600
+consensus_intens=11.06,93.76,12.15,53.31,13.38,5.38,49.73,6.16,468.41,53.66,43.58,416.41,16.52,340.30,26.29,172.56,60.84,5.84,7.35,6.30,4.61,3.38,493.33,149.99,10.58,65.65,89.20,1275.38,508.38,78.17,5.43
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=271279#title=id=PXD001383;28401.xml;spectrum=2769	true	HRAGDPSQCR	400.00702	3		9-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.9376594050655267E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=271278#title=id=PXD001383;28401.xml;spectrum=2768	true	HPLFER	400.00702	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.4509711158442666E-4"}
+=Cluster=
+id=e6bd27b3-ad31-4a6d-bd83-51a444eeb209
+av_precursor_mz=400.007
+av_precursor_intens=1.0
+sequence=[EDFKKLIK:1]
+consensus_mz=159.091,163.119,175.119,188.151,191.118,216.157,244.179,259.152,291.215,292.218,301.200,358.221,372.273,388.575,399.412,441.762,450.835,460.789,484.449,485.039,517.383,521.756,531.302,557.865,589.855,616.900,617.406,618.387,653.902,654.405
+consensus_intens=16.62,22.82,23.90,21.00,24.60,192.45,14.39,16.34,85.95,13.07,80.04,17.81,167.28,1378.69,73309.63,382.24,183.62,294.34,1731.18,343.08,15.65,12.09,19.63,13.40,13.56,28.38,16.54,24.72,44.90,37.92
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD006536.mgf#id=index=141313#title=id=PXD006536;Bart_Rice_iTRAQ_05_FT_19May16_Pippin_16-03-37.mgf;index=7399	true	EDFKKLIK	400.0073	4		0-214,4-214,5-214,8-214	0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.00481680353758686"}
+=Cluster=
+id=461ba991-02c2-4b04-bffe-73090d638e94
+av_precursor_mz=400.008
+av_precursor_intens=1.0
+sequence=[WHLRVWLLGK:1]
+consensus_mz=161.114,163.120,164.123,195.087,230.199,255.108,258.194,289.200,291.215,317.641,331.990,341.296,348.237,369.701,416.252,416.753,430.249,430.751,461.309,511.305,511.806,553.853,567.848,574.350,602.305,605.390,788.457,828.506,829.511,831.494,859.492,860.497,944.575,972.581,973.576
+consensus_intens=10.22,326.63,14.06,8.35,12.69,12.33,24.16,18.81,59.16,120.40,603.84,2720.30,369.54,442.90,55.53,30.91,107.39,48.44,395.72,29.93,19.21,7.70,9.12,132.02,21.91,15.35,8.15,21.18,10.03,15.30,41.10,23.90,11.03,10.49,11.75
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD006536.mgf#id=index=144673#title=id=PXD006536;Bart_Rice_iTRAQ_05_FT_19May16_Pippin_16-03-37.mgf;index=10811	true	WHLRVWLLGK	400.0076	4		0-214,10-214	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.043003202360389535"}
+=Cluster=
+id=818884ea-f95a-49a6-849d-6c837ed37378
+av_precursor_mz=400.008
+av_precursor_intens=1.0
+sequence=[HQAEMAL:1,MAAAALRAPTQV:1,SLGLPLSEQARAAGAR:1,TPPS:1]
+consensus_mz=154.812,173.123,175.021,185.133,199.107,202.955,233.224,235.149,266.065,275.221,337.078,337.887,354.231,382.159,391.234,426.707,460.534,464.869,481.330,499.028,515.864,523.921,533.857,543.931,545.967
+consensus_intens=19.92,69.56,21.91,75.71,38.69,288.26,71.21,97.05,1828.31,98.48,6836.36,199.33,106.50,68.22,70.18,15.68,17.37,24.80,15.44,48.45,11.34,11.66,11.47,14.13,12.94
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5471025#title=id=PXD001383;44286.xml;spectrum=15759	true	MAAAALRAPTQV	400.00714	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.5659936993910907E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5471024#title=id=PXD001383;44286.xml;spectrum=15758	true	HQAEMAL	400.00705	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.594235542881516E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5471026#title=id=PXD001383;44286.xml;spectrum=15760	true	SLGLPLSEQARAAGAR	400.0072	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.5670868186314917E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5471023#title=id=PXD001383;44286.xml;spectrum=15757	true	TPPS	400.01	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.805822313680173E-4"}
+=Cluster=
+id=a0503389-9f91-436d-acf1-7ac3358f9728
+av_precursor_mz=400.008
+av_precursor_intens=1.0
+sequence=[DATAYRKVLK:1]
+consensus_mz=232.641,277.170,291.215,292.219,298.188,346.696,388.425,388.858,398.075,399.428,441.724,452.316,483.849,484.458,485.053,503.367,509.829,524.309,538.313,548.284,653.902,654.404,675.356,732.379,759.524,792.448,820.445
+consensus_intens=26.57,13.58,117.12,13.43,24.18,149.48,237.31,115.88,100.35,8088.88,170.58,126.36,128.41,1092.19,245.07,42.26,18.14,18.93,21.84,19.63,24.73,18.59,9.32,9.22,26.72,12.39,9.30
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD006536.mgf#id=index=176100#title=id=PXD006536;Bart_Rice_iTRAQ_06_FT_19May16_Pippin_16-03-37.mgf;index=8571	true	DATAYRKVLK	400.0082	4		0-214,7-214,10-214	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.26953852940866296"}
+=Cluster=
+id=b664d07f-4227-4a41-a165-8f1ff108a5e0
+av_precursor_mz=400.008
+av_precursor_intens=1.0
+sequence=[TPGAG:1]
+consensus_mz=150.100,159.100,173.900,177.200,199.000,211.400,251.100,255.100,265.300,299.300,327.300,335.900,337.100,358.900,385.000
+consensus_intens=15.05,8.78,15.05,8.78,41.39,15.05,23.83,27.59,18.81,107.87,43.90,95.33,42.65,1215.42,156.79
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=754383#title=id=PXD001383;33356.xml;spectrum=15600	true	TPGAG	400.00827	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.6534810125956783E-4"}
+=Cluster=
+id=2febb219-cb93-4bfc-9687-34ab811866c8
+av_precursor_mz=400.009
+av_precursor_intens=1.0
+sequence=[NLHNDKTISEENHR:1]
+consensus_mz=156.593,175.119,187.144,196.588,197.088,213.614,241.154,255.151,259.153,264.157,312.179,312.665,313.165,372.237,378.068,426.221,458.413,481.397,489.279,497.072,509.296,527.302,555.264,556.261,586.292,602.356,604.304,684.308,685.311,686.847,753.334,754.315,771.338,772.339,773.344
+consensus_intens=19.01,76.14,15.00,58.17,18.01,39.85,101.89,57.17,41.79,74.65,122.99,252.25,77.76,120.39,98.84,142.93,334.67,138.30,97.72,127.92,19.61,27.35,54.45,12.87,12.99,22.55,30.16,39.90,18.21,17.48,24.71,34.65,167.78,73.66,16.40
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PRD000448.mgf#id=index=37004#title=id=PRD000448;PRIDE_Exp_Complete_Ac_17701.xml;spectrum=94977	true	NLHNDKTISEENHR	400.0085	5		0-UNIMOD:214,6-UNIMOD:214	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.0013682435004994163"}
+=Cluster=
+id=47a600e0-8030-43d6-854c-cb7cd4f31bec
+av_precursor_mz=400.009
+av_precursor_intens=1.0
+sequence=[EPGVRLK:1,QMRSQVCMK:1]
+consensus_mz=173.100,175.100,198.000,199.000,226.000,227.100,249.100,250.100,277.200,365.200,366.200,381.200,383.200,385.100,412.200,451.100,460.000,460.800,499.300,571.200,572.200,573.200,598.200,599.200
+consensus_intens=73.24,23.05,75.90,34.93,368.71,148.90,200.23,83.17,121.53,87.45,97.29,51.90,450.36,58.93,13.40,24.81,286.16,111.97,11.50,299.28,558.01,129.79,190.11,55.37
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2088983#title=id=PXD001383;36763.xml;spectrum=2814	true	EPGVRLK	400.00858	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.154948579919783E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2088984#title=id=PXD001383;36763.xml;spectrum=2815	true	QMRSQVCMK	400.00858	3		2-UNIMOD:35,7-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.7178261227676557E-4"}
+=Cluster=
+id=bcd36b59-e2b5-4eef-ad43-e1f691a5f0a9
+av_precursor_mz=400.009
+av_precursor_intens=1.0
+sequence=[EGIQRMTPKIVDLP:1,GAGAAAGGTGPLAAR:1,GVGPA:1,ITGGLLLL:1]
+consensus_mz=152.313,169.236,185.354,187.264,199.201,215.082,216.234,256.437,292.831,299.243,310.234,358.344,385.062,386.234,390.948,413.511,441.532,471.371,472.555,497.773,555.674,556.356,584.502,585.405,586.467,614.538,624.606,685.663,686.558,695.741
+consensus_intens=119.65,91.87,49.02,373.78,190.41,908.30,147.57,74.53,111.65,432.69,271.72,202.64,352.66,298.64,1351.03,15.61,33.16,141.25,40.15,12.84,9.71,24.61,913.33,383.38,38.48,28.98,14.24,98.63,21.85,21.16
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1192768#title=id=PXD003924;46243.xml;spectrum=77651	true	GAGAAAGGTGPLAAR	400.0077	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3427082139414766E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1192769#title=id=PXD003924;46243.xml;spectrum=77652	true	EGIQRMTPKIVDLP	400.00775	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.0838895194292072E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1192767#title=id=PXD003924;46243.xml;spectrum=77650	true	ITGGLLLL	400.0076	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.4006973007120232E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1192766#title=id=PXD003924;46243.xml;spectrum=77649	true	GVGPA	400.01	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.5921117759944416E-4"}
+=Cluster=
+id=8a30d512-ed05-490e-bfd9-44149c659928
+av_precursor_mz=400.009
+av_precursor_intens=1.0
+sequence=[KLAYCQASRS:1,RPAGFPR:1]
+consensus_mz=157.100,175.100,197.200,246.200,255.200,272.200,274.300,289.300,350.400,368.800,381.200,383.300,393.400,418.200,466.900,476.000,476.900,489.400,510.300,522.400,524.600,547.200,548.600,602.400,615.400,649.400,686.400,694.500,702.500
+consensus_intens=20.73,74.64,22.02,78.52,282.90,90.87,44.49,43.64,332.13,82.79,91.23,131.14,125.54,97.13,63.06,204.78,81.36,72.21,65.94,62.84,34.58,58.20,46.71,105.81,34.10,53.00,27.62,28.93,28.38
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=236876#title=id=PXD000593;32978.xml;spectrum=6427	true	KLAYCQASRS	400.0088	3		5-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.148315700529612E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=236875#title=id=PXD000593;32978.xml;spectrum=6426	true	RPAGFPR	400.0088	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.900983409668044E-4"}
+=Cluster=
+id=7454a197-0a03-47b2-be52-e4594f09c850
+av_precursor_mz=400.009
+av_precursor_intens=1.0
+sequence=[QRGDAVEWLHAQGDLR:1]
+consensus_mz=159.092,163.119,170.059,175.119,199.073,211.119,218.162,228.166,246.157,291.214,333.189,341.673,360.181,391.210,399.204,400.702,452.263,455.243,455.747,480.257,536.302,541.344,548.283,548.785,549.286,603.800,613.307,655.300,668.319,682.342,892.453
+consensus_intens=88.88,281.30,16.28,53.16,44.98,18.13,22.71,127.99,34.34,28.19,85.65,20.27,18.90,25.95,60.68,1547.45,42.84,82.27,32.23,61.32,18.22,14.67,80.63,51.22,19.74,48.17,41.39,57.15,50.62,64.46,11.97
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD006536.mgf#id=index=247851#title=id=PXD006536;Bart_Rice_iTRAQ_11_FT_19May16_Pippin_16-03-37.mgf;index=12447	true	QRGDAVEWLHAQGDLR	400.0092	5		0-214	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.07895217275837402"}
+=Cluster=
+id=feb984c1-3eff-44a6-9af4-246c9ca988f4
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[SLKSSLTKAPKPVIK:1]
+consensus_mz=157.208,175.220,185.140,187.258,200.203,201.188,229.258,261.861,280.647,384.699,387.871,393.270,394.150,394.981
+consensus_intens=15.10,8.63,24.66,21.22,27.58,39.56,24.01,193.04,19.54,67.44,95.21,217.60,178.97,63.16
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD002317.mgf#id=index=452820#title=id=PXD002317;C_elegans_TO_17_run1_19Dec13_Pippin_13-07-06.mzML;controllerType=0 controllerNumber=1 scan=4432	true	SLKSSLTKAPKPVIK	400.00952	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.4908966594325032"}
+=Cluster=
+id=ff7f826d-bbf0-45c4-8a17-ccb29030ba40
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[DPLLLTK:1,ERLGSQGMPPSLLGR:1,QRPPSATADEQ:1,RGAP:1]
+consensus_mz=157.194,171.243,175.123,179.215,185.339,230.379,244.455,247.407,248.177,286.247,318.870,332.894,370.282,379.325,390.978,437.371,438.284,439.404,458.432,488.793,500.126,523.517,534.830,551.381,552.418,652.568,653.686,664.456,665.372,684.495,739.692,757.519
+consensus_intens=144.16,58.29,10.36,11.99,64.86,122.46,105.70,66.26,218.07,287.64,1108.77,309.72,177.63,176.23,801.12,28.20,67.15,23.82,31.97,31.18,30.90,70.06,36.52,297.24,98.00,174.14,55.01,193.37,67.55,63.87,40.70,23.88
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1398712#title=id=PXD003924;46246.xml;spectrum=2257	true	RGAP	400.01	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=8.686031303603715E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1398714#title=id=PXD003924;46246.xml;spectrum=2259	true	QRPPSATADEQ	400.00934	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.277811691811996E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1398715#title=id=PXD003924;46246.xml;spectrum=2260	true	ERLGSQGMPPSLLGR	400.0094	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=5.758212573746228E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1398713#title=id=PXD003924;46246.xml;spectrum=2258	true	DPLLLTK	400.00925	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.245940538262523E-5"}
+=Cluster=
+id=0c582f7f-df87-43dc-bdc1-2ce30ca00039
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[ERETALDILH:1,RKSLTPP:1]
+consensus_mz=171.200,185.200,186.200,213.200,214.200,284.700,285.400,286.300,314.300,343.600,354.300,381.200,390.900,421.100,441.300,485.300,486.300,495.800,514.900,571.200,586.300,587.200,588.300,682.400,699.300,700.300
+consensus_intens=17.53,200.53,26.59,283.12,22.30,20.74,14.74,14.60,38.30,82.81,33.89,31.13,557.76,16.53,57.17,104.25,23.11,40.66,348.44,25.28,1106.88,406.33,52.61,8.64,21.55,10.51
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=450736#title=id=PXD000593;33367.xml;spectrum=11485	true	RKSLTPP	400.0099	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.2024923953019384E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=450737#title=id=PXD000593;33367.xml;spectrum=11486	true	ERETALDILH	400.0099	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=9.498887549848604E-5"}
+=Cluster=
+id=1484f244-37d9-4a0f-b27a-9abc3c69820e
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[CSEEFTNKLK:1]
+consensus_mz=174.621,246.928,271.004,286.802,294.678,313.428,317.553,333.490,343.575,365.994,368.553,372.302,375.945,380.993,383.225,390.116,411.398,437.428,448.178,449.552,459.177,473.134,475.102,487.682,491.802,500.166,502.675,503.161,548.178,581.148,616.179,634.178
+consensus_intens=100.73,35.70,69.09,46.38,31.42,50.50,36.15,127.95,240.53,130.70,51.56,33.11,193.05,129.97,121.72,98.92,78.78,57.05,93.22,128.16,34.46,134.15,35.86,67.48,49.74,78.14,54.34,34.89,34.18,418.39,34.49,56.15
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000876.mgf#id=index=365100#title=id=PXD000876;163c_OMSSA.xml;spectrum=136412	true	CSEEFTNKLK	400.01	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.24686794313929233"}
+=Cluster=
+id=c6412f79-8903-486b-8b30-1a53c1548b97
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[KQNISDSLHR:1,VLGLSRR:1]
+consensus_mz=158.200,175.100,185.200,199.200,213.100,226.200,286.300,290.400,299.200,375.600,377.900,381.400,383.200,385.000,425.400,470.300,471.300,483.900,485.100,514.300,541.600,582.200,586.400,588.300,607.500,608.500,614.500,626.300,627.400,700.400
+consensus_intens=45.89,73.92,191.45,5.07,116.05,49.17,30.90,40.08,38.03,61.55,241.44,89.33,122.77,60.73,53.19,149.98,90.23,68.52,48.76,61.88,25.57,39.83,25.98,674.09,108.76,64.66,27.95,96.95,58.84,23.52
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=192584#title=id=PXD001383;28294.xml;spectrum=479	true	KQNISDSLHR	400.01	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.924014863645797E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=192583#title=id=PXD001383;28294.xml;spectrum=478	true	VLGLSRR	400.01	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=7.160750516400601E-5"}
+=Cluster=
+id=c29102da-96b9-4195-912b-ac553aa2b98e
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[TGHS:1]
+consensus_mz=158.025,159.187,160.245,186.103,187.120,242.265,262.139,274.331,278.168,299.084,338.179,365.316,385.094,388.628,394.202
+consensus_intens=12.52,16.58,7.04,11.21,17.06,11.23,8.68,7.71,11.71,18.07,86.33,280.61,126.39,740.78,140.37
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4335335#title=id=PXD001383;44270.xml;spectrum=49321	true	TGHS	400.01	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.9285766684673343E-4"}
+=Cluster=
+id=da87930e-d698-401a-a8fb-24894d84ffeb
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[EPVG:1]
+consensus_mz=157.242,172.172,175.331,180.146,185.282,217.077,245.145,274.183,275.189,299.258,378.375,385.368,390.249,391.311,393.174
+consensus_intens=10.72,11.41,13.04,3.84,9.07,100.98,63.76,407.59,58.45,21.58,746.43,43.53,30.97,298.85,32.90
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1649029#title=id=PXD003924;46248.xml;spectrum=965	true	EPVG	400.01	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.0518615492118833E-4"}
+=Cluster=
+id=be92083a-1b17-4088-ac2f-94aa97e387d9
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[IGGGP:1]
+consensus_mz=157.272,170.133,173.193,181.497,195.266,230.353,256.335,257.072,284.454,287.416,379.481,385.129,388.268,391.724,394.029,401.455
+consensus_intens=8.63,14.09,8.65,10.78,17.11,42.38,35.60,32.74,61.35,52.98,122.19,146.65,163.34,236.71,154.39,25.27
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1871796#title=id=PXD003924;46249.xml;spectrum=104401	true	IGGGP	400.01	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3239184581380822E-4"}
+=Cluster=
+id=47b4f572-f63a-4053-aa76-f98c02bfde57
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[GAPR:1]
+consensus_mz=175.141,198.997,274.236,275.137,288.444,295.071,296.186,318.637,378.366,388.081,390.694,391.321
+consensus_intens=20.36,6.93,220.42,23.27,12.90,11.86,12.63,166.48,451.40,81.32,280.46,186.32
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3173811#title=id=PXD003924;46820.xml;spectrum=55561	true	GAPR	400.01	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.2075099513295935E-4"}
+=Cluster=
+id=134de1f5-8ce8-43c7-b2f3-6f3522c44556
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[RLKMRLR:1]
+consensus_mz=153.110,158.081,160.087,162.098,163.097,201.183,219.193,231.160,284.151,285.154,334.601,359.822,371.316,377.554,399.327,434.079,478.865,479.398,483.104,484.779,503.291,511.805,512.307,528.290,588.309,629.370,638.385
+consensus_intens=49.56,33.95,119.01,234.40,37.39,16.82,13.46,33.94,140.24,54.83,99.31,141.09,7496.41,1496.44,57621.42,130.57,217.00,190.84,233.55,370.09,22.83,43.74,18.60,23.40,23.57,9.94,13.39
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD004204.mgf#id=index=324471#title=id=PXD004204;Singer_BGWC_8plex_19_14May13_Methow_13-02-13.mgf;index=7992	true	RLKMRLR	400.01	4		0-730,3-730,4-35	0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.3025114907899022"}
+=Cluster=
+id=c528b2c7-4389-431d-896e-08083e7ac7e5
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[AKNPVFRR:1,SVYMKVCNTDND:1]
+consensus_mz=151.025,162.101,166.999,183.012,185.020,214.986,215.990,217.001,248.974,253.001,316.999,320.221,380.998,399.012,399.472,478.280,479.282,636.428,637.465,638.393,639.397,640.361
+consensus_intens=2808.67,685.88,1241.77,1996.36,528.85,689.03,28.70,27.72,16.55,14.31,32.14,41.20,157.11,122430758912.00,157.73,84.40,20.03,4.97,7.96,6.34,7.58,5.52
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD004204.mgf#id=index=414541#title=id=PXD004204;Singer_BGWC_8plex_24_14May13_Methow_13-02-13.mgf;index=1560	true	AKNPVFRR	400.01	4		0-730,2-730	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.09018993052659924"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD004204.mgf#id=index=414542#title=id=PXD004204;Singer_BGWC_8plex_24_14May13_Methow_13-02-13.mgf;index=1561	true	SVYMKVCNTDND	400.01	5		0-730,5-730	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.5499169334620977"}
+=Cluster=
+id=57f1e848-835c-412f-9448-4f2333526072
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[EPSQGPRDVMAASRP:1,GAVYGGFK:1,GVAAKGKGSPQAQ:1,GVAGP:1]
+consensus_mz=157.137,196.478,199.235,277.564,291.336,293.104,294.181,299.214,335.397,381.343,387.064,390.406,391.426,442.812,456.171,477.619,484.862,490.741,500.292,501.130,504.205,505.269,549.675,633.329,634.260,642.351,669.466,670.413
+consensus_intens=4.88,5.74,3.56,505.70,200.43,154.63,163.49,172.47,246.07,180.23,186.55,223.85,414.80,315.25,86.29,87.08,113.98,212.72,860.58,401.69,206.10,303.78,96.96,57.80,120.69,114.13,84.28,65.11
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4409871#title=id=PXD001383;44271.xml;spectrum=47348	true	EPSQGPRDVMAASRP	400.0104	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=5.495751191021758E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4409869#title=id=PXD001383;44271.xml;spectrum=47346	true	GAVYGGFK	400.01025	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=8.784109375372389E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4409870#title=id=PXD001383;44271.xml;spectrum=47347	true	GVAAKGKGSPQAQ	400.01035	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=9.212609834457008E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4409868#title=id=PXD001383;44271.xml;spectrum=47345	true	GVAGP	400.01	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3991315263136908E-4"}
+=Cluster=
+id=504b1df5-8fbd-4336-9a4a-2019b6562a04
+av_precursor_mz=400.010
+av_precursor_intens=1.0
+sequence=[EAIVEGKGQHE:1,EAPINKK:1]
+consensus_mz=199.100,201.100,233.200,286.200,299.300,365.300,382.300,383.200,390.500,391.400,431.100,432.000,469.400,475.900,485.000,501.400,525.600,526.300,551.000,598.300,669.400
+consensus_intens=28.33,42.22,28.56,48.56,60.89,184.90,169.69,413.46,550.58,179.21,30.78,29.22,158.12,31.00,55.78,59.45,33.22,36.45,28.11,59.00,22.33
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=452045#title=id=PXD001383;32392.xml;spectrum=2541	true	EAPINKK	400.0105	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.2065588836198239E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=452046#title=id=PXD001383;32392.xml;spectrum=2542	true	EAIVEGKGQHE	400.0105	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.9999346080467936E-4"}
+=Cluster=
+id=7f5bbcfd-3764-44b6-815a-babeaf84d3eb
+av_precursor_mz=400.011
+av_precursor_intens=1.0
+sequence=[TLYAASC:1,TPGLKRSSHLT:1]
+consensus_mz=175.200,185.200,187.100,198.000,199.000,213.200,215.100,217.200,262.100,279.100,342.800,368.200,368.900,376.300,390.900,422.200,423.300,460.200,465.300,477.200,521.300,522.300,537.200,538.200,585.300,604.300,607.200,668.300,669.300,684.300
+consensus_intens=32.23,17.38,21.57,149.46,24.68,17.52,20.73,16.48,91.79,149.58,223.18,251.09,93.69,99.81,178.21,116.90,82.70,34.58,17.96,40.69,644.86,158.24,199.32,58.03,75.62,27.13,25.95,258.93,74.13,28.07
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=241360#title=id=PXD000593;32978.xml;spectrum=10912	true	TLYAASC	400.01108	2		7-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.9542585777124734E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=241361#title=id=PXD000593;32978.xml;spectrum=10913	true	TPGLKRSSHLT	400.01108	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.958011928142522E-4"}
+=Cluster=
+id=b416cc5c-b446-4f3b-adbe-550d36c32b07
+av_precursor_mz=400.011
+av_precursor_intens=1.0
+sequence=[AANGELEVKIR:1,RIIPSSK:1]
+consensus_mz=157.100,173.200,185.100,223.200,234.500,255.200,281.200,288.400,304.700,313.800,322.800,355.400,382.600,446.200,449.900,456.500,460.300,472.300,513.400,532.500,533.300,547.500,565.800,626.500,644.500,645.100,654.500,687.400,709.400,727.400
+consensus_intens=88.04,7.92,5.83,6.46,29.05,13.81,11.54,8.51,42.53,83.62,3462.47,252.76,107.54,7.81,10.67,21.23,27.73,20.44,9.70,124.04,10.16,34.61,12.51,27.14,320.04,8.86,16.00,40.43,7.61,3.86
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=255800#title=id=PXD000593;33197.xml;spectrum=4769	true	AANGELEVKIR	400.0113	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.804978532190146E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=255799#title=id=PXD000593;33197.xml;spectrum=4768	true	RIIPSSK	400.0113	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=4.056451306437821E-4"}
+=Cluster=
+id=abf6d2df-65ab-4f59-bdb4-771b834f9aa5
+av_precursor_mz=400.012
+av_precursor_intens=1.0
+sequence=[ELLVAVHMLR:1,LAAPTAVR:1]
+consensus_mz=175.200,184.200,237.200,265.200,274.300,287.600,288.300,353.400,365.300,381.400,383.300,391.000,446.300,469.300,470.400,478.300,478.900,507.300,525.200,535.300,536.400,542.200,624.400,625.300,627.500
+consensus_intens=117.91,17.57,70.94,50.87,86.84,30.91,29.57,95.90,67.43,149.60,220.65,370.75,102.29,79.55,45.14,62.65,44.81,54.48,111.41,155.22,38.69,68.27,250.90,79.61,18.57
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=723784#title=id=PXD001383;33355.xml;spectrum=2646	true	ELLVAVHMLR	400.01154	3		8-UNIMOD:35	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=8.826844020138236E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=723783#title=id=PXD001383;33355.xml;spectrum=2645	true	LAAPTAVR	400.01154	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.872027656668212E-4"}
+=Cluster=
+id=fe914e65-de00-493c-81a8-92f57842bdbd
+av_precursor_mz=400.012
+av_precursor_intens=1.0
+sequence=[GLSGTLPR:1,RALLLSQELPG:1]
+consensus_mz=171.200,175.000,182.100,185.200,203.100,272.300,274.200,279.000,299.200,353.200,368.000,378.200,381.100,383.300,422.200,446.300,485.300,490.200,494.300,521.200,525.200,542.600,543.400,558.100,624.300,629.300,630.300,652.200,653.300,700.400
+consensus_intens=64.84,107.78,27.64,43.48,41.76,33.01,38.86,35.86,52.93,89.91,184.06,75.36,68.97,77.94,92.16,43.48,95.01,85.08,91.30,88.83,48.52,165.21,98.44,83.31,146.16,229.95,60.44,40.79,51.91,40.90
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1928322#title=id=PXD001383;36520.xml;spectrum=6114	true	RALLLSQELPG	400.0117	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.2960206092111145E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1928321#title=id=PXD001383;36520.xml;spectrum=6113	true	GLSGTLPR	400.0117	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.9536940524833833E-4"}
+=Cluster=
+id=edae50b2-86da-4b84-a185-58f089029db4
+av_precursor_mz=400.013
+av_precursor_intens=1.0
+sequence=[AVFPSIVGRPR:1]
+consensus_mz=154.993,190.826,218.854,230.932,285.047,285.544,289.972,316.204,347.582,376.396,382.097,386.677,441.195,447.192,452.236,479.082,487.742,522.290,531.451,536.239,536.664,566.240,622.335,697.168
+consensus_intens=5.80,12.30,32.38,11.76,13.96,13.88,15.23,13.42,15.16,26.30,32.61,26.23,223.79,77.88,63.68,128.80,450.10,17.07,3369.41,66.87,52.09,64.83,7.80,7.03
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000879.mgf#id=index=231671#title=id=PXD000879;Mouse 2_OMSSA.xml;spectrum=151327	true	AVFPSIVGRPR	400.013	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=297.62823172382946"}
+=Cluster=
+id=d738e582-9390-475c-828c-a713988a1453
+av_precursor_mz=400.014
+av_precursor_intens=1.0
+sequence=[DNDSTPIPTGHDNGR:1,GQIRVLD:1,KPVG:1,YLSPYDNVAR:1]
+consensus_mz=175.229,230.713,246.990,292.343,297.472,299.125,320.140,345.291,346.164,387.785,393.581,418.077,418.824,426.805,427.719,460.182,552.579,554.336,573.427,581.943,590.394,607.285,614.491,624.145,625.467,667.449
+consensus_intens=27.37,28.86,80.44,27.51,34.82,74.14,340.49,1420.69,384.91,204.14,613.18,1183.07,348.04,1696.98,104.94,129.94,29.23,101.58,34.06,46.43,238.61,32.08,41.92,45.22,35.11,199.15
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5038809#title=id=PXD001383;44278.xml;spectrum=60324	true	DNDSTPIPTGHDNGR	400.01474	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.6026649433501896E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5038806#title=id=PXD001383;44278.xml;spectrum=60321	true	KPVG	400.01	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.6589009905591378E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5038808#title=id=PXD001383;44278.xml;spectrum=60323	true	YLSPYDNVAR	400.01468	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.6208325869444614E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5038807#title=id=PXD001383;44278.xml;spectrum=60322	true	GQIRVLD	400.0146	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.6291429518241498E-4"}
+=Cluster=
+id=ae1365ce-59e2-4cb3-88d8-506b18583d28
+av_precursor_mz=400.014
+av_precursor_intens=1.0
+sequence=[EIVPMGISPKK:1,KPDAQSGP:1]
+consensus_mz=175.100,199.100,255.300,260.200,283.200,284.200,299.300,311.200,340.200,381.300,382.200,384.900,457.300,459.300,460.300,489.200,490.200,539.200,540.200,558.300,570.300,574.300,627.300,630.400,636.300,652.300,684.400
+consensus_intens=55.88,56.45,38.86,102.69,203.67,51.06,91.06,102.40,120.84,164.81,95.05,94.46,84.53,161.97,40.85,286.22,59.00,65.81,83.40,50.49,83.68,139.56,98.72,49.07,87.37,40.57,32.91
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1646598#title=id=PXD001383;35664.xml;spectrum=3726	true	EIVPMGISPKK	400.01437	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.163604586562178E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1646597#title=id=PXD001383;35664.xml;spectrum=3725	true	KPDAQSGP	400.01437	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.2132440744038195E-4"}
+=Cluster=
+id=25dcabed-f578-4cfd-a615-5ee765cab8d2
+av_precursor_mz=400.014
+av_precursor_intens=1.0
+sequence=[GAPVG:1,HTQMKR:1,RVQSDDLEDSASMGS:1,THTTMSGVAHR:1]
+consensus_mz=156.891,175.096,192.222,195.167,239.312,270.337,271.821,280.720,281.412,373.335,383.316,384.389,387.808,393.929,434.611,459.114,475.430,480.379,481.087,503.254,539.501,540.506,549.249,562.342,626.485,698.503,716.492,717.480
+consensus_intens=48.17,195.86,98.39,3.75,119.09,58.44,342.76,319.18,70.74,355.40,515.96,210.77,1131.22,290.37,201.55,252.34,106.59,765.46,134.02,49.02,65.01,49.87,47.24,47.22,33.73,41.02,96.24,60.24
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4715413#title=id=PXD001383;44275.xml;spectrum=1637	true	GAPVG	400.01	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.806287583402087E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4715416#title=id=PXD001383;44275.xml;spectrum=1640	true	RVQSDDLEDSASMGS	400.01532	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.6418505941568202E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4715415#title=id=PXD001383;44275.xml;spectrum=1639	true	THTTMSGVAHR	400.01526	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.571443534204394E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4715414#title=id=PXD001383;44275.xml;spectrum=1638	true	HTQMKR	400.01517	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.742468073159155E-4"}
+=Cluster=
+id=27ca4003-7e69-4ffc-9acc-d74cbfe965f5
+av_precursor_mz=400.014
+av_precursor_intens=1.0
+sequence=[LVALLSSRLM*GQHR:1,QPRGLTK:1,VRMANVSGPIR:1]
+consensus_mz=230.353,256.335,257.072,284.454,287.416,382.065,385.129,388.268,391.724,394.029,415.590,438.334,441.719,456.607,492.029,506.165,543.940,549.562,551.461,574.371,624.610,630.444,652.476,653.581,654.735
+consensus_intens=73.13,61.43,56.49,105.86,91.43,292.34,253.06,134.89,278.94,127.50,133.03,111.16,86.80,71.01,64.93,280.01,185.86,171.58,258.66,130.42,76.97,54.52,268.41,72.40,78.30
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1871797#title=id=PXD003924;46249.xml;spectrum=104402	true	QPRGLTK	400.0144	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.2037770592132774E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1871798#title=id=PXD003924;46249.xml;spectrum=104403	true	VRMANVSGPIR	400.0145	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.1968473519883638E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1871799#title=id=PXD003924;46249.xml;spectrum=104404	true	LVALLSSRLM*GQHR	400.01456	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.1668847024426595E-4"}
+=Cluster=
+id=06a532d9-770a-426c-84c1-b6adda05832e
+av_precursor_mz=400.014
+av_precursor_intens=1.0
+sequence=[ELASPVSPELR:1,VPPSGTIQ:1]
+consensus_mz=171.100,175.200,185.200,197.100,260.200,270.200,278.300,293.200,299.200,342.700,350.400,382.300,390.900,391.800,423.200,463.900,473.100,474.200,499.300,513.400,539.200,541.800,542.800,543.700,602.300,635.400,652.300,661.200,699.400,700.500,701.400
+consensus_intens=17.97,19.48,20.59,30.24,70.34,33.31,27.25,36.47,22.23,145.40,349.35,45.11,268.48,46.33,25.63,48.71,28.58,36.69,331.77,223.75,99.22,88.89,689.62,152.66,116.22,34.98,57.13,29.18,93.25,40.02,3.71
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=238078#title=id=PXD000593;32978.xml;spectrum=7629	true	VPPSGTIQ	400.0145	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.551812055130394E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=238079#title=id=PXD000593;32978.xml;spectrum=7630	true	ELASPVSPELR	400.0145	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.036602835006595E-4"}
+=Cluster=
+id=02cf96be-5fe8-4aec-8651-1f89372fc71a
+av_precursor_mz=400.015
+av_precursor_intens=1.0
+sequence=[EALPAPSD:1,GACPKSYGFNAARLA:1,GNGGHEVEWGR:1]
+consensus_mz=175.141,274.236,275.137,288.444,295.071,296.186,318.637,378.366,382.214,390.694,391.321,468.625,477.592,479.090,482.249,483.229,500.101,503.365,525.207,526.218,551.445,614.544,624.403,664.369,665.400,684.442,755.469
+consensus_intens=47.05,509.34,53.77,29.81,27.42,29.19,384.69,1043.09,84.56,214.62,142.58,98.47,64.03,80.21,196.78,144.15,53.07,105.82,418.94,87.32,79.95,37.04,38.82,141.75,78.93,45.34,45.57
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3173812#title=id=PXD003924;46820.xml;spectrum=55562	true	EALPAPSD	400.01456	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.401232554612676E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3173813#title=id=PXD003924;46820.xml;spectrum=55563	true	GNGGHEVEWGR	400.01465	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3928276616555246E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3173814#title=id=PXD003924;46820.xml;spectrum=55564	true	GACPKSYGFNAARLA	400.0147	4		3-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.1945581435716317E-4"}
+=Cluster=
+id=c2322eb5-24a8-4387-a57d-539f3b2b7435
+av_precursor_mz=400.015
+av_precursor_intens=1.0
+sequence=[KVHDLGLK:2]
+consensus_mz=156.076,159.132,176.159,178.628,188.159,229.136,230.169,265.946,280.219,294.216,313.606,329.753,343.751,376.274,398.283,412.279,429.301,469.793,470.294,489.358,546.380,554.311,554.846,555.338,570.343,637.432,659.462,780.455,781.457,784.459
+consensus_intens=28.41,14.14,29.96,5.18,29.81,85.80,346.46,1100.04,149.44,180.93,36487.97,289.13,286.97,456.74,126.42,183.20,72.51,545.60,195.42,115.82,283.40,190.21,149.78,75.00,89.30,29.26,31.78,71.00,4.88,4.39
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001304.mgf#id=index=132#title=id=PXD001304;F013973.dat-pride.xml;spectrum=34878	true	KVHDLGLK	400.01477	4		0-UNIMOD:737,1-UNIMOD:737,8-UNIMOD:737	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.007048193317431711"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001304.mgf#id=index=133#title=id=PXD001304;F013973.dat-pride.xml;spectrum=34879	true	KVHDLGLK	400.01514	4		0-UNIMOD:737,1-UNIMOD:737,8-UNIMOD:737	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.006749336100785709"}
+=Cluster=
+id=fb438859-f6d3-43a5-8d76-0d9e13c7008b
+av_precursor_mz=400.016
+av_precursor_intens=1.0
+sequence=[SHIHGKPNIKLEDHVDR:2]
+consensus_mz=158.166,175.171,175.724,225.216,244.320,290.352,295.493,297.704,371.715,382.481,383.346,391.001,393.604,442.498,443.837,446.172,452.555,456.276,521.623,530.580,536.381,556.940,579.368,623.611,670.661,671.476,678.454
+consensus_intens=21.44,38.68,5.20,56.00,116.54,53.63,17.27,14.42,94.63,244.69,84.43,478.09,99.26,90.38,314.13,120.81,83.03,57.09,22.04,38.63,92.36,21.17,25.14,12.73,20.75,5.02,5.61
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003672.mgf#id=index=1116770#title=id=PXD003672;P_ubique_SL_19_Set2_1_5Apr11_Phoenix_11-02-54.mgf;index=3179	true	SHIHGKPNIKLEDHVDR	400.0164	5			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.3504001705528899"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003672.mgf#id=index=933401#title=id=PXD003672;P_ubique_SL_15_Set2_2_2Apr11_Phoenix_11-02-56.mgf;index=3970	true	SHIHGKPNIKLEDHVDR	400.0158	5			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.009543822050593127"}
+=Cluster=
+id=96e504c1-e664-41f0-80ea-1471b3dd6a88
+av_precursor_mz=400.016
+av_precursor_intens=1.0
+sequence=[AMEGPILCRAVMQAK:1]
+consensus_mz=159.076,167.093,175.119,199.073,228.184,234.643,259.153,291.215,292.218,323.212,362.252,372.874,373.310,373.759,432.717,442.043,451.721,461.035,497.403,506.930,522.789,536.786,537.289,618.808,676.863,677.369,690.860,691.363
+consensus_intens=22.79,11.15,26.42,11.84,14.47,16.34,27.40,151.21,19.18,25.98,130.38,171.43,1816.08,477.18,228.62,198.96,692.37,877.14,553.41,10.22,9.95,27.20,20.60,15.17,20.24,17.44,31.64,20.68
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD006536.mgf#id=index=243374#title=id=PXD006536;Bart_Rice_iTRAQ_11_FT_19May16_Pippin_16-03-37.mgf;index=7907	true	AMEGPILCRAVMQAK	400.0162	5		0-214,2-35,8-4,12-35,15-214	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.31945881001921195"}
+=Cluster=
+id=2f1168a8-76e7-4512-8b98-e7d488bb6f5f
+av_precursor_mz=400.017
+av_precursor_intens=1.0
+sequence=[AGAAAAGRGP:1,EAIVEGKGQHE:1]
+consensus_mz=171.200,173.100,175.300,185.200,199.200,201.200,225.300,260.400,270.300,299.400,376.200,378.000,379.200,381.400,383.300,458.500,469.400,470.500,471.500,490.800,506.500,529.400,530.400,598.400,599.400,613.500,628.600,629.600,685.600,686.600
+consensus_intens=63.51,143.42,24.37,26.64,20.93,104.98,32.09,30.11,44.65,45.93,82.86,60.13,55.61,85.80,54.91,42.00,41.59,30.31,28.59,31.10,84.61,211.76,76.04,554.04,177.23,71.58,291.59,74.49,346.56,105.50
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1014174#title=id=PXD001383;33776.xml;spectrum=13278	true	AGAAAAGRGP	400.01657	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=4.2274470972137554E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1014175#title=id=PXD001383;33776.xml;spectrum=13279	true	EAIVEGKGQHE	400.01657	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.5402381382581356E-4"}
+=Cluster=
+id=7fb887e5-de8c-4ecc-9a01-882faacff422
+av_precursor_mz=400.017
+av_precursor_intens=1.0
+sequence=[KPAAVLKPSDWEK:6]
+consensus_mz=158.687,165.148,175.105,179.182,187.197,225.211,239.440,247.828,270.527,272.368,308.428,314.356,361.247,362.547,368.781,432.382,451.899,469.147,477.544,494.529,525.046,527.039,534.068,552.592,583.574,619.118,635.315,645.634,654.716,658.516,703.150,703.612,744.753,776.494,793.356,841.745,888.999,912.114,941.374
+consensus_intens=103.65,172.80,294.90,305.54,41.46,199.88,111.46,139.32,119.03,59.22,538.24,52.21,240.68,53.36,76.06,1028.19,101.64,743.02,610.07,507.15,241.61,160.52,3125.30,868.89,884.92,602.06,28.25,227.33,352.73,31.82,60.48,29.44,12.24,8.71,27.51,15.13,8.94,3.04,9.72
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000222.mgf#id=index=196062#title=id=PXD000222;PRIDE_Exp_Complete_Ac_29465.xml;spectrum=444632	true	KPAAVLKPSDWEK	400.01562	4		0-UNIMOD:425,1-UNIMOD:425,7-UNIMOD:425,13-UNIMOD:425	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.01928607710483202"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000222.mgf#id=index=112312#title=id=PXD000222;PRIDE_Exp_Complete_Ac_29464.xml;spectrum=396610	true	KPAAVLKPSDWEK	400.01517	4		0-UNIMOD:425,1-UNIMOD:425,7-UNIMOD:425,13-UNIMOD:425	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.01919043860638178"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000222.mgf#id=index=112313#title=id=PXD000222;PRIDE_Exp_Complete_Ac_29464.xml;spectrum=396612	true	KPAAVLKPSDWEK	400.0153	4		0-UNIMOD:425,1-UNIMOD:425,7-UNIMOD:425,13-UNIMOD:425	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.0207163372134369"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000222.mgf#id=index=32753#title=id=PXD000222;PRIDE_Exp_Complete_Ac_29463.xml;spectrum=390808	true	KPAAVLKPSDWEK	400.01715	4		0-UNIMOD:425,1-UNIMOD:425,7-UNIMOD:425,13-UNIMOD:425	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.003693667915201258"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000222.mgf#id=index=403149#title=id=PXD000222;PRIDE_Exp_Complete_Ac_29467.xml;spectrum=412810	true	KPAAVLKPSDWEK	400.01782	4		0-UNIMOD:425,1-UNIMOD:425,7-UNIMOD:425,13-UNIMOD:425	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.024482415013462325"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000222.mgf#id=index=291087#title=id=PXD000222;PRIDE_Exp_Complete_Ac_29466.xml;spectrum=454501	true	KPAAVLKPSDWEK	400.01886	4		0-UNIMOD:425,1-UNIMOD:425,7-UNIMOD:425,13-UNIMOD:425	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.019533088495512503"}
+=Cluster=
+id=ba1bb941-1d17-4ea3-a8d1-26f780862b24
+av_precursor_mz=400.017
+av_precursor_intens=1.0
+sequence=[AGRPFPR:1,RNLESHLMSP:1]
+consensus_mz=169.100,174.100,175.200,185.200,197.200,213.200,271.300,285.200,288.200,299.200,365.200,372.300,381.200,383.200,385.000,447.200,459.300,466.200,467.300,499.300,515.200,522.300,523.100,586.200,588.200,651.400,672.300
+consensus_intens=31.35,34.88,125.83,105.96,38.41,111.26,64.02,48.12,49.45,139.52,119.21,101.10,164.24,288.75,108.17,25.61,25.61,58.28,24.28,63.58,39.74,93.60,33.11,49.89,204.42,25.17,36.65
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1531710#title=id=PXD001383;35655.xml;spectrum=2082	true	RNLESHLMSP	400.01694	3		8-UNIMOD:35	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=4.371151596628678E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1531709#title=id=PXD001383;35655.xml;spectrum=2081	true	AGRPFPR	400.01694	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.494938630572055E-4"}
+=Cluster=
+id=aa455144-ae35-4256-9cd1-d5ce00acde39
+av_precursor_mz=400.017
+av_precursor_intens=1.0
+sequence=[NKNLLILAIGK:1]
+consensus_mz=170.798,230.678,238.950,259.304,261.425,278.867,312.927,318.499,361.925,377.473,390.128,414.042,418.142,420.976,441.145,482.036,515.932,533.983,537.500,552.076,592.802,625.181,627.428,664.137,696.172
+consensus_intens=76.16,28.38,81.51,26.68,27.58,27.36,82.01,149.26,72.26,83.16,72.15,72.54,89.07,65.96,65.04,81.84,39.26,52.27,53.09,27.23,68.75,138.61,33.41,46.01,28.63
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000876.mgf#id=index=329724#title=id=PXD000876;163c_OMSSA.xml;spectrum=72412	true	NKNLLILAIGK	400.017	3			0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.025147367943072728"}
+=Cluster=
+id=84f05a0e-e1ac-4d6d-ae5f-82594f7e9579
+av_precursor_mz=400.017
+av_precursor_intens=1.0
+sequence=[KLEAGTVFINTYNK:1,KLGMAQFDSLS:1,QAVSPSGPG:1]
+consensus_mz=173.182,251.047,252.189,291.087,299.285,365.350,366.239,382.261,383.197,391.240,451.417,471.623,481.138,482.364,490.719,500.367,501.144,537.380,547.447,550.439,626.348,627.558,669.620,679.462
+consensus_intens=37.81,45.32,53.00,60.57,109.01,435.29,356.90,388.87,1410.71,279.54,52.52,169.30,57.39,48.30,54.29,104.19,43.15,44.38,45.64,43.16,132.64,40.23,38.97,42.16
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4327301#title=id=PXD001383;44270.xml;spectrum=40971	true	KLGMAQFDSLS	400.0175	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.322973370430661E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4327302#title=id=PXD001383;44270.xml;spectrum=40972	true	KLEAGTVFINTYNK	400.01755	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.1305661757974742E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4327300#title=id=PXD001383;44270.xml;spectrum=40970	true	QAVSPSGPG	400.0174	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.4855258309153682E-4"}
+=Cluster=
+id=2a8ea101-5005-4184-81ff-6d350ecb36bc
+av_precursor_mz=400.017
+av_precursor_intens=1.0
+sequence=[GTDVFEKTQPDGRTR:1]
+consensus_mz=175.119,245.148,245.650,246.155,249.124,276.166,303.180,333.188,351.189,351.690,356.244,401.625,406.436,438.688,444.726,493.744,502.311,517.275,518.281,549.313,587.288,631.354,667.839,683.358,684.344,685.351,843.433,990.496
+consensus_intens=40.21,288.07,50.83,23.09,19.96,14.08,30.09,14.26,81.87,26.73,15.01,1912.55,1218.33,1467.19,702.76,924.56,10.18,81.86,19.62,8.61,12.20,8.86,12.73,23.22,32.82,12.07,8.75,12.86
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD006536.mgf#id=index=107203#title=id=PXD006536;Bart_Rice_iTRAQ_08_FT_19May16_Pippin_16-03-37.mgf;index=5626	true	GTDVFEKTQPDGRTR	400.0175	5		0-214,7-214	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=7.722522647146015E-7"}
+=Cluster=
+id=5b754b04-5870-4201-82c0-198ddb935a3f
+av_precursor_mz=400.018
+av_precursor_intens=1.0
+sequence=[EIKLAPK:1,EISVEKSLYK:1]
+consensus_mz=173.300,215.200,216.200,243.200,244.300,260.300,330.400,344.300,383.400,384.300,390.800,437.400,479.200,489.400,498.300,499.400,524.400,542.000,542.900,556.300,557.200,608.500,637.400,638.400,652.500,685.500
+consensus_intens=21.26,97.34,16.09,143.33,42.99,30.55,114.78,50.79,1141.56,106.31,144.39,35.19,44.84,44.40,187.44,36.65,65.26,137.18,31.73,310.00,88.76,18.95,117.72,66.58,31.91,44.93
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=646118#title=id=PXD000593;33754.xml;spectrum=7267	true	EISVEKSLYK	400.0181	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.5504890407403425E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=646117#title=id=PXD000593;33754.xml;spectrum=7266	true	EIKLAPK	400.0181	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3810171974824477E-4"}
+=Cluster=
+id=1b60d667-2acd-4039-9a68-880899175d36
+av_precursor_mz=400.018
+av_precursor_intens=1.0
+sequence=[IKIIAPPERK:1]
+consensus_mz=163.119,175.119,187.090,228.182,265.698,291.215,301.199,308.243,322.241,378.783,385.735,404.269,441.100,447.293,459.267,484.988,534.339,569.305,586.364,588.329,592.321,646.325,654.430,656.382,660.869,673.410,703.392,753.435,770.461,841.502
+consensus_intens=14.55,8.52,9.27,8.50,22.07,69.51,26.08,27.48,35.09,47.55,67.21,115.65,95.50,112.26,233.05,233.80,35.17,24.20,68.47,86.79,43.38,11.38,27.49,39.08,40.77,27.37,153.27,10.27,45.29,22.77
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001574.mgf#id=index=12802#title=id=PXD001574;InGel PiTRAQ QExactive.dat-pride.xml;spectrum=68943	true	IKIIAPPERK	400.0181	4		0-UNIMOD:214,2-UNIMOD:214,10-UNIMOD:214	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.030146414364477542"}
+=Cluster=
+id=7575f7dc-acf3-4351-a17c-fe8c9e589054
+av_precursor_mz=400.019
+av_precursor_intens=1.0
+sequence=[AVAISLPK:1,REGTLAARGDPG:1]
+consensus_mz=171.200,172.100,173.200,175.100,185.200,213.300,223.100,242.200,251.200,285.200,355.300,356.300,381.300,382.200,383.200,425.200,442.500,444.300,445.300,460.300,538.300,548.300,549.400,557.300,588.300,627.400,628.400,629.400,661.400,662.500
+consensus_intens=266.18,39.14,33.52,40.58,45.84,50.89,162.03,66.24,208.30,60.62,52.47,36.11,105.02,39.08,66.10,20.25,16.43,70.78,19.03,16.87,64.80,338.62,102.64,88.44,67.18,28.25,947.90,307.27,67.75,24.94
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=894124#title=id=PXD000593;35962.xml;spectrum=7853	true	REGTLAARGDPG	400.01852	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.61604717974716E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=894123#title=id=PXD000593;35962.xml;spectrum=7852	true	AVAISLPK	400.01852	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.0149966076912253E-4"}
+=Cluster=
+id=200b6939-dd88-4a9e-9c68-e84604f4ac0a
+av_precursor_mz=400.019
+av_precursor_intens=1.0
+sequence=[ESLHVSK:1,PTTLAEYCIK:1]
+consensus_mz=173.200,183.000,233.100,261.200,284.100,294.300,299.300,333.300,355.900,368.700,388.000,391.400,448.900,465.300,470.200,471.300,499.300,500.600,524.200,538.200,565.200,583.300,651.300,653.400,667.300,668.300,669.400
+consensus_intens=16.78,23.55,25.15,39.65,53.62,27.23,415.63,164.92,393.02,175.88,243.64,99.23,185.82,74.99,154.02,87.80,119.60,95.21,73.70,71.93,73.02,162.34,14.16,15.81,23.08,16.36,60.35
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=239497#title=id=PXD000593;32978.xml;spectrum=9048	true	ESLHVSK	400.01855	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.6843027553191005E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=239498#title=id=PXD000593;32978.xml;spectrum=9049	true	PTTLAEYCIK	400.01855	3		8-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.824347836708233E-4"}
+=Cluster=
+id=22fdc1a5-d4f4-4bd8-b6ce-b34feb7dd479
+av_precursor_mz=400.019
+av_precursor_intens=1.0
+sequence=[ETLKNLIVIR:1,VITPEIK:1]
+consensus_mz=173.000,185.200,213.200,214.300,260.200,293.800,295.100,326.300,363.900,381.500,382.300,387.500,455.000,473.200,474.300,486.000,486.800,512.100,512.900,542.500,586.300,587.300,600.500,602.400,629.400,699.500
+consensus_intens=22.14,149.19,243.46,28.85,23.49,50.52,50.08,114.64,160.45,113.77,51.36,183.50,80.07,274.80,57.26,100.35,70.53,75.38,179.83,66.06,711.84,229.02,18.23,48.62,25.09,30.75
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=352820#title=id=PXD000593;33202.xml;spectrum=8921	true	VITPEIK	400.0188	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.7392153593886377E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=352821#title=id=PXD000593;33202.xml;spectrum=8922	true	ETLKNLIVIR	400.0188	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3846702496810346E-4"}
+=Cluster=
+id=be391595-128c-4465-be4a-5c1bca12fffb
+av_precursor_mz=400.019
+av_precursor_intens=1.0
+sequence=[EVGP:1,KVALVGLT:1,LMMDMKELR:1,VDAYFPQISNATDR:1]
+consensus_mz=173.093,174.275,183.281,189.251,199.241,233.058,261.197,287.171,288.124,299.159,341.917,382.090,391.416,392.077,393.355,438.325,439.283,448.353,466.766,480.139,503.784,511.594,512.530,540.130,547.870,610.428,620.747,653.410,691.232,692.317
+consensus_intens=258.11,80.48,13.56,63.66,100.56,216.74,135.88,110.34,74.87,111.27,369.41,216.27,171.12,484.06,637.56,138.52,46.80,36.93,40.45,54.77,169.40,221.35,1137.47,249.27,64.44,62.87,26.25,35.32,39.02,49.62
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5096611#title=id=PXD001383;44279.xml;spectrum=45885	true	EVGP	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.0070338518100854E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5096614#title=id=PXD001383;44279.xml;spectrum=45888	true	VDAYFPQISNATDR	400.01855	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=8.091327777865247E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5096612#title=id=PXD001383;44279.xml;spectrum=45886	true	KVALVGLT	400.0184	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=9.25497074620323E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5096613#title=id=PXD001383;44279.xml;spectrum=45887	true	LMMDMKELR	400.0185	3		2-UNIMOD:35,5-UNIMOD:35	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=8.62340851686048E-5"}
+=Cluster=
+id=42e1ea3a-220b-4972-ac1c-eadd4350e392
+av_precursor_mz=400.019
+av_precursor_intens=1.0
+sequence=[DLRSGAEPVFHNVR:1,ENVIGSYICK:1,GAAGAEAPR:1,GAPGV:1]
+consensus_mz=158.128,173.204,175.224,215.268,243.223,244.194,257.266,299.414,336.830,340.373,343.345,390.084,391.003,456.203,457.263,463.312,477.410,489.358,517.264,518.285,533.081,541.844,597.379,601.389,635.373,652.399,653.338,672.427
+consensus_intens=10.49,71.38,144.71,76.34,81.89,107.48,96.53,87.96,615.10,634.54,627.48,1022.68,347.35,280.53,56.49,50.29,266.70,47.16,121.49,44.32,36.11,75.50,71.62,127.57,57.74,108.67,46.05,64.57
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4099812#title=id=PXD001383;43566.xml;spectrum=187	true	ENVIGSYICK	400.0186	3		9-UNIMOD:24	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=5.165047406483865E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4099811#title=id=PXD001383;43566.xml;spectrum=186	true	GAAGAEAPR	400.0185	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.090097623159556E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4099810#title=id=PXD001383;43566.xml;spectrum=185	true	GAPGV	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=9.247836555319846E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4099813#title=id=PXD001383;43566.xml;spectrum=188	true	DLRSGAEPVFHNVR	400.01865	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=5.585869431283052E-5"}
+=Cluster=
+id=3f2b97fe-2c71-4195-bc93-75777bdc2f21
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[HIIIRF:1,HLLPAFT:1,SYILFR:1,TRCGCLWCA:1,VFQQFLNFR:1,VMHEDAVAALK:1]
+consensus_mz=157.100,158.258,166.228,175.090,178.287,223.204,234.200,235.200,251.250,252.247,343.431,344.375,364.396,382.402,383.069,435.400,436.400,461.000,469.900,477.467,532.800,548.400,549.400,550.470,551.295,628.800,635.600,642.500,679.400,685.594,701.300
+consensus_intens=11.70,23.27,105.78,28.85,19.09,164.88,534.26,72.92,2286.04,250.19,2272.81,199.71,621.70,531.49,419.51,978.55,217.34,52.28,174.93,80.71,62.71,4020.55,1566.41,234.72,58.64,20.39,15.30,19.01,17.04,80.56,3.38
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=674136#title=id=PXD000593;33755.xml;spectrum=14854	true	TRCGCLWCA	400.01782	3		3-UNIMOD:4,5-UNIMOD:4,8-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.501738742529929E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=673959#title=id=PXD000593;33755.xml;spectrum=14677	true	HIIIRF	400.02173	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.3980756010540086E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=673783#title=id=PXD000593;33755.xml;spectrum=14501	true	SYILFR	400.01868	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.2673666177281743E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=674135#title=id=PXD000593;33755.xml;spectrum=14853	true	HLLPAFT	400.01782	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=4.790174759338275E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=673784#title=id=PXD000593;33755.xml;spectrum=14502	true	VFQQFLNFR	400.01868	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.596592935714053E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=673960#title=id=PXD000593;33755.xml;spectrum=14678	true	VMHEDAVAALK	400.02173	3		2-UNIMOD:35	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=4.6307713236099564E-4"}
+=Cluster=
+id=83737f73-59ab-40b5-8016-0c16e63bdea3
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[GAPGV:1,GAVPG:1]
+consensus_mz=157.171,170.993,175.287,185.999,199.121,200.320,227.223,228.303,274.297,299.320,343.520,345.258,381.383,390.762,391.967,401.191
+consensus_intens=15.27,121.76,48.11,14.85,793.34,74.36,874.13,141.28,50.41,67.62,409.89,222.84,127.83,311.67,523.96,3.29
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4374759#title=id=PXD001383;44271.xml;spectrum=12173	true	GAPGV	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.45504163704722E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4290959#title=id=PXD001383;44270.xml;spectrum=4389	true	GAVPG	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.7675322451926308E-4"}
+=Cluster=
+id=ac0ad3ba-2e45-4b44-8b71-6e8d3ca0bb20
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[GAGVP:1]
+consensus_mz=173.182,251.047,252.189,288.386,291.087,299.285,365.350,366.239,377.478,378.572,391.240
+consensus_intens=15.20,18.22,21.31,13.59,24.35,43.83,175.00,143.49,63.05,62.67,392.92
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4327299#title=id=PXD001383;44270.xml;spectrum=40969	true	GAGVP	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.9048130867785007E-4"}
+=Cluster=
+id=89b4baca-a6d7-4655-8d81-0682869d17cb
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[GGPVA:1]
+consensus_mz=158.048,175.225,183.067,197.140,199.210,227.096,232.337,242.263,244.141,286.276,355.268,369.244,377.307,381.267,390.564
+consensus_intens=11.75,10.42,9.67,6.59,10.97,13.32,20.69,9.35,10.15,9.85,105.73,134.47,407.86,108.99,345.75
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=4925225#title=id=PXD001383;44277.xml;spectrum=34129	true	GGPVA	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=7.384456386284665E-5"}
+=Cluster=
+id=770648d0-aa79-4efe-906c-8d059cce6dc6
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[EVGP:1]
+consensus_mz=175.174,212.197,235.282,244.252,289.257,293.595,381.115,390.227,390.851,391.487,392.995
+consensus_intens=25.03,19.31,15.96,17.74,21.52,30.30,72.58,87.41,92.01,336.45,66.16
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5552028#title=id=PXD001383;44287.xml;spectrum=7205	true	EVGP	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.0011280808869598001"}
+=Cluster=
+id=1a647488-90be-44bc-8940-e5b6ef2351c5
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[PGVQ:1]
+consensus_mz=173.219,185.267,199.241,213.231,246.158,247.197,274.084,275.064,321.164,338.376,347.252,390.749,391.355
+consensus_intens=6.60,16.38,24.82,43.31,385.67,76.17,197.77,51.77,182.69,53.24,95.74,113.65,71.09
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=1239858#title=id=PXD003924;46244.xml;spectrum=39425	true	PGVQ	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.771689892497945E-4"}
+=Cluster=
+id=34500758-c91e-4ff2-967f-397a595971a9
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[IPAT:2]
+consensus_mz=151.104,175.253,191.067,192.099,193.112,219.075,220.035,288.282,290.763,299.251,337.385,364.531,390.811,391.637,394.803
+consensus_intens=7.05,74.79,1848.03,227.11,5.23,1567.90,205.98,190.12,205.34,35.44,84.44,125.82,176.89,60.95,27.55
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3123186#title=id=PXD003924;46820.xml;spectrum=4813	true	IPAT	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.1565987555697007E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3123601#title=id=PXD003924;46820.xml;spectrum=5229	true	IPAT	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.0260361728951343E-4"}
+=Cluster=
+id=4b4d5215-0eb5-49dd-b7ca-8b1c8accb69c
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[AGPVG:1]
+consensus_mz=155.144,171.168,175.335,244.294,249.285,275.255,297.409,299.293,329.202,356.305,365.135,390.595,391.380
+consensus_intens=17.42,69.04,15.99,35.01,36.25,17.17,15.69,34.96,81.82,71.52,58.25,263.90,300.58
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3385150#title=id=PXD003924;46822.xml;spectrum=19333	true	AGPVG	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.2507543838876576E-4"}
+=Cluster=
+id=abe32388-6cd2-46fe-b206-0ba01bac51cf
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[GAPVG:1]
+consensus_mz=155.169,175.308,199.154,226.183,249.414,262.278,274.139,279.160,370.507,378.787,387.608,390.987,392.040
+consensus_intens=7.70,7.96,23.92,33.03,19.53,19.68,42.73,63.07,189.61,96.13,323.93,248.51,124.36
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3552021#title=id=PXD003924;46823.xml;spectrum=65145	true	GAPVG	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.1169454600425897E-4"}
+=Cluster=
+id=f3ae9488-30f9-49fd-9691-ea6dc29c3deb
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[KAMLLPK:1,WATAGLHIGDR:1]
+consensus_mz=171.200,175.200,182.100,185.200,199.100,210.200,226.200,227.100,244.200,299.300,302.200,330.200,357.300,383.200,385.000,425.700,426.400,470.300,471.300,490.200,571.300,573.300,577.300,589.300,590.300,600.300,601.300,624.400,628.400,629.300,710.300,711.400,795.500
+consensus_intens=63.36,51.56,151.13,34.63,120.56,45.92,41.06,40.27,187.60,57.33,236.93,104.30,214.50,78.85,85.40,66.78,59.82,217.65,52.34,59.30,45.00,86.32,31.09,201.51,84.36,146.02,51.69,32.40,27.42,53.52,62.31,26.11,21.38
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=875430#title=id=PXD000593;35625.xml;spectrum=5158	true	WATAGLHIGDR	400.0201	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.213775407333961E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=875429#title=id=PXD000593;35625.xml;spectrum=5157	true	KAMLLPK	400.0201	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.557923818690991E-4"}
+=Cluster=
+id=537dcaf1-a383-4fc4-9612-18514351cb77
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[YIEVFK:3,DRPEICFMK:1,FTQADIDEMK:1,GQKLAEQMFQ:1,GVLKVEAILEK:1,GVLPGPMECGAL:1,GVNELSTTFTK:1,LVTIPKK:1,RIATVLQHEE:1,RLLNVEVPQK:1,RLQTAQINAGK:1,VEYMEK:1,YLEDMK:1]
+consensus_mz=171.132,183.235,185.134,186.189,199.108,213.113,249.205,250.189,277.209,278.217,377.509,381.257,382.214,391.051,393.297,406.293,441.400,485.242,486.563,488.356,504.315,522.358,523.300,570.332,586.388,635.400,636.408,637.464,652.430,699.489,700.500,701.501
+consensus_intens=29.21,15.33,319.64,18.41,11.94,294.32,7033.89,1091.83,3426.52,347.88,214.03,219.42,46.64,786.32,711.35,98.19,92.76,83.55,33.78,49.34,361.07,16480.44,3876.86,396.80,965.36,1277.79,499.19,41.21,164.40,95.83,34.59,15.40
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=188100#title=id=PXD000593;29075.xml;spectrum=6473	true	GVNELSTTFTK	400.04376	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.217122520185273E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1663045#title=id=PXD001383;35665.xml;spectrum=5818	true	RLLNVEVPQK	400.00977	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.291094614101299E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=288564#title=id=PXD001383;28535.xml;spectrum=7200	true	GVLPGPMECGAL	400.0398	3		9-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=7.717940531716305E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1260433#title=id=PXD001383;34194.xml;spectrum=9106	true	YLEDMK	400.01605	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.6846320674344763E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1663044#title=id=PXD001383;35665.xml;spectrum=5817	true	YIEVFK	400.00977	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.9684748993060351E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=76236#title=id=PXD000593;28627.xml;spectrum=7460	true	GQKLAEQMFQ	400.0043	3		8-UNIMOD:35	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.243551888214421E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1124064#title=id=PXD001383;33783.xml;spectrum=8350	true	VEYMEK	400.00043	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.3178969797391795E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=860343#title=id=PXD001383;33769.xml;spectrum=13584	true	DRPEICFMK	400.02222	3		6-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.895950897080996E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=356985#title=id=PXD000593;33202.xml;spectrum=13086	true	RIATVLQHEE	400.03174	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.1418952967910282E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=356984#title=id=PXD000593;33202.xml;spectrum=13085	true	YIEVFK	400.03174	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.8957250038148602E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1222511#title=id=PXD001383;34191.xml;spectrum=12352	true	GVLKVEAILEK	400.02692	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=4.491186955361134E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1222510#title=id=PXD001383;34191.xml;spectrum=12351	true	YIEVFK	400.02692	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=4.232031417283099E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=76235#title=id=PXD000593;28627.xml;spectrum=7459	true	LVTIPKK	400.0043	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.1671694268028695E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1260434#title=id=PXD001383;34194.xml;spectrum=9107	true	FTQADIDEMK	400.01605	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.809167963296363E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1124065#title=id=PXD001383;33783.xml;spectrum=8351	true	RLQTAQINAGK	400.00043	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.441855400561083E-4"}
+=Cluster=
+id=bb18bcd7-8341-428d-8d9c-88715384bcdf
+av_precursor_mz=400.020
+av_precursor_intens=1.0
+sequence=[LIGGLAVR:1,NAVNLIILSLK:1]
+consensus_mz=171.212,172.151,175.227,185.210,199.203,200.162,227.214,228.202,271.186,284.252,338.978,341.316,343.339,345.426,348.516,414.441,426.417,454.409,455.391,458.394,515.357,527.415,572.354,573.373,574.381,626.549,627.617,685.481,686.597,695.572
+consensus_intens=9.75,11.11,20.64,7.96,626.82,66.98,377.00,47.04,37.82,24.58,33.85,35.48,39.92,103.70,43.53,28.27,24.81,47.98,20.55,42.32,60.08,44.85,1787.90,517.73,60.98,22.21,12.94,31.18,12.59,9.84
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000090.mgf#id=index=349780#title=id=PXD000090;PRIDE_Exp_Complete_Ac_27995.xml;spectrum=12446	true	LIGGLAVR	400.02032	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.1476379107981223"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000090.mgf#id=index=349781#title=id=PXD000090;PRIDE_Exp_Complete_Ac_27995.xml;spectrum=12447	true	NAVNLIILSLK	400.02045	3			0.0	{"DECOY": "decoy:true", "FDR": "psm_combined_fdr_score=0.6610576923076923"}
+=Cluster=
+id=9412a91d-b13b-40b7-a6cc-3001de4822d1
+av_precursor_mz=400.021
+av_precursor_intens=1.0
+sequence=[IVGLLAQLEKI:1,VAAGLQIK:1]
+consensus_mz=157.200,158.100,171.200,185.100,213.200,251.700,260.200,274.300,299.200,347.900,383.200,385.000,389.300,390.500,459.800,468.600,473.300,477.600,494.300,502.300,505.900,506.700,558.300,586.300,627.300,629.400,630.400,631.300,694.300,700.500,803.300
+consensus_intens=68.00,22.05,114.37,57.14,53.37,48.19,89.38,40.65,38.51,106.48,59.15,50.01,80.62,116.48,49.12,25.63,55.92,30.49,31.32,163.52,291.34,132.36,98.01,94.24,23.26,411.23,122.07,63.43,28.38,51.64,5.48
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2021088#title=id=PXD001383;36526.xml;spectrum=6047	true	IVGLLAQLEKI	400.0207	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.6501666200147887E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2021087#title=id=PXD001383;36526.xml;spectrum=6046	true	VAAGLQIK	400.0207	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.1225494158995403E-4"}
+=Cluster=
+id=f6800060-d954-4fe8-8847-b66f58df4bb7
+av_precursor_mz=400.021
+av_precursor_intens=1.0
+sequence=[HISADEK:1,RISSGKAGTHW:1]
+consensus_mz=171.200,173.200,175.100,178.100,223.200,249.200,250.200,251.200,277.200,342.700,377.400,381.400,391.000,393.300,406.400,453.200,466.200,474.400,499.000,522.300,523.300,548.400,549.300,570.300,628.400,635.400,636.500,661.500,662.500
+consensus_intens=19.97,10.77,17.84,20.32,136.36,488.14,60.59,178.28,235.92,48.71,25.78,19.70,45.31,57.06,10.15,13.17,19.48,10.68,90.61,1109.20,334.56,500.60,158.25,71.65,66.33,95.25,49.00,113.59,51.91
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1319327#title=id=PXD001383;34199.xml;spectrum=14472	true	RISSGKAGTHW	400.02075	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.045395112296537E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=1319326#title=id=PXD001383;34199.xml;spectrum=14471	true	HISADEK	400.02075	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.45284521252009E-4"}
+=Cluster=
+id=322cab62-3059-4994-92cb-141af869623c
+av_precursor_mz=400.021
+av_precursor_intens=1.0
+sequence=[AGPVGPKGD:1,NRLNWPHMICED:1,SAWKHAGALKK:1]
+consensus_mz=199.154,226.183,249.414,262.278,274.139,279.160,370.507,381.866,382.607,387.608,392.040,446.781,447.642,460.986,477.422,489.227,526.373,527.490,536.546,543.735,581.288,652.266,664.430,665.256,667.165,694.477
+consensus_intens=54.54,75.30,44.53,44.88,97.43,143.80,432.36,198.77,301.59,352.00,283.56,600.01,207.71,83.51,104.16,102.76,59.69,75.93,57.64,116.51,53.37,65.67,146.51,70.05,105.17,68.63
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3552022#title=id=PXD003924;46823.xml;spectrum=65146	true	AGPVGPKGD	400.02072	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.0138789804456164E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3552024#title=id=PXD003924;46823.xml;spectrum=65148	true	NRLNWPHMICED	400.02087	4		10-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=7.289424917775475E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=3552023#title=id=PXD003924;46823.xml;spectrum=65147	true	SAWKHAGALKK	400.0208	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=9.976053257724101E-5"}
+=Cluster=
+id=6ef506ac-4dd4-4a1b-9d65-faaaaf29191b
+av_precursor_mz=400.021
+av_precursor_intens=1.0
+sequence=[ALRCLLGPAAR:1,FSGADIST:1]
+consensus_mz=158.200,171.200,175.200,199.200,207.200,235.200,284.400,293.100,293.800,341.700,342.400,382.400,390.500,391.400,460.000,470.000,483.300,490.400,499.500,500.400,520.300,548.900,562.300,563.300,632.300,650.300,651.400,757.500
+consensus_intens=20.36,29.19,23.18,25.38,21.50,31.18,44.84,503.69,97.15,964.08,252.86,68.93,392.59,90.20,33.47,23.45,28.39,47.29,399.82,65.59,25.17,64.77,45.92,89.31,19.00,37.33,25.76,19.89
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=544183#title=id=PXD000593;33749.xml;spectrum=954	true	FSGADIST	400.02094	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.1456173434820068E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=544184#title=id=PXD000593;33749.xml;spectrum=955	true	ALRCLLGPAAR	400.02094	3		4-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.8769126690159032E-4"}
+=Cluster=
+id=1763d71f-84d4-4f32-8fa3-61163576d7c7
+av_precursor_mz=400.021
+av_precursor_intens=1.0
+sequence=[GDLRCHCWP:1,LGDARPGL:1]
+consensus_mz=171.100,172.100,173.100,249.400,257.300,269.300,286.300,293.200,300.200,314.300,360.300,368.500,381.000,441.900,442.900,450.000,463.400,497.200,505.000,505.800,513.500,514.400,515.200,622.300,623.400,690.400,735.500
+consensus_intens=756.80,68.27,2.46,4.15,4.02,8.63,7.47,7.33,55.77,67.52,16.17,53.25,35.44,104.34,21.95,237.64,19.09,20.77,201.34,94.86,724.64,2074.32,129.21,11.10,4.08,2.82,6.26
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2345385#title=id=PXD001383;37543.xml;spectrum=10629	true	LGDARPGL	400.02112	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.024487607189401E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=2345386#title=id=PXD001383;37543.xml;spectrum=10630	true	GDLRCHCWP	400.02112	3		5-UNIMOD:4,7-UNIMOD:4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.555924974167338E-4"}
+=Cluster=
+id=59f81dd7-9474-45c1-a75f-04110c1fd96e
+av_precursor_mz=400.022
+av_precursor_intens=1.0
+sequence=[DPTTVTTLRVP:1,IAEPGRR:1,PSTPLQR:1,SPEVGTQLLPR:1]
+consensus_mz=157.200,158.220,185.200,186.200,187.200,219.200,270.300,283.300,288.400,299.220,307.926,381.200,383.400,390.840,391.623,484.028,490.400,491.810,493.740,494.500,506.447,513.500,526.200,529.300,555.400,614.500,615.500,624.500,630.600,654.600,701.500
+consensus_intens=286.46,34.05,452.86,69.79,16.67,75.18,32.10,28.76,22.58,51.99,3181.00,92.66,90.67,82.52,60.43,60.53,94.46,76.69,98.86,32.21,198.36,56.97,18.12,30.45,24.68,2128.44,585.96,18.53,20.20,18.33,46.01
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=924613#title=id=PXD001383;33772.xml;spectrum=10645	true	IAEPGRR	400.00433	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.7352485457672973E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=924614#title=id=PXD001383;33772.xml;spectrum=10646	true	SPEVGTQLLPR	400.00433	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.1958908246311904E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=967727#title=id=PXD001383;33774.xml;spectrum=10729	true	PSTPLQR	400.02844	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=3.003516094751294E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=967728#title=id=PXD001383;33774.xml;spectrum=10730	true	DPTTVTTLRVP	400.02844	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.834996308770152E-4"}
+=Cluster=
+id=657cd21b-a19a-4021-8a63-e4b2e54cba07
+av_precursor_mz=400.022
+av_precursor_intens=1.0
+sequence=[KDQPEANAPVK:1,KHGSENK:1]
+consensus_mz=169.200,173.200,174.100,175.100,181.100,201.100,225.100,233.200,261.200,299.500,355.400,368.000,381.300,383.300,390.500,409.400,451.300,452.400,476.100,477.300,538.400,539.300,591.600,598.400,599.400,600.400,624.500,651.500
+consensus_intens=29.18,321.39,23.18,45.20,15.54,204.52,123.77,93.64,64.88,61.12,68.92,162.71,72.63,213.01,140.27,93.85,88.97,25.78,20.96,24.14,210.14,58.04,36.24,906.83,263.30,34.64,19.84,18.41
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=38237#title=id=PXD001383;23101.xml;spectrum=1978	true	KDQPEANAPVK	400.02155	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3776020406589307E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=38236#title=id=PXD001383;23101.xml;spectrum=1977	true	KHGSENK	400.02155	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.2286005384581512E-4"}
+=Cluster=
+id=1ca6c29f-ae70-4230-8839-400e1b6b5c31
+av_precursor_mz=400.022
+av_precursor_intens=1.0
+sequence=[KDPPSAAL:1,KVGCAAAPLQPA:1,QHYILSFNQSFSK:1]
+consensus_mz=175.174,212.197,235.282,244.252,289.257,293.595,381.115,382.139,383.139,390.227,391.487,429.640,458.661,460.579,476.049,484.581,509.302,524.474,529.541,596.404,597.288,652.318
+consensus_intens=68.56,52.90,43.71,48.59,58.97,83.01,100.91,432.31,665.84,239.49,259.48,74.35,97.70,72.75,69.84,63.73,70.99,47.25,52.56,63.70,89.75,19.07
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5552030#title=id=PXD001383;44287.xml;spectrum=7207	true	KVGCAAAPLQPA	400.02194	3		4-UNIMOD:24	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=8.28809384880551E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5552029#title=id=PXD001383;44287.xml;spectrum=7206	true	KDPPSAAL	400.02185	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=5.15265160677125E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=5552031#title=id=PXD001383;44287.xml;spectrum=7208	true	QHYILSFNQSFSK	400.022	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=8.649149865058679E-5"}
+=Cluster=
+id=50481583-841e-4348-92be-f79d25c42d33
+av_precursor_mz=400.022
+av_precursor_intens=1.0
+sequence=[ALWGPFSALHQNKK:1,EVASRITPLVL:1,GAPVG:1,KPM*LPAK:1]
+consensus_mz=164.959,171.326,175.194,187.292,192.749,224.169,230.055,274.109,275.126,277.218,343.531,374.642,380.362,382.313,388.204,428.390,471.245,485.073,498.407,499.569,500.370,525.228,526.205,533.557,542.092
+consensus_intens=4.04,4.42,4.44,3.75,3.81,180.72,255.66,315.52,93.41,102.92,283.17,221.96,155.80,84.81,441.06,1284.94,460.17,818.27,106.74,205.51,91.81,343.54,95.86,158.92,135.56
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=2388550#title=id=PXD003924;46254.xml;spectrum=19078	true	KPM*LPAK	400.02213	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.3924474084124952E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=2388551#title=id=PXD003924;46254.xml;spectrum=19079	true	EVASRITPLVL	400.02222	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=6.952257258917905E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=2388552#title=id=PXD003924;46254.xml;spectrum=19080	true	ALWGPFSALHQNKK	400.02228	4			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=7.328958124953552E-5"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003924.mgf#id=index=2388549#title=id=PXD003924;46254.xml;spectrum=19077	true	GAPVG	400.02	1			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.680104294279171E-4"}
+=Cluster=
+id=37539e35-22fa-418c-b86c-4d24405a159f
+av_precursor_mz=400.022
+av_precursor_intens=1.0
+sequence=[FMSAFLATHR:1,LEKAPLK:1]
+consensus_mz=157.200,175.100,180.100,181.200,185.200,201.200,229.100,244.200,294.200,295.300,311.300,372.200,381.200,382.200,383.300,423.300,442.400,478.300,488.300,498.200,505.200,538.200,539.300,571.400,597.200,616.400,624.300,685.400,686.400,687.300
+consensus_intens=28.79,105.68,173.98,30.65,44.87,59.09,59.37,85.48,289.89,77.37,108.36,61.09,105.61,50.43,141.55,21.64,78.40,18.90,30.37,23.77,173.63,334.21,111.79,79.91,77.58,62.46,52.70,92.00,85.75,55.45
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=890120#title=id=PXD000593;35962.xml;spectrum=3849	true	LEKAPLK	400.0223	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.754604042906525E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD000593.mgf#id=index=890121#title=id=PXD000593;35962.xml;spectrum=3850	true	FMSAFLATHR	400.0223	3		2-UNIMOD:35	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=2.7319682694979913E-4"}
+=Cluster=
+id=d857f0c7-72c3-4e28-9d3b-31a716a6e7e6
+av_precursor_mz=400.023
+av_precursor_intens=1.0
+sequence=[PASPDSPK:1,PASSSAALGGSAPK:1]
+consensus_mz=158.100,169.100,175.100,181.000,199.100,215.100,243.100,244.000,256.200,271.400,331.300,371.400,372.400,381.400,390.700,450.300,468.400,469.500,480.200,486.100,527.300,541.200,543.300,544.300,556.300,612.300,613.300,624.500,630.400,631.400,700.400,701.400,702.400
+consensus_intens=51.55,229.34,56.59,22.88,30.22,48.91,38.54,32.41,81.99,36.05,185.08,111.85,57.67,113.77,71.00,28.75,76.97,37.57,35.80,27.87,40.04,34.80,138.31,49.61,31.55,41.12,45.22,36.85,459.31,169.83,29.73,212.37,86.54
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=256562#title=id=PXD001383;28400.xml;spectrum=1965	true	PASSSAALGGSAPK	400.02283	3			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=1.2207650961683613E-4"}
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD001383.mgf#id=index=256561#title=id=PXD001383;28400.xml;spectrum=1964	true	PASPDSPK	400.02283	2			0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=9.766989016446226E-5"}
+=Cluster=
+id=08b511d4-25f7-4630-9d44-04c6fee124a5
+av_precursor_mz=400.023
+av_precursor_intens=1.0
+sequence=[VGTVGTPVGTLTLSCAYR:1]
+consensus_mz=158.093,163.120,164.123,166.062,175.119,235.139,257.140,272.136,285.135,289.163,316.225,330.221,374.290,378.748,390.211,414.747,416.403,469.328,481.807,497.322,501.243,518.271,542.814,558.264,575.291,705.333,722.359,800.493,828.487,842.393,859.419,989.460
+consensus_intens=18.66,496.04,19.29,24.19,58.32,427.14,58.91,29.59,66.98,47.00,15.63,45.73,24.29,26.12,66.50,34.08,126.93,33.03,59.27,106.76,37.09,15.51,22.86,45.16,29.34,20.25,19.64,15.94,13.85,14.22,11.57,10.15
+SPEC	#file=/nfs/pride/prod/cluster/archive_spectra/archive_identified_2017-08/PXD003656.mgf#id=index=8454233#title=id=PXD003656;FN23_Mouseretina_set2_180min_10ug_C2_091213_PEMMR.mgf;index=48953	true	VGTVGTPVGTLTLSCAYR	400.0229	5		0-214,15-4	0.0	{"DECOY": "decoy:false", "FDR": "psm_combined_fdr_score=0.22249586483813244"}

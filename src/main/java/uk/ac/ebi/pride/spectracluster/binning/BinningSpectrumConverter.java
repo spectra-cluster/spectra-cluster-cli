@@ -1,11 +1,11 @@
 package uk.ac.ebi.pride.spectracluster.binning;
 
-import uk.ac.ebi.pride.spectracluster.binning.BinarySpectrumReferenceWriterCallable;
-import uk.ac.ebi.pride.spectracluster.binning.ISpectrumReferenceBinner;
-import uk.ac.ebi.pride.spectracluster.binning.ReferenceMzBinner;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
+import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
+import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
 import uk.ac.ebi.pride.spectracluster.spectra_list.IPeaklistScanner;
+import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingClusteringScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingMgfScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class BinningSpectrumConverter {
     private ISpectrumReferenceBinner spectrumReferenceBinner = new ReferenceMzBinner();
     private IPeaklistScanner peaklistScanner = new ParsingMgfScanner();
+    private ParsingClusteringScanner clusteringScanner = new ParsingClusteringScanner();
 
     private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
     private List<IProgressListener> progressListeners = new ArrayList<IProgressListener>();
@@ -41,21 +42,54 @@ public class BinningSpectrumConverter {
     private List<BinaryClusterFileReference> writtenFiles;
     private List<SpectrumReference> spectrumReferences;
 
+    private ClusteringSettings.LOADING_MODE loadingMode = ClusteringSettings.DEFAULT_LOADING_MODE;
+
     public BinningSpectrumConverter(File outputDirectory, int nJobs, boolean fastMode) {
         this.outputDirectory = outputDirectory;
         this.nJobs = nJobs;
         this.fastMode = fastMode;
     }
 
+    public BinningSpectrumConverter(File outputDirectory, int nJobs, boolean fastMode, ISpectrumReferenceBinner spectrumReferenceBinner) {
+        this(outputDirectory, nJobs, fastMode);
+        this.spectrumReferenceBinner = spectrumReferenceBinner;
+    }
+
     public void processPeaklistFiles(String[] filenames) throws Exception {
+        // process MGF and .clustering files separately
+        List<String> mgfFilenames = new ArrayList<>(filenames.length);
+        List<String> clusteringFilenames = new ArrayList<>(filenames.length);
+
+        ((ParsingMgfScanner) peaklistScanner).setLoadingMode(loadingMode);
+
+        for (String filename : filenames) {
+            if (filename.toLowerCase().endsWith(".mgf")) {
+                mgfFilenames.add(filename);
+            }
+            else if (filename.toLowerCase().endsWith(".clustering")) {
+                clusteringFilenames.add(filename);
+            }
+            else {
+                throw new Exception("Unsupported filetype in " + filename);
+            }
+        }
+
         // pre-scan the spectrum references
-        spectrumReferences = peaklistScanner.getSpectrumReferences(filenames);
+        spectrumReferences = new ArrayList<>();
+        if (mgfFilenames.size() > 0) {
+            spectrumReferences.addAll(
+                    peaklistScanner.getSpectrumReferences(mgfFilenames.toArray(new String[mgfFilenames.size()])));
+        }
+        if (clusteringFilenames.size() > 0) {
+            spectrumReferences.addAll(
+                    clusteringScanner.getSpectrumReferences(clusteringFilenames.toArray(new String[clusteringFilenames.size()])));
+        }
 
         // bin the references
         List<List<SpectrumReference>> binnedSpectrumReferences = spectrumReferenceBinner.binSpectrumReferences(spectrumReferences);
 
         // create the files
-        launchFileWritingJobs(binnedSpectrumReferences, filenames);
+        launchFileWritingJobs(binnedSpectrumReferences, mgfFilenames, clusteringFilenames);
 
         // wait for the completed jobs
         waitForCompletedJobs();
@@ -120,7 +154,8 @@ public class BinningSpectrumConverter {
         }
     }
 
-    private void launchFileWritingJobs(List<List<SpectrumReference>> binnedSpectrumReferences, String[] filenames) throws Exception {
+    private void launchFileWritingJobs(List<List<SpectrumReference>> binnedSpectrumReferences, List<String> peaklistFilenames,
+                                       List<String> clusteringFilenames) throws Exception {
         if (outputDirectory == null || !outputDirectory.exists() || !outputDirectory.isDirectory())
             throw new Exception("Invalid output directory for converted spectra set");
 
@@ -130,12 +165,19 @@ public class BinningSpectrumConverter {
         // launch the jobs
         for (int i = 0; i < binnedSpectrumReferences.size(); i++) {
             List<SpectrumReference> spectrumReferences = binnedSpectrumReferences.get(i);
-            File outputFile = generateOutputfile(i);
+
+            if (spectrumReferences.size() < 1) {
+                continue;
+            }
+
+            File outputFile = generateOutputfile(spectrumReferences);
 
             BinarySpectrumReferenceWriterCallable writerCallable =
                     new BinarySpectrumReferenceWriterCallable(
-                            filenames,
+                            peaklistFilenames,
+                            clusteringFilenames,
                             peaklistScanner.getFileIndices(),
+                            clusteringScanner.getClusteringFileIndices(),
                             spectrumReferences,
                             outputFile,
                             fastMode);
@@ -147,23 +189,21 @@ public class BinningSpectrumConverter {
         writingJobsExecutorService.shutdown();
     }
 
-    public File generateOutputfile(int bin) {
-        String binString;
+    public File generateOutputfile(List<SpectrumReference> spectrumReferences) {
+        float minMz = (float) spectrumReferences.stream()
+                .mapToDouble(SpectrumReference::getPrecursorMz)
+                .min()
+                .orElse(0.0);
+        float maxMz = (float) spectrumReferences.stream()
+                .mapToDouble(SpectrumReference::getPrecursorMz)
+                .max()
+                .orElse(9999.0);
 
-        if (bin >= 1000) {
-            binString = String.valueOf(bin);
-        }
-        else if (bin >= 100) {
-            binString = "0" + String.valueOf(bin);
-        }
-        else if (bin >= 10) {
-            binString = "00" + String.valueOf(bin);
-        }
-        else {
-            binString = "000" + String.valueOf(bin);
-        }
+        String filename = String.format("convertedSpectra_%04d_%04d.cls",
+                (int) Math.floor(minMz),
+                (int) Math.ceil(maxMz));
 
-        return new File(outputDirectory, "convertedSpectra_" + binString + ".cls");
+        return new File(outputDirectory, filename);
     }
 
     public void addWrittenFileListener(IBinaryClusteringResultListener listener) {
@@ -184,5 +224,13 @@ public class BinningSpectrumConverter {
 
     public void addProgressListener(IProgressListener listener) {
         progressListeners.add(listener);
+    }
+
+    public ClusteringSettings.LOADING_MODE getLoadingMode() {
+        return loadingMode;
+    }
+
+    public void setLoadingMode(ClusteringSettings.LOADING_MODE loadingMode) {
+        this.loadingMode = loadingMode;
     }
 }

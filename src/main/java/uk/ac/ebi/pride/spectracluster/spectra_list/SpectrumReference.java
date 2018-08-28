@@ -11,12 +11,20 @@ public final class SpectrumReference implements Comparable<SpectrumReference> {
     private final int spectrumIndex;
     private final float precursorMz;
     private final String spectrumId;
+    /**
+     * Indicates that the current spectrum is referencing a cluster.
+     */
+    public static final int IS_CLUSTER = -1;
 
     public SpectrumReference(int fileId, int spectrumIndex, float precursorMz) {
+        this(fileId, spectrumIndex, precursorMz, UUID.randomUUID().toString());
+    }
+
+    public SpectrumReference(int fileId, int spectrumIndex, float precursorMz, String spectrumId) {
         this.fileId = fileId;
         this.spectrumIndex = spectrumIndex;
         this.precursorMz = precursorMz;
-        this.spectrumId = UUID.randomUUID().toString();
+        this.spectrumId = spectrumId;
     }
 
     public int getFileId() {

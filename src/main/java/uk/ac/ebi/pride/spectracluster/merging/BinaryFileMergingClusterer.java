@@ -4,6 +4,8 @@ import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
+import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
+import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
 
 import java.io.File;
 import java.util.*;
@@ -34,6 +36,7 @@ public class BinaryFileMergingClusterer {
 
     private ExecutorService clusteringExecuteService;
     private List<IBinaryClusteringResultListener> listeners = new ArrayList<IBinaryClusteringResultListener>();
+    private List<IProgressListener> progressListeners = new ArrayList<IProgressListener>();
     private List<Future<ClusteringJobReference>> clusteringFutures = new ArrayList<Future<ClusteringJobReference>>();
 
     private List<BinaryClusterFileReference> resultFiles;
@@ -86,7 +89,7 @@ public class BinaryFileMergingClusterer {
                         BinaryClusterFileReference resultFile = fileFuture.get().getOutputFile();
                         resultFiles.add(resultFile);
                         // notify all listeners
-                        notifyListeners(resultFile);
+                        notifyListeners(resultFile, completedJobs.size(), clusteringFutures.size());
 
                         // delete the input file if set
                         if (deleteInputFiles) {
@@ -110,9 +113,18 @@ public class BinaryFileMergingClusterer {
         }
     }
 
-    private void notifyListeners(BinaryClusterFileReference writtenFile) {
+    private void notifyListeners(BinaryClusterFileReference writtenFile, int completedJobs, int totalJobs) {
         for (IBinaryClusteringResultListener listener : listeners) {
             listener.onNewResultFile(writtenFile);
+        }
+
+        ProgressUpdate progressUpdate = new ProgressUpdate(
+                String.format("Completed merging %d spectra (%.2f m/z to %.2f m/z)",
+                        writtenFile.getnSpectra(), writtenFile.getMinMz(), writtenFile.getMaxMz()),
+                ProgressUpdate.CLUSTERING_STAGE.MERGING, completedJobs, totalJobs);
+
+        for (IProgressListener progressListener : progressListeners) {
+            progressListener.onProgressUpdate(progressUpdate);
         }
     }
 
@@ -132,7 +144,7 @@ public class BinaryFileMergingClusterer {
 
                 // ignore the first file since it will not be clustered
                 if (i == 0) {
-                    notifyListeners(binaryClusterFileReference);
+                    notifyListeners(binaryClusterFileReference, 1, binaryFiles.size());
                     continue;
                 }
 
@@ -141,7 +153,7 @@ public class BinaryFileMergingClusterer {
                 File outputFile = new File(outputDirectory, binaryClusterFileReference.getResultFile().getName());
                 BinaryFileClusteringCallable clusteringCallable =
                         new BinaryFileClusteringCallable(outputFile, binaryClusterFileReference.getResultFile(),
-                                thresholds, fastMode, 0, (float) maxMz, temporaryDirectory);
+                                thresholds, fastMode, 0, (float) maxMz, temporaryDirectory, null);
                 Future<ClusteringJobReference> resultFileFuture = clusteringExecuteService.submit(clusteringCallable);
                 clusteringFutures.add(resultFileFuture);
             }
@@ -159,5 +171,24 @@ public class BinaryFileMergingClusterer {
 
     public List<BinaryClusterFileReference> getResultFiles() {
         return Collections.unmodifiableList(resultFiles);
+    }
+
+    public void addProgressListener(IProgressListener progressListener) {
+        progressListeners.add(progressListener);
+    }
+
+    private void notifyListeners(int completedJobs, int totalJobs, BinaryClusterFileReference writtenFile) {
+        for (IBinaryClusteringResultListener listener : listeners) {
+            listener.onNewResultFile(writtenFile);
+        }
+
+        ProgressUpdate progressUpdate = new ProgressUpdate(
+                String.format("Completed clustering %d spectra (%.2f m/z to %.2f m/z)",
+                        writtenFile.getnSpectra(), writtenFile.getMinMz(), writtenFile.getMaxMz()),
+                ProgressUpdate.CLUSTERING_STAGE.CLUSTERING, completedJobs, totalJobs);
+
+        for (IProgressListener progressListener : progressListeners) {
+            progressListener.onProgressUpdate(progressUpdate);
+        }
     }
 }

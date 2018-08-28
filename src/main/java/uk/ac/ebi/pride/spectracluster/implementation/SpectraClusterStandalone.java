@@ -1,7 +1,9 @@
 package uk.ac.ebi.pride.spectracluster.implementation;
 
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.math3.ml.clustering.Cluster;
 import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
+import uk.ac.ebi.pride.spectracluster.cdf.SpectraPerBinNumberComparisonAssessor;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusterer;
@@ -9,6 +11,9 @@ import uk.ac.ebi.pride.spectracluster.conversion.MergingCGFConverter;
 import uk.ac.ebi.pride.spectracluster.io.CGFSpectrumIterable;
 import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
 import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
+import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
+import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
+import uk.ac.ebi.pride.spectracluster.spectrum.KnownProperties;
 import uk.ac.ebi.pride.spectracluster.util.BinaryFileScanner;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
@@ -16,12 +21,17 @@ import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
 import uk.ac.ebi.pride.spectracluster.util.function.Functions;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.HighestNSpectrumPeaksFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveReporterIonPeaksFunction;
+import uk.ac.ebi.pride.spectracluster.util.predicate.IPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyIdentifiedPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyUnidentifiedPredicate;
+import uk.ac.ebi.pride.spectracluster.util.predicate.spectrum.IdentifiedPredicate;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -325,7 +335,7 @@ public class SpectraClusterStandalone {
      * @return A File object pointing to the newly created temporary directory.
      * @throws Exception
      */
-    private File createTemporaryDirectory(String prefix) throws Exception {
+    public static File createTemporaryDirectory(String prefix) throws Exception {
         return createTemporaryDirectory(prefix, null);
     }
 
@@ -337,7 +347,7 @@ public class SpectraClusterStandalone {
      * @return A File object pointing to the newly created temporary directory.
      * @throws Exception
      */
-    private File createTemporaryDirectory(String prefix, File tmpDirectory) throws Exception {
+    public static File createTemporaryDirectory(String prefix, File tmpDirectory) throws Exception {
         // first a temporary file is created. This is then deleted and the generated name re-used
         // to create the directory.
         File tmpFile;
@@ -378,6 +388,8 @@ public class SpectraClusterStandalone {
         BinningSpectrumConverter binningSpectrumConverter = new BinningSpectrumConverter(binarySpectraDirectory,
                 parallelJobs, useFastMode);
 
+        binningSpectrumConverter.setLoadingMode(ClusteringSettings.getLoadingMode());
+
         // if verbose mode is enabled, send all progress updates to the progress listeners
         if (verbose) {
             for (IProgressListener progressListener : progressListeners) {
@@ -397,6 +409,16 @@ public class SpectraClusterStandalone {
         }
 
         binningSpectrumConverter.processPeaklistFiles(peakListFilenameArray);
+
+        // count the spectra per bin
+        if (Defaults.getNumberOfComparisonAssessor().getClass() == SpectraPerBinNumberComparisonAssessor.class) {
+            SpectraPerBinNumberComparisonAssessor assessor = (SpectraPerBinNumberComparisonAssessor) Defaults.getNumberOfComparisonAssessor();
+            List<SpectrumReference> specRefs = binningSpectrumConverter.getSpectrumReferences();
+
+            for (SpectrumReference specRef : specRefs) {
+                assessor.countSpectrum(specRef.getPrecursorMz());
+            }
+        }
 
         return binningSpectrumConverter.getWrittenFiles();
     }
@@ -422,7 +444,22 @@ public class SpectraClusterStandalone {
                 String.format("Scanning %d binary files...", existingBinaryFiles.length),
                 ProgressUpdate.CLUSTERING_STAGE.CONVERSION));
 
-        return BinaryFileScanner.scanBinaryFiles(existingBinaryFiles);
+        // count the spectra per bin while scanning the files
+        SpectraPerBinNumberComparisonAssessor spectraPerBinNumberComparisonAssessor = null;
+        if (Defaults.getNumberOfComparisonAssessor().getClass() == SpectraPerBinNumberComparisonAssessor.class) {
+            spectraPerBinNumberComparisonAssessor = (SpectraPerBinNumberComparisonAssessor) Defaults.getNumberOfComparisonAssessor();
+        }
+
+        IPredicate<ICluster> loadingPredicate = null;
+
+        if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED) {
+            loadingPredicate = new ClusterOnlyIdentifiedPredicate();
+        }
+        else if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED) {
+            loadingPredicate = new ClusterOnlyUnidentifiedPredicate();
+        }
+
+        return BinaryFileScanner.scanBinaryFiles(spectraPerBinNumberComparisonAssessor, loadingPredicate, existingBinaryFiles);
     }
 
     /**
@@ -443,9 +480,18 @@ public class SpectraClusterStandalone {
         File clusteringResultDirectory = createTemporaryDirectory("clustering_results", temporaryDirectory);
         File tmpClusteringResultDirectory = createTemporaryDirectory("clustering_results_tmp", temporaryDirectory);
 
+        IPredicate<ICluster> clusterPredicate = null;
+
+        if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED) {
+            clusterPredicate = new ClusterOnlyIdentifiedPredicate();
+        }
+        if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED) {
+            clusterPredicate = new ClusterOnlyUnidentifiedPredicate();
+        }
+
         // cluster the files
         BinaryFileClusterer binaryFileClusterer = new BinaryFileClusterer(parallelJobs, clusteringResultDirectory,
-                clusteringThresholds, useFastMode, tmpClusteringResultDirectory);
+                clusteringThresholds, useFastMode, tmpClusteringResultDirectory, clusterPredicate);
 
         // if verbose mode is enabled add the progress listeners to receive all updates
         if (verbose) {
@@ -488,6 +534,35 @@ public class SpectraClusterStandalone {
     }
 
     /**
+     * Merge existing binary files that were created through a previous clustering
+     * process.
+     * @param binaryFilenames
+     * @param thresholds
+     * @param finalResultFile
+     */
+    public void mergeBinaryFiles(String[] binaryFilenames, List<Float> thresholds, File finalResultFile) throws Exception{
+        // convert into an array of FileS
+        File[] binaryFiles = new File[binaryFilenames.length];
+        for (int i = 0; i < binaryFilenames.length; i++) {
+            binaryFiles[i] = new File(binaryFilenames[i]);
+        }
+
+        // scan binary files
+        notifyProgressListeners(new ProgressUpdate(
+                String.format("Scanning %d binary files...", binaryFilenames.length),
+                ProgressUpdate.CLUSTERING_STAGE.MERGING
+        ));
+
+        List<BinaryClusterFileReference> binaryFileReferences = BinaryFileScanner.scanBinaryFiles(binaryFiles);
+
+        // merge the files
+        File combinedResultFile = mergeClusteringResults(binaryFileReferences, thresholds);
+
+        // create the output file
+        convertCgfToClustering(combinedResultFile, finalResultFile, thresholds.get(thresholds.size() - 1));
+    }
+
+    /**
      * Merges the result files (clusters at the borders of two result files are re-processed based on the precursor
      * tolerance). The resulting clustering are automatically merged into a single CGF file.
      * @param clusteredFiles Clustered (binary) files to merge.
@@ -510,6 +585,13 @@ public class SpectraClusterStandalone {
         BinaryFileMergingClusterer mergingClusterer = new BinaryFileMergingClusterer(parallelJobs, mergedResultsDirectory,
                 clusteringThresholds, useFastMode, Defaults.getDefaultPrecursorIonTolerance(), deleteTemporaryFiles,
                 mergedResultsDirectoryTmp);
+
+        // if verbose mode is enabled add the progress listeners to receive all updates
+        if (verbose) {
+            for (IProgressListener progressListener : progressListeners) {
+                mergingClusterer.addProgressListener(progressListener);
+            }
+        }
 
         // create the combined output file as soon as a job is done
         File combinedResultFile = File.createTempFile("combined_clustering_results", ".cgf", temporaryDirectory);
@@ -553,7 +635,7 @@ public class SpectraClusterStandalone {
      *                        as metadata in the header of the .clustering file.
      * @throws Exception
      */
-    private void convertCgfToClustering(File cgfResultFile, File clusteringOutputFile, float targetThreshold) throws Exception {
+    public void convertCgfToClustering(File cgfResultFile, File clusteringOutputFile, float targetThreshold) throws Exception {
         FileInputStream fileInputStream = new FileInputStream(cgfResultFile);
         FileWriter writer = new FileWriter(clusteringOutputFile);
 
@@ -568,6 +650,12 @@ public class SpectraClusterStandalone {
         for (ICluster cluster : iterable) {
             DotClusterClusterAppender.INSTANCE.appendCluster(writer, cluster);
             nClusterWritten++;
+
+            if (nClusterWritten % 10000 == 0 && isVerbose()) {
+                notifyProgressListeners(new ProgressUpdate(
+                        String.format("%d clusters successfully written to %s", nClusterWritten, clusteringOutputFile.toString()),
+                        ProgressUpdate.CLUSTERING_STAGE.OUTPUT));
+            }
         }
 
         writer.close();

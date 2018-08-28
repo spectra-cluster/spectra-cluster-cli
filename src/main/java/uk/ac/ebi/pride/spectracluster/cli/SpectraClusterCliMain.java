@@ -4,31 +4,27 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
-import uk.ac.ebi.pride.spectracluster.cdf.CdfLearner;
-import uk.ac.ebi.pride.spectracluster.cdf.CdfResult;
-import uk.ac.ebi.pride.spectracluster.cdf.CumulativeDistributionFunction;
-import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
-import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
-import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusterer;
-import uk.ac.ebi.pride.spectracluster.clustering.BinaryFileClusteringCallable;
-import uk.ac.ebi.pride.spectracluster.conversion.MergingCGFConverter;
+import uk.ac.ebi.pride.spectracluster.cdf.*;
 import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
+import uk.ac.ebi.pride.spectracluster.implementation.ScoreCalculator;
 import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
-import uk.ac.ebi.pride.spectracluster.io.CGFSpectrumIterable;
-import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
-import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
-import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
-import uk.ac.ebi.pride.spectracluster.util.*;
-import uk.ac.ebi.pride.spectracluster.util.function.Functions;
+import uk.ac.ebi.pride.spectracluster.util.Defaults;
+import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
+import uk.ac.ebi.pride.spectracluster.util.MissingParameterException;
+import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
+import uk.ac.ebi.pride.spectracluster.util.function.peak.BinnedHighestNPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.peak.HighestNPeakFunction;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveReporterIonPeaksFunction;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -78,12 +74,12 @@ public class SpectraClusterCliMain implements IProgressListener {
             }
 
             // NUMBER OF ROUNDS
-            int rounds = 4;
+            int rounds = 5;
             if (commandLine.hasOption(CliOptions.OPTIONS.ROUNDS.getValue()))
                 rounds = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ROUNDS.getValue()));
 
             // START THRESHOLD
-            float startThreshold = 0.999F;
+            float startThreshold = 1F;
             if (commandLine.hasOption(CliOptions.OPTIONS.START_THRESHOLD.getValue()))
                 startThreshold = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.START_THRESHOLD.getValue()));
 
@@ -98,6 +94,23 @@ public class SpectraClusterCliMain implements IProgressListener {
             if (commandLine.hasOption(CliOptions.OPTIONS.PRECURSOR_TOLERANCE.getValue())) {
                 float precursorTolerance = Float.parseFloat(commandLine.getOptionValue(CliOptions.OPTIONS.PRECURSOR_TOLERANCE.getValue()));
                 Defaults.setDefaultPrecursorIonTolerance(precursorTolerance);
+            }
+
+            // PRECURSOR TOLERANCE UNIT
+            if (commandLine.hasOption(CliOptions.OPTIONS.PRECURSOR_TOELRANCE_UNIT.getValue())) {
+                String unit = commandLine.getOptionValue(CliOptions.OPTIONS.PRECURSOR_TOELRANCE_UNIT.getValue()).toLowerCase();
+
+                if ("ppm".equals(unit)) {
+                    // adapt the precursor tolerance
+                    float userTolerance = Defaults.getDefaultPrecursorIonTolerance();
+                    float ppmFraction = userTolerance / 1000000;
+
+                    // set the "precursor" tolerance based on a high m/z
+                    Defaults.setDefaultPrecursorIonTolerance(ppmFraction * 3500);
+
+                    // set the actual ppm tolerance
+                    ClusteringSettings.ppmThreshold = userTolerance;
+                }
             }
 
             // FRAGMENT ION TOLERANCE
@@ -122,9 +135,23 @@ public class SpectraClusterCliMain implements IProgressListener {
                 spectraClusterStandalone.setUseFastMode(true);
             }
 
+            // LOADING MODE
+            if (commandLine.hasOption(CliOptions.OPTIONS.ONLY_IDENTIFIED.getValue()) && commandLine.hasOption(CliOptions.OPTIONS.ONLY_UNIDENTIFIED.getValue())) {
+                throw new Exception(CliOptions.OPTIONS.ONLY_IDENTIFIED.getValue() + " and " + CliOptions.OPTIONS.ONLY_UNIDENTIFIED.getValue() +
+                " cannot be used together");
+            }
+            if (commandLine.hasOption(CliOptions.OPTIONS.ONLY_IDENTIFIED.getValue())) {
+                ClusteringSettings.setLoadingMode(ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED);
+            }
+            if (commandLine.hasOption(CliOptions.OPTIONS.ONLY_UNIDENTIFIED.getValue())) {
+                ClusteringSettings.setLoadingMode(ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED);
+            }
+
             // VERBOSE
             if (commandLine.hasOption(CliOptions.OPTIONS.VERBOSE.getValue())) {
                 spectraClusterStandalone.setVerbose(true);
+                Defaults.setSaveDebugInformation(true);
+                Defaults.setSaveAddingScore(true);
             }
 
             // REMOVE QUANT PEAKS
@@ -185,10 +212,19 @@ public class SpectraClusterCliMain implements IProgressListener {
              * Advanced options
              */
             // MIN NUMBER COMPARISONS
-            Defaults.setMinNumberComparisons(10000);
+            // By default, use the SpectraPerBinNumberComparisonAssessor
+            // if the command line option is set, use the MinNumberComparisonAssessor instead.
             if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue())) {
                 int minComparisons = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue()));
-                Defaults.setMinNumberComparisons(minComparisons);
+                Defaults.setNumberOfComparisonAssessor(new MinNumberComparisonsAssessor(minComparisons));
+            }
+            // adaptive version with a min number of spectra set
+            else if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MIN_ADAPTIVE_COMPARISONS.getValue())) {
+                int minComparisons = Integer.parseInt(commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_MIN_ADAPTIVE_COMPARISONS.getValue()));
+                Defaults.setNumberOfComparisonAssessor(new SpectraPerBinNumberComparisonAssessor(Defaults.getDefaultPrecursorIonTolerance(),
+                        minComparisons));
+            } else {
+                Defaults.setNumberOfComparisonAssessor(new SpectraPerBinNumberComparisonAssessor(Defaults.getDefaultPrecursorIonTolerance()));
             }
 
             // N HIGHEST PEAKS
@@ -197,8 +233,30 @@ public class SpectraClusterCliMain implements IProgressListener {
                 ClusteringSettings.setLoadingSpectrumFilter(new HighestNPeakFunction(nHighestPeaks));
             }
 
+            // FILTER PEAKS PER MZ
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_FILTER_PEAKS_PER_MZ.getValue())) {
+                ClusteringSettings.setLoadingSpectrumFilter(new BinnedHighestNPeakFunction(10, 100, 30));
+            }
+
+            // MIN CONSENSUS PEAKS TO KEEP
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP.getValue())) {
+                Defaults.setDefaultConsensusMinPeaks(Integer.parseInt(
+                        commandLine.getOptionValue(CliOptions.OPTIONS.ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP.getValue())));
+            }
+
             // MGF COMMENT SUPPORT
             ClusteringSettings.disableMGFCommentSupport = commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_DISABLE_MGF_COMMENTS.getValue());
+
+            // MERGE BINARY FILES
+            boolean mergeBinaryFilesMode = commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_MERGE_BINARY_FILES.getValue());
+
+            /**
+             * ------ Convert CLS mode ----
+             */
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADVANCED_CONVERT_CGF.getValue())) {
+                convertToCgf(peaklistFilenames, finalResultFile);
+                return;
+            }
 
             /**
              * ------ Learn the CDF if set --------
@@ -251,6 +309,19 @@ public class SpectraClusterCliMain implements IProgressListener {
 
             spectraClusterStandalone.addProgressListener(this);
 
+            // merge mode
+            if (mergeBinaryFilesMode) {
+                System.out.println("Binary file merging mode set.");
+
+                if (commandLine.hasOption(CliOptions.OPTIONS.ADD_SCORES.getValue())) {
+                    System.out.println("Error: Scores cannot be added in binary file merging mode");
+                    System.exit(1);
+                }
+
+                spectraClusterStandalone.mergeBinaryFiles(peaklistFilenames, thresholds, finalResultFile);
+                System.exit(0);
+            }
+
             // make sure binary files exist
             if (reUseBinaryFiles) {
                 File binaryFileDirectory = new File(spectraClusterStandalone.getTemporaryDirectory(), "spectra");
@@ -272,6 +343,21 @@ public class SpectraClusterCliMain implements IProgressListener {
 
                 spectraClusterStandalone.clusterPeaklistFiles(peaklistFiles, thresholds, finalResultFile);
             }
+
+            // add the scores if set
+            if (commandLine.hasOption(CliOptions.OPTIONS.ADD_SCORES.getValue())) {
+                // get the directories of the MGF files
+                Set<File> directories = new HashSet<>();
+                for (String peakListFile : peaklistFilenames) {
+                    directories.add(new File(peakListFile).getParentFile());
+                }
+                File[] mgfDirs = new File[directories.size()];
+                directories.toArray(mgfDirs);
+
+                System.out.println("Adding scores to output file...");
+                ScoreCalculator scoreCalculator = new ScoreCalculator();
+                scoreCalculator.processClusteringResult(finalResultFile, mgfDirs);
+            }
         } catch (MissingParameterException e) {
             System.out.println("Error: " + e.getMessage() + "\n\n");
             printUsage();
@@ -285,11 +371,28 @@ public class SpectraClusterCliMain implements IProgressListener {
         }
     }
 
+    /**
+     * Convert the passed files from the .cgf format to the .clustering format.
+     * @param inputFiles
+     * @param outputFile
+     */
+    private void convertToCgf(String[] inputFiles, File outputFile) throws Exception {
+        SpectraClusterStandalone spectraClusterStandalone = new SpectraClusterStandalone();
+        spectraClusterStandalone.addProgressListener(this);
+
+        if (inputFiles.length != 1) {
+            System.out.println("Error: Only one cgf file can be converted to one .clustering file");
+            return;
+        }
+
+        spectraClusterStandalone.convertCgfToClustering(new File(inputFiles[0]), outputFile, 0.99F);
+    }
+
     private void printSettings(File finalResultFile, int nMajorPeakJobs, float startThreshold,
                                       float endThreshold, int rounds, boolean keepBinaryFiles, File binaryTmpDirectory,
                                       String[] peaklistFilenames, boolean reUseBinaryFiles, boolean fastMode,
                                       List<String> addedFilters) {
-        System.out.println("spectra-cluster API Version 1.0");
+        System.out.println("spectra-cluster API Version 1.0.11");
         System.out.println("Created by Rui Wang & Johannes Griss\n");
 
         System.out.println("-- Settings --");
@@ -301,10 +404,28 @@ public class SpectraClusterCliMain implements IProgressListener {
         System.out.println("Reuse binary files: " + (reUseBinaryFiles ? "true" : "false"));
         System.out.println("Input files: " + peaklistFilenames.length);
         System.out.println("Using fast mode: " + (fastMode ? "yes" : "no"));
+        if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED) {
+            System.out.println("Loading only identified spectra");
+        }
+        if (ClusteringSettings.getLoadingMode() == ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED) {
+            System.out.println("Loading only unidentified spectra");
+        }
 
         System.out.println("\nOther settings:");
-        System.out.println("Precursor tolerance: " + Defaults.getDefaultPrecursorIonTolerance());
+        if (ClusteringSettings.ppmThreshold != null)
+            System.out.println("Precursor tolerance: " + ClusteringSettings.ppmThreshold + " ppm");
+        else
+            System.out.println("Precursor tolerance: " + Defaults.getDefaultPrecursorIonTolerance() + " m/z");
+
         System.out.println("Fragment ion tolerance: " + Defaults.getFragmentIonTolerance());
+
+        // loading peak filter
+        if (ClusteringSettings.getLoadingSpectrumFilter().getClass() == HighestNPeakFunction.class) {
+            System.out.println("Loading filter: Filtering top N peaks per spectrum");
+        }
+        if (ClusteringSettings.getLoadingSpectrumFilter().getClass() == BinnedHighestNPeakFunction.class) {
+            System.out.println("Loading filter: Filtering top 10 peaks / 100 m/z");
+        }
 
         // used filters
         System.out.print("Added filters: ");
@@ -316,9 +437,13 @@ public class SpectraClusterCliMain implements IProgressListener {
         }
         System.out.println("");
 
-        // only show certain settings if they were changed
-        if (Defaults.getMinNumberComparisons() != Defaults.DEFAULT_MIN_NUMBER_COMPARISONS)
-            System.out.println("Minimum number of comparisons: " + Defaults.getMinNumberComparisons());
+        // number of comparisons
+        if (Defaults.getNumberOfComparisonAssessor().getClass() == MinNumberComparisonsAssessor.class) {
+            MinNumberComparisonsAssessor assessor = (MinNumberComparisonsAssessor) Defaults.getNumberOfComparisonAssessor();
+            System.out.println("Minimum number of comparisons: " + assessor.getMinNumberComparisons());
+        } else {
+            System.out.println("Minimum number of comparisons: adaptive");
+        }
 
         System.out.println();
     }
@@ -326,7 +451,7 @@ public class SpectraClusterCliMain implements IProgressListener {
     private void printUsage() {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("Spectra Cluster - Clusterer",
-                "Clusters the spectra found in an MGF file and writes the results in a text-based file.\n",
+                "Clusters the spectra found in a MGF files or .clustering files and writes the results in a text-based file.\n",
                 CliOptions.getOptions(), "\n\n", true);
     }
 

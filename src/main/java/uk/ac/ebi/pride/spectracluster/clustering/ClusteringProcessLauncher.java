@@ -1,6 +1,8 @@
 package uk.ac.ebi.pride.spectracluster.clustering;
 
+import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
+import uk.ac.ebi.pride.spectracluster.util.predicate.IPredicate;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,15 +21,17 @@ public class ClusteringProcessLauncher implements  IBinaryClusteringResultListen
     private final List<Float> thresholds;
     private final boolean fastMode;
     private final File temporaryDirectory;
+    private final IPredicate<ICluster> clusterPredicate;
 
 
     public ClusteringProcessLauncher(ExecutorService executorService, File outputDirectory, List<Float> thresholds,
-                                     boolean fastMode, File temporaryDirectory) {
+                                     boolean fastMode, File temporaryDirectory, IPredicate<ICluster> clusterPredicate) {
         this.executorService = executorService;
         this.outputDirectory = outputDirectory;
         this.thresholds = thresholds;
         this.fastMode = fastMode;
         this.temporaryDirectory = temporaryDirectory;
+        this.clusterPredicate = clusterPredicate;
     }
 
     @Override
@@ -35,7 +39,7 @@ public class ClusteringProcessLauncher implements  IBinaryClusteringResultListen
         File outputFile = new File(outputDirectory, binaryBinaryClusterFileReferenceFile.getResultFile().getName());
         BinaryFileClusteringCallable clusteringCallable = new
                 BinaryFileClusteringCallable(outputFile, binaryBinaryClusterFileReferenceFile.getResultFile(),
-                thresholds, fastMode, temporaryDirectory);
+                thresholds, fastMode, temporaryDirectory, clusterPredicate);
         Future<ClusteringJobReference> fileFuture = executorService.submit(clusteringCallable);
 
         fileFutures.add(fileFuture);

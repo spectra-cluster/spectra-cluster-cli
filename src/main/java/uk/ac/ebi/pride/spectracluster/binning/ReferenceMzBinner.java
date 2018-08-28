@@ -12,8 +12,27 @@ import java.util.List;
  * Created by jg on 20.05.15.
  */
 public class ReferenceMzBinner implements ISpectrumReferenceBinner {
-    public static final int[] WINDOW_SIZES = {25, 10, 4};
-    public static final int MAXIMAL_SPECTRA = 50000;
+    private final int[] WINDOW_SIZES;
+    private final int MAXIMAL_SPECTRA;
+
+    public ReferenceMzBinner() {
+        MAXIMAL_SPECTRA = 50000;
+        WINDOW_SIZES = new int[3];
+        WINDOW_SIZES[0] = 25;
+        WINDOW_SIZES[1] = 10;
+        WINDOW_SIZES[2] = 4;
+    }
+
+    /**
+     * Creates a customized ReferenceMzBinner.
+     *
+     * @param windowSizes The window sizes to use in decreasing size. The size is given in m/z.
+     * @param maxSpectra The maximum number of spectra per window before decreasing it.
+     */
+    public ReferenceMzBinner(int[] windowSizes, int maxSpectra) {
+        MAXIMAL_SPECTRA = maxSpectra;
+        WINDOW_SIZES = windowSizes;
+    }
 
     @Override
     public List<List<SpectrumReference>> binSpectrumReferences(List<SpectrumReference> spectrumReferences) {

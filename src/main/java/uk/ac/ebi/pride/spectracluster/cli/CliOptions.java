@@ -15,6 +15,7 @@ public class CliOptions {
     public enum OPTIONS {
         OUTPUT_PATH("output_path"),
         PRECURSOR_TOLERANCE("precursor_tolerance"),
+        PRECURSOR_TOELRANCE_UNIT("precursor_tolerance_unit"),
         FRAGMENT_TOLERANCE("fragment_tolerance"),
         MAJOR_PEAK_JOBS("major_peak_jobs"),
         START_THRESHOLD("threshold_start"),
@@ -25,16 +26,24 @@ public class CliOptions {
         REUSE_BINARY_FILES("reuse_binary_files"),
         REMOVE_REPORTER_PEAKS("remove_reporters"),
         FAST_MODE("fast_mode"),
+        ADD_SCORES("add_scores"),
         FILTER("filter"),
         HELP("help"),
         VERBOSE("verbose"),
+        ONLY_IDENTIFIED("only_identified"),
+        ONLY_UNIDENTIFIED("only_unidentified"),
 
         // Advanced options
         ADVANCED_MIN_NUMBER_COMPARISONS("x_min_comparisons"),
+        ADVANCED_MIN_ADAPTIVE_COMPARISONS("x_min_adapt_comparisons"),
         ADVANCED_NUMBER_PREFILTERED_PEAKS("x_n_prefiltered_peaks"),
         ADVANCED_LEARN_CDF("x_learn_cdf"),
         ADVANCED_LOAD_CDF_FILE("x_load_cdf"),
-        ADVANCED_DISABLE_MGF_COMMENTS("x_disable_mgf_comments");
+        ADVANCED_DISABLE_MGF_COMMENTS("x_disable_mgf_comments"),
+        ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP("x_min_consensus_peaks_to_keep"),
+        ADVANCED_MERGE_BINARY_FILES("x_merge_binary_files"),
+        ADVANCED_CONVERT_CGF("x_convert_cgf"),
+        ADVANCED_FILTER_PEAKS_PER_MZ("x_filter_peaks_mz");
 
         private String value;
 
@@ -63,9 +72,17 @@ public class CliOptions {
 
         Option precursorTolerance = OptionBuilder
                 .hasArg()
-                .withDescription("precursor tolerance (clustering window size) in m/z used during matching.")
+                .withDescription("precursor tolerance (clustering window size) in m/z (default) or ppm used during matching." +
+                        " The unit can be changed by setting the -" + OPTIONS.PRECURSOR_TOELRANCE_UNIT.getValue() + " parameter")
                 .create(OPTIONS.PRECURSOR_TOLERANCE.getValue());
         options.addOption(precursorTolerance);
+
+        Option precursorToleranceUnit = OptionBuilder
+                .hasArg()
+                .withDescription("sets the precursor tolerance unit. Allowed values are \"mz\" and \"ppm\". " +
+                                "Default is \"mz\".")
+                .create(OPTIONS.PRECURSOR_TOELRANCE_UNIT.getValue());
+        options.addOption(precursorToleranceUnit);
 
         Option outputPath = OptionBuilder
                 .hasArg()
@@ -136,6 +153,22 @@ public class CliOptions {
                 .create(OPTIONS.REMOVE_REPORTER_PEAKS.getValue());
         options.addOption(removeReporters);
 
+        Option addScores = OptionBuilder
+                .withDescription("if set, the similarity scores of each spectrum to the cluster's consensus spectrum is" +
+                        "added to the output file.")
+                .create(OPTIONS.ADD_SCORES.getValue());
+        options.addOption(addScores);
+
+        Option onlyIdentified = OptionBuilder
+                .withDescription("if set, only identified spectra are considered for clustering.")
+                .create(OPTIONS.ONLY_IDENTIFIED.getValue());
+        options.addOption(onlyIdentified);
+
+        Option onlyUnidentified = OptionBuilder
+                .withDescription("if set, only unidentified spectra are considered for clustering.")
+                .create(OPTIONS.ONLY_UNIDENTIFIED.getValue());
+        options.addOption(onlyUnidentified);
+
         Option help = new Option(
                 OPTIONS.HELP.toString(),
                 "print this message.");
@@ -149,6 +182,12 @@ public class CliOptions {
                 .hasArg()
                 .create(OPTIONS.ADVANCED_MIN_NUMBER_COMPARISONS.getValue());
         options.addOption(xMinComparisons);
+
+        Option xMinAdaptComparisons = OptionBuilder
+                .withDescription("(Experimental option) Uses an adaptive function for the minimum comparisons together with a minimum number always to return.")
+                .hasArg()
+                .create(OPTIONS.ADVANCED_MIN_ADAPTIVE_COMPARISONS.getValue());
+        options.addOption(xMinAdaptComparisons);
 
         Option xLearnCdf = OptionBuilder
                 .hasArg()
@@ -175,6 +214,34 @@ public class CliOptions {
                 .withDescription("(Advanced option) If set, MGF comment strings are NOT supported. This will increase performance but only works for MGF files that do not contain any comments")
                 .create(OPTIONS.ADVANCED_DISABLE_MGF_COMMENTS.getValue());
         options.addOption(xDisableMgfComments);
+
+        Option xMinConsensusPeaksToKeep = OptionBuilder
+                .withDescription("(Advanced option) Sets the minimum number of peaks to keep in a consensus spectrum. If" +
+                        " the consensus spectrum contains fewer than these peaks, the noise filtering which retains N" +
+                        " peaks per M m/z is not used but all peaks are kept")
+                .hasArg()
+                .withArgName("number peaks")
+                .create(OPTIONS.ADVANCED_MIN_CONSENSUS_PEAKS_TO_KEEP.getValue());
+        options.addOption(xMinConsensusPeaksToKeep);
+
+        Option xMergeBinaryfiles = OptionBuilder
+                .withDescription("(Advanced option) If this option is set, the input files should be binary" +
+                                " result files from the clustering process. In this mode, the spectra-cluster-cli " +
+                                "only merges the binary files and creates the final output file.")
+                .create(OPTIONS.ADVANCED_MERGE_BINARY_FILES.getValue());
+
+        Option xConvertCgf = OptionBuilder
+                .withDescription("(Advanced option) It this option is set, the input file in CGF format will be " +
+                        "converted to the .clustering file. No other processing will be performed.")
+                .create(OPTIONS.ADVANCED_CONVERT_CGF.getValue());
+        options.addOption(xConvertCgf);
+
+        Option xFilterPeaksMz = OptionBuilder
+                .withDescription("(Advanced option) If this option is set, the top 10 peaks per 100 m/z are retained instead of the top N peaks overall.")
+                .create(OPTIONS.ADVANCED_FILTER_PEAKS_PER_MZ.getValue());
+        options.addOption(xFilterPeaksMz);
+
+        options.addOption(xMergeBinaryfiles);
     }
 
     public static Options getOptions() {

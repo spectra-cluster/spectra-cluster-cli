@@ -1,5 +1,7 @@
 package uk.ac.ebi.pride.spectracluster.spectra_list;
 
+import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
+import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
 import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
 import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.IndexElementImpl;
@@ -13,6 +15,17 @@ import java.util.Map;
  */
 public class ParsingMgfScanner implements IPeaklistScanner {
     private List<List<IndexElement>> fileIndices;
+    private boolean ignoreEmptySpectra;
+    private ClusteringSettings.LOADING_MODE loadingMode = ClusteringSettings.DEFAULT_LOADING_MODE;
+
+
+    public ParsingMgfScanner(boolean ignoreEmptySpectra) {
+        this.ignoreEmptySpectra = ignoreEmptySpectra;
+    }
+
+    public ParsingMgfScanner() {
+        this(true);
+    }
 
     @Override
     public Map<Integer, List<SpectrumReference>> getSpectraPerMajorPeaks(String[] filenames, int nMajorPeaks) throws Exception {
@@ -60,6 +73,8 @@ public class ParsingMgfScanner implements IPeaklistScanner {
         int spectrumIndex = 1; // 1-based index
         float precursorMz = 0;
         boolean inHeader = true;
+        boolean hasPeaks = false;
+        boolean isIdentified = false;
 
 
         while ((line = randomAccessFile.readLine()) != null) {
@@ -71,28 +86,54 @@ public class ParsingMgfScanner implements IPeaklistScanner {
             // ignore all header fields
             if (line.startsWith("BEGIN IONS")) {
                 currentStart = lastLineEnd;
+                isIdentified = false;
+            }
+
+            // check whether the spectrum is identified
+            if (line.startsWith("SEQ=")) {
+                isIdentified = true;
             }
 
             // save the end position of a spectrum as the current last position
             if (line.startsWith("END IONS")) {
-                // save the spectrum reference
-                SpectrumReference spectrumReference = new SpectrumReference(fileId, spectrumIndex, precursorMz);
-                spectrumReferences.add(spectrumReference);
-
-                // save the index element
+                // save the index element - the index has to be complete
                 IndexElement indexElement = new IndexElementImpl(currentStart, (int) (randomAccessFile.getFilePointer() - currentStart));
                 fileIndex.add(indexElement);
 
+                boolean saveSpectrum = hasPeaks || !this.ignoreEmptySpectra;
+
+                if (loadingMode == ClusteringSettings.LOADING_MODE.ONLY_IDENTIFIED && !isIdentified) {
+                    saveSpectrum = false;
+                }
+                if (loadingMode == ClusteringSettings.LOADING_MODE.ONLY_UNIDENTIFIED && isIdentified) {
+                    saveSpectrum = false;
+                }
+
+                // save the spectrum reference only if defined
+                if (saveSpectrum) {
+                    SpectrumReference spectrumReference = new SpectrumReference(fileId, spectrumIndex, precursorMz);
+                    spectrumReferences.add(spectrumReference);
+                }
+
                 // move to the next spectrum
                 spectrumIndex++;
+
                 precursorMz = 0; // to detect any problems
+                hasPeaks = false;
             }
             else if (line.startsWith("PEPMASS=")) {
                 int index = line.indexOf("=");
                 String value = line.substring(index + 1);
                 String[] fields = value.split("\\s+");
 
+                if (fields[0].length() < 1) {
+                    throw new Exception("Invalid PEPMASS= line encountered: " + line + " (" + filename + "@" + String.valueOf(spectrumIndex) + ")");
+                }
+
                 precursorMz = Float.parseFloat(fields[0]);
+            }
+            else if (line.length() > 0 && Character.isDigit(line.charAt(0))) {
+                hasPeaks = true;
             }
 
             lastLineEnd = randomAccessFile.getFilePointer();
@@ -105,5 +146,21 @@ public class ParsingMgfScanner implements IPeaklistScanner {
 
     public List<List<IndexElement>> getFileIndices() {
         return fileIndices;
+    }
+
+    /**
+     * Get the current mode for loading spectra.
+     * @return
+     */
+    public ClusteringSettings.LOADING_MODE getLoadingMode() {
+        return loadingMode;
+    }
+
+    /**
+     * Set the mode for loading spectra (all, only identified, only unidentified)
+     * @param loadingMode
+     */
+    public void setLoadingMode(ClusteringSettings.LOADING_MODE loadingMode) {
+        this.loadingMode = loadingMode;
     }
 }

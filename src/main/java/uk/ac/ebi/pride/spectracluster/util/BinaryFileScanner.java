@@ -1,8 +1,11 @@
 package uk.ac.ebi.pride.spectracluster.util;
 
+import uk.ac.ebi.pride.spectracluster.cdf.SpectraPerBinNumberComparisonAssessor;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
+import uk.ac.ebi.pride.spectracluster.spectrum.KnownProperties;
+import uk.ac.ebi.pride.spectracluster.util.predicate.IPredicate;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -25,6 +28,23 @@ public class BinaryFileScanner {
      * @return
      */
     public static List<BinaryClusterFileReference> scanBinaryFiles(File... inputFiles) throws IOException {
+        return scanBinaryFiles(null, null, inputFiles);
+    }
+
+    /**
+     * Scans the passed binary clustering files and returns
+     * the matching CLusteringResultS with the associated
+     * metadata. Since this function is primarily dependent
+     * on the disk I/O speed it should not run in parallel.
+     * @param spectraPerBinNumberComparisonAssessor If set, the found cluster are counted as spectra per bin.
+     * @param clusterAddingPredicate Predicate which needs to be fulfilled for clusters to be considered. If set
+     *                               to NULL, all clusteres are processed.
+     * @param inputFiles
+     * @return
+     */
+    public static List<BinaryClusterFileReference> scanBinaryFiles(SpectraPerBinNumberComparisonAssessor spectraPerBinNumberComparisonAssessor,
+                                                                   IPredicate<ICluster> clusterAddingPredicate,
+                                                                   File... inputFiles) throws IOException {
         List<BinaryClusterFileReference> binaryClusterFileReferences = new ArrayList<BinaryClusterFileReference>(inputFiles.length);
 
         for (File currentInputFile : inputFiles) {
@@ -40,12 +60,21 @@ public class BinaryFileScanner {
                     throw new InterruptedIOException();
                 }
 
+                if (clusterAddingPredicate != null && !clusterAddingPredicate.apply(cluster)) {
+                    continue;
+                }
+
                 if (cluster.getPrecursorMz() < minMz) {
                     minMz = cluster.getPrecursorMz();
                 }
                 if (cluster.getPrecursorMz() > maxMz) {
                     maxMz = cluster.getPrecursorMz();
                 }
+
+                if (spectraPerBinNumberComparisonAssessor != null) {
+                    spectraPerBinNumberComparisonAssessor.countSpectrum(cluster.getPrecursorMz());
+                }
+
                 nCluster++;
             }
 
