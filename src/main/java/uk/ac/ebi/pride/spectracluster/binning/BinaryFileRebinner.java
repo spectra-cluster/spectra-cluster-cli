@@ -1,4 +1,4 @@
-package uk.ac.ebi.pride.spectracluster.util;
+package uk.ac.ebi.pride.spectracluster.binning;
 
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
@@ -32,14 +32,20 @@ public class BinaryFileRebinner {
     public static List<BinaryClusterFileReference> rebinBinaryFiles(List<BinaryClusterFileReference> inputFiles,
                                                                     File outputDirectory, double windowSize)
             throws Exception {
+        // test whether anything needs to be re-binned at all
+        if (inputFiles.size() < 2) {
+            return inputFiles;
+        }
+
         // make sure the file window sizes are large enough
         checkFileWindows(inputFiles, windowSize);
 
         // sort the input files according to m/z
         Collections.sort(inputFiles);
 
-        int currentBin = 1;
-        File outputFile = getResultFile(outputDirectory, currentBin);
+        // set the current max m/z
+        double maxMz = inputFiles.get(0).getMaxMz() - windowSize;
+        File outputFile = getResultFile(outputDirectory, inputFiles.get(0).getMinMz(), maxMz);
         ObjectOutputStream outputStream = new ObjectOutputStream(new BufferedOutputStream(
                 new FileOutputStream(outputFile)));
 
@@ -47,9 +53,8 @@ public class BinaryFileRebinner {
         double outputMinMz = Double.MAX_VALUE, outputMaxMz = 0;
         int nCluster = 0;
 
-        for (BinaryClusterFileReference clusterFileReference : inputFiles) {
-            // set the current max m/z
-            double maxMz = clusterFileReference.getMaxMz() - windowSize;
+        for (int i = 0; i < inputFiles.size(); i++) {
+            BinaryClusterFileReference clusterFileReference = inputFiles.get(i);
 
             // open the file
             ObjectInputStream inputStream = new ObjectInputStream(new BufferedInputStream(
@@ -63,13 +68,21 @@ public class BinaryFileRebinner {
                 // if the cluster's precursor m/z is larger than the current maximum, create the next output file
                 if (cluster.getPrecursorMz() > maxMz) {
                     outputStream.close();
-                    currentBin++;
 
                     // save the file reference
                     outputFiles.add(new BinaryClusterFileReference(outputFile, outputMinMz, outputMaxMz, nCluster));
 
+                    // set the next max m/z
+                    if (i < inputFiles.size() - 1) {
+                        // use the next file's maximum
+                        maxMz = inputFiles.get(i + 1).getMaxMz() - windowSize;
+                    } else {
+                        // simply use this file's
+                        maxMz = clusterFileReference.getMaxMz();
+                    }
+
                     // create the new file
-                    outputFile = getResultFile(outputDirectory, currentBin);
+                    outputFile = getResultFile(outputDirectory, outputMaxMz, maxMz);
                     outputStream = new ObjectOutputStream(new BufferedOutputStream(
                             new FileOutputStream(outputFile)));
 
@@ -119,7 +132,7 @@ public class BinaryFileRebinner {
 
             if (fileWindowSize < windowSize * 2) {
                 throw new Exception(clusterFileReference.getResultFile().getName() + " only spans " +
-                        fileWindowSize + " m/z. Window size of " + windowSize + " is too large for re-binning.");
+                        fileWindowSize + " m/z. Window size of " + windowSize + " is too small for re-binning.");
             }
         }
     }
@@ -128,25 +141,15 @@ public class BinaryFileRebinner {
      * Create a result file object for the current bin. Basically just
      * generates the output filename.
      * @param outputDirectory
-     * @param currentBin
+     * @param minMz
+     * @param maxMz
      * @return
      */
-    private static File getResultFile(File outputDirectory, int currentBin) {
-        String stringBin;
+    private static File getResultFile(File outputDirectory, double minMz, double maxMz) {
+        String filename = String.format("rebinnedSpectra_%04d_%04d.cls",
+                (int) Math.floor(minMz),
+                (int) Math.floor(maxMz));
 
-        if (currentBin >= 1000) {
-            stringBin = String.valueOf(currentBin);
-        }
-        else if (currentBin >= 100) {
-            stringBin = "0" + String.valueOf(currentBin);
-        }
-        else if (currentBin >= 10) {
-            stringBin = "00" + String.valueOf(currentBin);
-        }
-        else {
-            stringBin = "000" + String.valueOf(currentBin);
-        }
-
-        return new File(outputDirectory, "rebinned_bin_" + stringBin + ".cls");
+        return new File(outputDirectory, filename);
     }
 }

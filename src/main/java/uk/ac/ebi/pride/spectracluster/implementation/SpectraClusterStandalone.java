@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.spectracluster.implementation;
 
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.math3.ml.clustering.Cluster;
+import uk.ac.ebi.pride.spectracluster.binning.BinaryFileRebinner;
 import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
 import uk.ac.ebi.pride.spectracluster.cdf.SpectraPerBinNumberComparisonAssessor;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
@@ -12,26 +12,17 @@ import uk.ac.ebi.pride.spectracluster.io.CGFSpectrumIterable;
 import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
 import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
-import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
-import uk.ac.ebi.pride.spectracluster.spectrum.KnownProperties;
-import uk.ac.ebi.pride.spectracluster.util.BinaryFileScanner;
-import uk.ac.ebi.pride.spectracluster.util.Defaults;
-import uk.ac.ebi.pride.spectracluster.util.IProgressListener;
-import uk.ac.ebi.pride.spectracluster.util.ProgressUpdate;
-import uk.ac.ebi.pride.spectracluster.util.function.Functions;
-import uk.ac.ebi.pride.spectracluster.util.function.spectrum.HighestNSpectrumPeaksFunction;
+import uk.ac.ebi.pride.spectracluster.util.*;
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveReporterIonPeaksFunction;
 import uk.ac.ebi.pride.spectracluster.util.predicate.IPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyIdentifiedPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyUnidentifiedPredicate;
-import uk.ac.ebi.pride.spectracluster.util.predicate.spectrum.IdentifiedPredicate;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -580,6 +571,15 @@ public class SpectraClusterStandalone {
         // create the required temporary directories
         File mergedResultsDirectory = createTemporaryDirectory("merged_results", temporaryDirectory);
         File mergedResultsDirectoryTmp = createTemporaryDirectory("merged_results_tmp", temporaryDirectory);
+        File rebinnedFilesDirectory = createTemporaryDirectory("rebinned_files", temporaryDirectory);
+
+        // re-bin the input files
+        notifyProgressListeners(new ProgressUpdate(
+                String.format("Re-binning %d binary files...", clusteredFiles.size()),
+                ProgressUpdate.CLUSTERING_STAGE.MERGING
+        ));
+        List<BinaryClusterFileReference> rebinnedFiles = BinaryFileRebinner.rebinBinaryFiles(clusteredFiles,
+                rebinnedFilesDirectory, Defaults.getDefaultPrecursorIonTolerance());
 
         // create the merger
         BinaryFileMergingClusterer mergingClusterer = new BinaryFileMergingClusterer(parallelJobs, mergedResultsDirectory,
@@ -604,7 +604,7 @@ public class SpectraClusterStandalone {
                 ProgressUpdate.CLUSTERING_STAGE.MERGING
         ));
 
-        mergingClusterer.clusterFiles(clusteredFiles);
+        mergingClusterer.clusterFiles(rebinnedFiles);
 
         // delete the temporary directory after merging - this directory should be empty
         if (!mergedResultsDirectoryTmp.delete()) {
