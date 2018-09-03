@@ -581,6 +581,13 @@ public class SpectraClusterStandalone {
         List<BinaryClusterFileReference> rebinnedFiles = BinaryFileRebinner.rebinBinaryFiles(clusteredFiles,
                 rebinnedFilesDirectory, Defaults.getDefaultPrecursorIonTolerance());
 
+        // delete the input files if set
+        if (deleteTemporaryFiles) {
+            for (BinaryClusterFileReference reference : clusteredFiles) {
+                reference.getResultFile().delete();
+            }
+        }
+
         // create the merger
         BinaryFileMergingClusterer mergingClusterer = new BinaryFileMergingClusterer(parallelJobs, mergedResultsDirectory,
                 clusteringThresholds, useFastMode, Defaults.getDefaultPrecursorIonTolerance(), deleteTemporaryFiles,
@@ -618,6 +625,8 @@ public class SpectraClusterStandalone {
             if (!clusteredFilesDirectory.delete()) {
                 // TODO: add notification at a later stage
             }
+
+            rebinnedFilesDirectory.delete();
 
             if (!mergedResultsDirectory.delete()) {
                 // TODO: add notification at a later stage
