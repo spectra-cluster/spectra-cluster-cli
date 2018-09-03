@@ -3,9 +3,7 @@ package uk.ac.ebi.pride.spectracluster.spectra_list;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.indexing.ClusteringFileIndex;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.indexing.ClusteringFileIndexer;
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.indexing.ClusteringIndexElement;
-import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
 import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
-import uk.ac.ebi.pride.tools.jmzreader.model.impl.IndexElementImpl;
 
 import java.io.File;
 import java.util.ArrayList;

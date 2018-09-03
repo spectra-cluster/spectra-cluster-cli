@@ -3,7 +3,6 @@ package uk.ac.ebi.pride.spectracluster.binning;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
 import uk.ac.ebi.pride.spectracluster.clustering.IBinaryClusteringResultListener;
 import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
-import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
 import uk.ac.ebi.pride.spectracluster.spectra_list.IPeaklistScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingClusteringScanner;
 import uk.ac.ebi.pride.spectracluster.spectra_list.ParsingMgfScanner;

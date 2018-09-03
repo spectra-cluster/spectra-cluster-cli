@@ -1,10 +1,8 @@
 package uk.ac.ebi.pride.spectracluster.cli;
 
 import org.apache.commons.cli.*;
-import org.apache.commons.math3.ml.clustering.Cluster;
 import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
 import uk.ac.ebi.pride.spectracluster.binning.FixedReferenceMzBinner;
-import uk.ac.ebi.pride.spectracluster.binning.ReferenceMzBinner;
 import uk.ac.ebi.pride.spectracluster.cdf.*;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
@@ -14,7 +12,6 @@ import uk.ac.ebi.pride.spectracluster.implementation.ScoreCalculator;
 import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
-import uk.ac.ebi.pride.spectracluster.io.CGFClusterAppender;
 import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
 import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
 import uk.ac.ebi.pride.spectracluster.util.*;

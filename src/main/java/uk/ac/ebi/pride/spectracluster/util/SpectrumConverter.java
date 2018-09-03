@@ -6,9 +6,7 @@ import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ClusteringFil
 import uk.ac.ebi.pride.spectracluster.clusteringfilereader.objects.ISpectrumReference;
 import uk.ac.ebi.pride.spectracluster.consensus.BinnedGreedyConsensusSpectrum;
 import uk.ac.ebi.pride.spectracluster.consensus.ConsensusSpectrum;
-import uk.ac.ebi.pride.spectracluster.consensus.GreedyConsensusSpectrum;
 import uk.ac.ebi.pride.spectracluster.consensus.IConsensusSpectrumBuilder;
-import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
 import uk.ac.ebi.pride.spectracluster.spectrum.KnownProperties;

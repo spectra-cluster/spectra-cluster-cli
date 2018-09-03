@@ -1,6 +1,5 @@
 package uk.ac.ebi.pride.spectracluster.implementation;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import uk.ac.ebi.pride.spectracluster.normalizer.IIntensityNormalizer;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
 import uk.ac.ebi.pride.spectracluster.spectrum.ISpectrum;
@@ -15,7 +14,6 @@ import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemovePrecursorPeak
 import uk.ac.ebi.pride.spectracluster.util.function.spectrum.RemoveWindowPeaksFunction;
 
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * This is a (static) class that holds certain user

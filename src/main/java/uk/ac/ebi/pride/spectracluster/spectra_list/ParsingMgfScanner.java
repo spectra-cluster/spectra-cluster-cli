@@ -1,7 +1,6 @@
 package uk.ac.ebi.pride.spectracluster.spectra_list;
 
 import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
-import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
 import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
 import uk.ac.ebi.pride.tools.jmzreader.model.IndexElement;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.IndexElementImpl;
