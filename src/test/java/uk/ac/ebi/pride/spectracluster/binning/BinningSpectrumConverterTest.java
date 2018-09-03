@@ -17,14 +17,14 @@ import java.nio.file.Path;
 /**
  * Created by jg on 12.10.17.
  */
-public class BinningSpectrumConverterTests {
+public class BinningSpectrumConverterTest {
     private File mgfTestFile;
     private File clusteringTestFile;
 
     @Before
     public void setUp() throws Exception {
-        mgfTestFile = new File(BinningSpectrumConverterTests.class.getClassLoader().getResource("spectra_400.0_4.0.mgf").toURI());
-        clusteringTestFile = new File(BinningSpectrumConverterTests.class.getClassLoader().getResource("imp_hela_test_API11.clustering").toURI());
+        mgfTestFile = new File(BinningSpectrumConverterTest.class.getClassLoader().getResource("spectra_400.0_4.0.mgf").toURI());
+        clusteringTestFile = new File(BinningSpectrumConverterTest.class.getClassLoader().getResource("imp_hela_test_API11.clustering").toURI());
     }
 
     @Test

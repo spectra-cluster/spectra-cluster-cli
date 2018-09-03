@@ -581,8 +581,8 @@ public class SpectraClusterStandalone {
         List<BinaryClusterFileReference> rebinnedFiles = BinaryFileRebinner.rebinBinaryFiles(clusteredFiles,
                 rebinnedFilesDirectory, Defaults.getDefaultPrecursorIonTolerance());
 
-        // delete the input files if set
-        if (deleteTemporaryFiles) {
+        // delete the input files if set and if the files were re-binned (only happening if there is more than one file)
+        if (deleteTemporaryFiles && clusteredFiles.size() > 1) {
             for (BinaryClusterFileReference reference : clusteredFiles) {
                 reference.getResultFile().delete();
             }

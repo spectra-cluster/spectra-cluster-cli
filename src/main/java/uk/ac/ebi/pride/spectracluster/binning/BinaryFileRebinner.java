@@ -67,6 +67,7 @@ public class BinaryFileRebinner {
             for (ICluster cluster : clusterIterable) {
                 // if the cluster's precursor m/z is larger than the current maximum, create the next output file
                 if (cluster.getPrecursorMz() > maxMz) {
+                    BinaryClusterAppender.INSTANCE.appendEnd(outputStream);
                     outputStream.close();
 
                     // save the file reference
@@ -119,6 +120,7 @@ public class BinaryFileRebinner {
         }
 
         // close the currently written file and save it
+        BinaryClusterAppender.INSTANCE.appendEnd(outputStream);
         outputStream.close();
         outputFiles.add(new BinaryClusterFileReference(outputFile, outputMinMz, outputMaxMz, nCluster));
 
