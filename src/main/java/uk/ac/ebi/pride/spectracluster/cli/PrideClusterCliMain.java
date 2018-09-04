@@ -658,8 +658,8 @@ public class PrideClusterCliMain implements IProgressListener {
             }
         }
 
-        // always bin to 2 m/z wide bins
-        int windowSize = 2;
+        // always bin to at least 1 m/z wide bins
+        int windowSize = (int) Math.ceil(Defaults.getDefaultPrecursorIonTolerance() * 2);
 
         BinningSpectrumConverter binningSpectrumConverter = new BinningSpectrumConverter(temporaryDirectory,
                 nJobs, false, new FixedReferenceMzBinner(windowSize));

@@ -57,7 +57,7 @@ public class BinningSpectrumConverterTest {
             binaryResultFile.delete();
         }
 
-        Assert.assertEquals(40, nFiles);
+        Assert.assertEquals(22, nFiles);
         Assert.assertEquals(7397, nClusters);
         tmpDir.toFile().delete();
     }
@@ -94,7 +94,7 @@ public class BinningSpectrumConverterTest {
                 binaryResultFile.delete();
             }
 
-            Assert.assertEquals(40, nFiles);
+            Assert.assertEquals(22, nFiles);
             Assert.assertEquals(7187, nClusters);
             tmpDir.toFile().delete();
     }
@@ -131,7 +131,7 @@ public class BinningSpectrumConverterTest {
             binaryResultFile.delete();
         }
 
-        Assert.assertEquals(40, nFiles);
+        Assert.assertEquals(22, nFiles);
         Assert.assertEquals(7397, nClusters);
         tmpDir.toFile().delete();
     }

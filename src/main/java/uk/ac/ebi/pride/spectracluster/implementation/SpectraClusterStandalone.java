@@ -144,6 +144,14 @@ public class SpectraClusterStandalone {
         // pre-scan the binary files
         List<BinaryClusterFileReference> binaryFiles = findExistingBinaryFiles(binarySpectraDirectory);
 
+        // make sure the bin-size matches the set precursor tolerance
+        for (BinaryClusterFileReference reference : binaryFiles) {
+            if (reference.getMaxMz() - reference.getMinMz() < Defaults.getDefaultPrecursorIonTolerance() * 2) {
+                throw new Exception("Binary files were binned with less than twice the set precursor tolerance. " +
+                        "Please re-launch the clustering process on the original peak list files.");
+            }
+        }
+
         if (binaryFiles.size() < 1) {
             throw new Exception("No existing binary files found.");
         }
