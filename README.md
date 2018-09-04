@@ -14,6 +14,11 @@ __WARNING__: This software is still in beta phase. We do expect it to still have
 
 ## Changelog
 
+### Version 1.1.1
+
+* Fixed a bug in the merging of adjacent bins: Spectra were not re-binned correctly
+* Adapted binning procedure to create fewer files
+
 ### Version 1.1.0
 
 * Updated to spectra-cluster API version 1.1 Therefore, the following new features are available

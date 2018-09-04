@@ -37,9 +37,6 @@ public class BinaryFileRebinner {
             return inputFiles;
         }
 
-        // make sure the file window sizes are large enough
-        checkFileWindows(inputFiles, windowSize);
-
         // sort the input files according to m/z
         Collections.sort(inputFiles);
 
@@ -125,18 +122,6 @@ public class BinaryFileRebinner {
         outputFiles.add(new BinaryClusterFileReference(outputFile, outputMinMz, outputMaxMz, nCluster));
 
         return outputFiles;
-    }
-
-    private static void checkFileWindows(List<BinaryClusterFileReference> inputFiles, double windowSize) throws Exception {
-        // make sure the input files are "large enough"
-        for (BinaryClusterFileReference clusterFileReference : inputFiles) {
-            double fileWindowSize = clusterFileReference.getMaxMz() - clusterFileReference.getMinMz();
-
-            if (fileWindowSize < windowSize * 2) {
-                throw new Exception(clusterFileReference.getResultFile().getName() + " only spans " +
-                        fileWindowSize + " m/z. Window size of " + windowSize + " is too small for re-binning.");
-            }
-        }
     }
 
     /**
