@@ -89,7 +89,6 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
     public ClusteringJobReference call() throws Exception {
         try {
             File currentInputFile = inputFile;
-            long start = System.currentTimeMillis();
             int nSpectra = 0;
             float fileMinMz = Float.MAX_VALUE, fileMaxMz = 0;
 
@@ -123,6 +122,11 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
                         outputStream.close();
                         inputStream.close();
                         throw new InterruptedException();
+                    }
+
+                    // in the first round, reset all comparison matches
+                    if (nRound == 0) {
+                        clusterToAdd.setComparisonMatches(Collections.emptyList());
                     }
 
                     // ignore any cluster that does not fulfill the predicate

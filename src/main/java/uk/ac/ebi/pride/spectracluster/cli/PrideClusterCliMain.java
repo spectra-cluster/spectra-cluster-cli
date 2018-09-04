@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.spectracluster.cli;
 
 import org.apache.commons.cli.*;
+import uk.ac.ebi.pride.spectracluster.binning.BinaryFileRebinner;
 import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
 import uk.ac.ebi.pride.spectracluster.binning.FixedReferenceMzBinner;
 import uk.ac.ebi.pride.spectracluster.cdf.*;
@@ -461,7 +462,8 @@ public class PrideClusterCliMain implements IProgressListener {
         Defaults.setSaveDebugInformation(true);
 
         // create the temporary directory
-        File tmpDir = SpectraClusterStandalone.createTemporaryDirectory("spectra_cluster_cli");
+        File tmpRebinned = SpectraClusterStandalone.createTemporaryDirectory("spectra_cluster_cli-rebin");
+        File tmpDir = SpectraClusterStandalone.createTemporaryDirectory("spectra_cluster_cli-merging");
 
         // count the spectra per bin while scanning the files
         SpectraPerBinNumberComparisonAssessor spectraPerBinNumberComparisonAssessor = null;
@@ -476,6 +478,10 @@ public class PrideClusterCliMain implements IProgressListener {
                 null,
                 filenames.toArray(new File[filenames.size()]));
 
+        // rebin the files
+        List<BinaryClusterFileReference> rebinnedFiles = BinaryFileRebinner.rebinBinaryFiles(clusterReferences,
+                tmpRebinned, Defaults.getDefaultPrecursorIonTolerance());
+
         // Create the merger
         BinaryFileMergingClusterer merger = new BinaryFileMergingClusterer(paralellJobs, finalResultFile, thresholds,
                 false, Defaults.getDefaultPrecursorIonTolerance(), false, tmpDir);
@@ -484,7 +490,7 @@ public class PrideClusterCliMain implements IProgressListener {
             merger.addProgressListener(this);
 
         // launch the merging
-        merger.clusterFiles(clusterReferences);
+        merger.clusterFiles(rebinnedFiles);
 
         System.out.println("Result files written to " + finalResultFile.toString());
     }
