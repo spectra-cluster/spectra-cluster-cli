@@ -72,8 +72,8 @@ public class BinaryFileRebinner {
 
                     // set the next max m/z
                     if (i < inputFiles.size() - 1) {
-                        // use the next file's maximum
-                        maxMz = inputFiles.get(i + 1).getMaxMz() - windowSize;
+                        // use the next file's maximum but at least the current window size
+                        maxMz = Math.max(maxMz + windowSize, inputFiles.get(i + 1).getMaxMz() - windowSize);
                     } else {
                         // simply use this file's
                         maxMz = clusterFileReference.getMaxMz();
