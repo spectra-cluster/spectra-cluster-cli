@@ -24,6 +24,7 @@ import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyIdentifi
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyUnidentifiedPredicate;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -492,6 +493,16 @@ public class PrideClusterCliMain implements IProgressListener {
         // launch the merging
         merger.clusterFiles(rebinnedFiles);
 
+        // make sure all files were copied to the target directory
+        List<BinaryClusterFileReference> processedFiles = merger.getResultFiles();
+
+        for (BinaryClusterFileReference reference : processedFiles) {
+            if (reference.getResultFile().getParentFile() != finalResultFile) {
+                File targetName = new File(finalResultFile, reference.getResultFile().getName());
+                Files.copy(reference.getResultFile().toPath(), targetName.toPath());
+            }
+        }
+
         System.out.println("Result files written to " + finalResultFile.toString());
     }
 
@@ -518,6 +529,7 @@ public class PrideClusterCliMain implements IProgressListener {
         }
 
         DotClusterClusterAppender.INSTANCE.appendEnd(writer);
+        writer.close();
 
         System.out.println("Result written to " + finalResultFile.toString());
     }
