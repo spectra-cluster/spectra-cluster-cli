@@ -66,7 +66,6 @@ public class BinaryFileMergingClusterer {
     private void waitForCompletedJobs() throws Exception {
         try {
             boolean allDone = false;
-            resultFiles = new ArrayList<BinaryClusterFileReference>();
             Set<Integer> completedJobs = new HashSet<Integer>();
 
             while (!allDone) {
@@ -130,6 +129,7 @@ public class BinaryFileMergingClusterer {
 
     private void launchClusteringJobs(List<BinaryClusterFileReference> binaryFiles) {
         try {
+            resultFiles = new ArrayList<BinaryClusterFileReference>();
             clusteringExecuteService = Executors.newFixedThreadPool(nJobs);
 
             // make sure the files are sorted according to m/z
@@ -144,6 +144,7 @@ public class BinaryFileMergingClusterer {
 
                 // ignore the first file since it will not be clustered
                 if (i == 0) {
+                    resultFiles.add(binaryClusterFileReference);
                     notifyListeners(binaryClusterFileReference, 1, binaryFiles.size());
                     continue;
                 }
