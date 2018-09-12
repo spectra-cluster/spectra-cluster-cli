@@ -10,7 +10,6 @@ import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
 import uk.ac.ebi.pride.spectracluster.similarity.CombinedFisherIntensityTest;
 import uk.ac.ebi.pride.spectracluster.similarity.ISimilarityChecker;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
-import uk.ac.ebi.pride.spectracluster.spectrum.KnownProperties;
 import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
@@ -119,10 +118,6 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
 
                 // do the actual clustering
                 for (ICluster clusterToAdd : clusterIterable) {
-                    if (clusterToAdd.getClusteredSpectra().get(0).getProperty(KnownProperties.SPECTRUM_TITLE).endsWith("id=index=15010#title=imp_hela_test.mgf.15010")) {
-                        int n = 1 + 1;
-                    }
-
                     if (Thread.currentThread().isInterrupted()) {
                         outputStream.close();
                         inputStream.close();
