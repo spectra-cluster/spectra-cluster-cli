@@ -601,7 +601,7 @@ public class SpectraClusterStandalone {
 
         // create the merger
         BinaryFileMergingClusterer mergingClusterer = new BinaryFileMergingClusterer(parallelJobs, mergedResultsDirectory,
-                clusteringThresholds, useFastMode, Defaults.getDefaultPrecursorIonTolerance(), deleteTemporaryFiles,
+                clusteringThresholds, useFastMode, Defaults.getDefaultPrecursorIonTolerance() * 2, deleteTemporaryFiles,
                 mergedResultsDirectoryTmp);
 
         // if verbose mode is enabled add the progress listeners to receive all updates

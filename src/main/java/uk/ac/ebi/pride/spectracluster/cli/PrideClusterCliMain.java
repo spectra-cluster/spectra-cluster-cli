@@ -453,7 +453,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param thresholds List of thresholds to use
      * @param verbose Indicates whether verbose output should be used.
      */
-    private void mergeClusterBinaryFiles(String[] peaklistFilenames, File finalResultFile, int paralellJobs, List<Float> thresholds, boolean verbose) throws Exception {
+    public void mergeClusterBinaryFiles(String[] peaklistFilenames, File finalResultFile, int paralellJobs, List<Float> thresholds, boolean verbose) throws Exception {
         if (!finalResultFile.isDirectory()) {
             throw new Exception("Error: Result file must be a directory.");
         }
@@ -485,7 +485,7 @@ public class PrideClusterCliMain implements IProgressListener {
 
         // Create the merger
         BinaryFileMergingClusterer merger = new BinaryFileMergingClusterer(paralellJobs, finalResultFile, thresholds,
-                false, Defaults.getDefaultPrecursorIonTolerance(), false, tmpDir);
+                false, Defaults.getDefaultPrecursorIonTolerance() * 2, false, tmpDir);
 
         if (verbose)
             merger.addProgressListener(this);
@@ -511,7 +511,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param peaklistFilenames
      * @param finalResultFile
      */
-    private void convertBinaryFiles(String[] peaklistFilenames, File finalResultFile) throws Exception {
+    public void convertBinaryFiles(String[] peaklistFilenames, File finalResultFile) throws Exception {
         FileWriter writer = new FileWriter(finalResultFile);
 
         String[] options = {"PrideCluster 2.0"};
@@ -539,7 +539,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param peaklistFilenames
      * @param finalResultFile
      */
-    private void clusterBinaryFile(String[] peaklistFilenames, File finalResultFile, int nJobs, List<Float> clusteringThresholds, boolean verbose) throws Exception {
+    public void clusterBinaryFile(String[] peaklistFilenames, File finalResultFile, int nJobs, List<Float> clusteringThresholds, boolean verbose) throws Exception {
         if (!finalResultFile.isDirectory()) {
             throw new Exception("Error: Result file must be a directory.");
         }
@@ -600,7 +600,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param peaklistFilenames
      * @param finalResultFile
      */
-    private void mergeBinaryFiles(String[] peaklistFilenames, File finalResultFile) throws Exception {
+    public void mergeBinaryFiles(String[] peaklistFilenames, File finalResultFile) throws Exception {
         // Create the output file
         ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(finalResultFile));
 
@@ -658,7 +658,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param peaklistFilenames
      * @param temporaryDirectory
      */
-    private void createBinaryFiles(String[] peaklistFilenames, File temporaryDirectory, int nJobs) throws Exception {
+    public void createBinaryFiles(String[] peaklistFilenames, File temporaryDirectory, int nJobs) throws Exception {
         if (!temporaryDirectory.isDirectory()) {
             throw new Exception("Error: Output path must be set to a directory");
         }
@@ -686,7 +686,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param inputFiles
      * @param outputFile
      */
-    private void convertToCgf(String[] inputFiles, File outputFile) throws Exception {
+    public void convertToCgf(String[] inputFiles, File outputFile) throws Exception {
         SpectraClusterStandalone spectraClusterStandalone = new SpectraClusterStandalone();
         spectraClusterStandalone.addProgressListener(this);
 
