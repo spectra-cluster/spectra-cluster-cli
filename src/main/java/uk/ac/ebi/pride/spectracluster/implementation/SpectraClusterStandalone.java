@@ -28,6 +28,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * This class takes care of the actual clustering
@@ -70,6 +71,9 @@ public class SpectraClusterStandalone {
         this.temporaryDirectory = createTemporaryDirectory("spectra_cluster_cli");
         // default number of parallel jobs is the number of cores
         this.parallelJobs = Runtime.getRuntime().availableProcessors();
+
+        // prevent locale specific issues
+        Locale.setDefault(new Locale("en", "US"));
     }
 
     /**
