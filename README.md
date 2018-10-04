@@ -14,12 +14,9 @@ __WARNING__: This software is still in beta phase. We do expect it to still have
 
 ## Changelog
 
-### Version 1.1.2
-
-* Fixed a bug when running on systems with non-english locale
-
 ### Version 1.1.1
 
+* Fixed a bug when running on systems with non-english locale
 * Fixed a bug in the merging of adjacent bins: Spectra were not re-binned correctly
 * Adapted binning procedure to create fewer files
 
