@@ -1,6 +1,7 @@
 package uk.ac.ebi.pride.spectracluster.binning;
 
 import uk.ac.ebi.pride.spectracluster.spectra_list.SpectrumReference;
+import uk.ac.ebi.pride.spectracluster.util.Defaults;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,15 +13,18 @@ import java.util.List;
  * Created by jg on 20.05.15.
  */
 public class ReferenceMzBinner implements ISpectrumReferenceBinner {
-    private final int[] WINDOW_SIZES;
-    private final int MAXIMAL_SPECTRA;
+    private final int[] windowSizes;
+    private final int maxSpectra;
 
     public ReferenceMzBinner() {
-        MAXIMAL_SPECTRA = 50000;
-        WINDOW_SIZES = new int[3];
-        WINDOW_SIZES[0] = 25;
-        WINDOW_SIZES[1] = 10;
-        WINDOW_SIZES[2] = 4;
+        maxSpectra = 50000;
+        int minSize = (int) Math.ceil(Defaults.getDefaultPrecursorIonTolerance() * 2);
+        windowSizes = new int[10];
+        int stepIncrease = (50 - minSize) / (windowSizes.length - 1);
+
+        for (int i = 1; i <= windowSizes.length; i++) {
+            windowSizes[i - 1] = minSize + (stepIncrease * (windowSizes.length - i));
+        }
     }
 
     /**
@@ -30,8 +34,8 @@ public class ReferenceMzBinner implements ISpectrumReferenceBinner {
      * @param maxSpectra The maximum number of spectra per window before decreasing it.
      */
     public ReferenceMzBinner(int[] windowSizes, int maxSpectra) {
-        MAXIMAL_SPECTRA = maxSpectra;
-        WINDOW_SIZES = windowSizes;
+        this.maxSpectra = maxSpectra;
+        this.windowSizes = windowSizes;
     }
 
     @Override
@@ -43,9 +47,9 @@ public class ReferenceMzBinner implements ISpectrumReferenceBinner {
         List<List<SpectrumReference>> groupedSpectrumReferences = new ArrayList<List<SpectrumReference>>();
         groupedSpectrumReferences.add(spectrumReferences);
 
-        for (int i = 0; i < WINDOW_SIZES.length; i++) {
-            int windowSize = WINDOW_SIZES[i];
-            int maximalSpectra = MAXIMAL_SPECTRA;
+        for (int i = 0; i < windowSizes.length; i++) {
+            int windowSize = windowSizes[i];
+            int maximalSpectra = maxSpectra;
 
             // force a re-distribution in the first round
             if (i == 0)

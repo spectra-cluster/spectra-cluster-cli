@@ -16,7 +16,10 @@ import uk.ac.ebi.pride.tools.mgf_parser.MgfFile;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Stream;
 

@@ -1,10 +1,9 @@
 package uk.ac.ebi.pride.spectracluster.cli;
 
 import org.apache.commons.cli.*;
-import org.apache.commons.math3.ml.clustering.Cluster;
+import uk.ac.ebi.pride.spectracluster.binning.BinaryFileRebinner;
 import uk.ac.ebi.pride.spectracluster.binning.BinningSpectrumConverter;
 import uk.ac.ebi.pride.spectracluster.binning.FixedReferenceMzBinner;
-import uk.ac.ebi.pride.spectracluster.binning.ReferenceMzBinner;
 import uk.ac.ebi.pride.spectracluster.cdf.*;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.clustering.BinaryClusterFileReference;
@@ -14,7 +13,6 @@ import uk.ac.ebi.pride.spectracluster.implementation.ScoreCalculator;
 import uk.ac.ebi.pride.spectracluster.implementation.SpectraClusterStandalone;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
-import uk.ac.ebi.pride.spectracluster.io.CGFClusterAppender;
 import uk.ac.ebi.pride.spectracluster.io.DotClusterClusterAppender;
 import uk.ac.ebi.pride.spectracluster.merging.BinaryFileMergingClusterer;
 import uk.ac.ebi.pride.spectracluster.util.*;
@@ -26,6 +24,7 @@ import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyIdentifi
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster.ClusterOnlyUnidentifiedPredicate;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -454,7 +453,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param thresholds List of thresholds to use
      * @param verbose Indicates whether verbose output should be used.
      */
-    private void mergeClusterBinaryFiles(String[] peaklistFilenames, File finalResultFile, int paralellJobs, List<Float> thresholds, boolean verbose) throws Exception {
+    public void mergeClusterBinaryFiles(String[] peaklistFilenames, File finalResultFile, int paralellJobs, List<Float> thresholds, boolean verbose) throws Exception {
         if (!finalResultFile.isDirectory()) {
             throw new Exception("Error: Result file must be a directory.");
         }
@@ -464,7 +463,8 @@ public class PrideClusterCliMain implements IProgressListener {
         Defaults.setSaveDebugInformation(true);
 
         // create the temporary directory
-        File tmpDir = SpectraClusterStandalone.createTemporaryDirectory("spectra_cluster_cli");
+        File tmpRebinned = SpectraClusterStandalone.createTemporaryDirectory("spectra_cluster_cli-rebin");
+        File tmpDir = SpectraClusterStandalone.createTemporaryDirectory("spectra_cluster_cli-merging");
 
         // count the spectra per bin while scanning the files
         SpectraPerBinNumberComparisonAssessor spectraPerBinNumberComparisonAssessor = null;
@@ -479,15 +479,29 @@ public class PrideClusterCliMain implements IProgressListener {
                 null,
                 filenames.toArray(new File[filenames.size()]));
 
+        // rebin the files
+        List<BinaryClusterFileReference> rebinnedFiles = BinaryFileRebinner.rebinBinaryFiles(clusterReferences,
+                tmpRebinned, Defaults.getDefaultPrecursorIonTolerance());
+
         // Create the merger
         BinaryFileMergingClusterer merger = new BinaryFileMergingClusterer(paralellJobs, finalResultFile, thresholds,
-                false, Defaults.getDefaultPrecursorIonTolerance(), false, tmpDir);
+                false, Defaults.getDefaultPrecursorIonTolerance() * 2, false, tmpDir);
 
         if (verbose)
             merger.addProgressListener(this);
 
         // launch the merging
-        merger.clusterFiles(clusterReferences);
+        merger.clusterFiles(rebinnedFiles);
+
+        // make sure all files were copied to the target directory
+        List<BinaryClusterFileReference> processedFiles = merger.getResultFiles();
+
+        for (BinaryClusterFileReference reference : processedFiles) {
+            if (reference.getResultFile().getParentFile() != finalResultFile) {
+                File targetName = new File(finalResultFile, reference.getResultFile().getName());
+                Files.copy(reference.getResultFile().toPath(), targetName.toPath());
+            }
+        }
 
         System.out.println("Result files written to " + finalResultFile.toString());
     }
@@ -497,7 +511,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param peaklistFilenames
      * @param finalResultFile
      */
-    private void convertBinaryFiles(String[] peaklistFilenames, File finalResultFile) throws Exception {
+    public void convertBinaryFiles(String[] peaklistFilenames, File finalResultFile) throws Exception {
         FileWriter writer = new FileWriter(finalResultFile);
 
         String[] options = {"PrideCluster 2.0"};
@@ -515,6 +529,7 @@ public class PrideClusterCliMain implements IProgressListener {
         }
 
         DotClusterClusterAppender.INSTANCE.appendEnd(writer);
+        writer.close();
 
         System.out.println("Result written to " + finalResultFile.toString());
     }
@@ -524,7 +539,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param peaklistFilenames
      * @param finalResultFile
      */
-    private void clusterBinaryFile(String[] peaklistFilenames, File finalResultFile, int nJobs, List<Float> clusteringThresholds, boolean verbose) throws Exception {
+    public void clusterBinaryFile(String[] peaklistFilenames, File finalResultFile, int nJobs, List<Float> clusteringThresholds, boolean verbose) throws Exception {
         if (!finalResultFile.isDirectory()) {
             throw new Exception("Error: Result file must be a directory.");
         }
@@ -585,7 +600,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param peaklistFilenames
      * @param finalResultFile
      */
-    private void mergeBinaryFiles(String[] peaklistFilenames, File finalResultFile) throws Exception {
+    public void mergeBinaryFiles(String[] peaklistFilenames, File finalResultFile) throws Exception {
         // Create the output file
         ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(finalResultFile));
 
@@ -643,7 +658,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param peaklistFilenames
      * @param temporaryDirectory
      */
-    private void createBinaryFiles(String[] peaklistFilenames, File temporaryDirectory, int nJobs) throws Exception {
+    public void createBinaryFiles(String[] peaklistFilenames, File temporaryDirectory, int nJobs) throws Exception {
         if (!temporaryDirectory.isDirectory()) {
             throw new Exception("Error: Output path must be set to a directory");
         }
@@ -655,8 +670,8 @@ public class PrideClusterCliMain implements IProgressListener {
             }
         }
 
-        // always bin to 2 m/z wide bins
-        int windowSize = 2;
+        // always bin to at least 1 m/z wide bins
+        int windowSize = (int) Math.ceil(Defaults.getDefaultPrecursorIonTolerance() * 2);
 
         BinningSpectrumConverter binningSpectrumConverter = new BinningSpectrumConverter(temporaryDirectory,
                 nJobs, false, new FixedReferenceMzBinner(windowSize));
@@ -671,7 +686,7 @@ public class PrideClusterCliMain implements IProgressListener {
      * @param inputFiles
      * @param outputFile
      */
-    private void convertToCgf(String[] inputFiles, File outputFile) throws Exception {
+    public void convertToCgf(String[] inputFiles, File outputFile) throws Exception {
         SpectraClusterStandalone spectraClusterStandalone = new SpectraClusterStandalone();
         spectraClusterStandalone.addProgressListener(this);
 

@@ -6,6 +6,7 @@ import org.junit.Test;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
+import uk.ac.ebi.pride.spectracluster.util.Defaults;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -17,14 +18,15 @@ import java.nio.file.Path;
 /**
  * Created by jg on 12.10.17.
  */
-public class BinningSpectrumConverterTests {
+public class BinningSpectrumConverterTest {
     private File mgfTestFile;
     private File clusteringTestFile;
 
     @Before
     public void setUp() throws Exception {
-        mgfTestFile = new File(BinningSpectrumConverterTests.class.getClassLoader().getResource("spectra_400.0_4.0.mgf").toURI());
-        clusteringTestFile = new File(BinningSpectrumConverterTests.class.getClassLoader().getResource("imp_hela_test_API11.clustering").toURI());
+        mgfTestFile = new File(BinningSpectrumConverterTest.class.getClassLoader().getResource("spectra_400.0_4.0.mgf").toURI());
+        clusteringTestFile = new File(BinningSpectrumConverterTest.class.getClassLoader().getResource("imp_hela_test_API11.clustering").toURI());
+        Defaults.setDefaultPrecursorIonTolerance(Defaults.DEFAULT_PRECURSOR_ION_TOLERANCE);
     }
 
     @Test
@@ -57,7 +59,7 @@ public class BinningSpectrumConverterTests {
             binaryResultFile.delete();
         }
 
-        Assert.assertEquals(40, nFiles);
+        Assert.assertEquals(22, nFiles);
         Assert.assertEquals(7397, nClusters);
         tmpDir.toFile().delete();
     }
@@ -94,7 +96,7 @@ public class BinningSpectrumConverterTests {
                 binaryResultFile.delete();
             }
 
-            Assert.assertEquals(40, nFiles);
+            Assert.assertEquals(22, nFiles);
             Assert.assertEquals(7187, nClusters);
             tmpDir.toFile().delete();
     }
@@ -131,8 +133,8 @@ public class BinningSpectrumConverterTests {
             binaryResultFile.delete();
         }
 
-        Assert.assertEquals(40, nFiles);
-        Assert.assertEquals(7187, nClusters);
+        Assert.assertEquals(22, nFiles);
+        Assert.assertEquals(7397, nClusters);
         tmpDir.toFile().delete();
     }
 }

@@ -4,19 +4,18 @@ import org.apache.commons.io.FileUtils;
 import uk.ac.ebi.pride.spectracluster.cluster.ICluster;
 import uk.ac.ebi.pride.spectracluster.engine.GreedyIncrementalClusteringEngine;
 import uk.ac.ebi.pride.spectracluster.engine.IIncrementalClusteringEngine;
+import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterAppender;
 import uk.ac.ebi.pride.spectracluster.io.BinaryClusterIterable;
 import uk.ac.ebi.pride.spectracluster.similarity.CombinedFisherIntensityTest;
 import uk.ac.ebi.pride.spectracluster.similarity.ISimilarityChecker;
 import uk.ac.ebi.pride.spectracluster.spectrum.IPeak;
-import uk.ac.ebi.pride.spectracluster.implementation.ClusteringSettings;
 import uk.ac.ebi.pride.spectracluster.util.ClusteringJobReference;
 import uk.ac.ebi.pride.spectracluster.util.Defaults;
 import uk.ac.ebi.pride.spectracluster.util.function.IFunction;
 import uk.ac.ebi.pride.spectracluster.util.predicate.ComparisonPredicates;
 import uk.ac.ebi.pride.spectracluster.util.predicate.IComparisonPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.IPredicate;
-import uk.ac.ebi.pride.spectracluster.util.predicate.Predicates;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.ClusterPpmPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.ClusterShareMajorPeakPredicate;
 import uk.ac.ebi.pride.spectracluster.util.predicate.cluster_comparison.IsKnownComparisonsPredicate;
@@ -90,7 +89,6 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
     public ClusteringJobReference call() throws Exception {
         try {
             File currentInputFile = inputFile;
-            long start = System.currentTimeMillis();
             int nSpectra = 0;
             float fileMinMz = Float.MAX_VALUE, fileMaxMz = 0;
 
@@ -124,6 +122,11 @@ public class BinaryFileClusteringCallable implements Callable<ClusteringJobRefer
                         outputStream.close();
                         inputStream.close();
                         throw new InterruptedException();
+                    }
+
+                    // in the first round, reset all comparison matches
+                    if (nRound == 0) {
+                        clusterToAdd.setComparisonMatches(Collections.emptyList());
                     }
 
                     // ignore any cluster that does not fulfill the predicate
