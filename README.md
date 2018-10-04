@@ -1,4 +1,4 @@
-# spectra-cluster-cli
+# spectra-cluster-cli [![Build Status](https://travis-ci.org/spectra-cluster/spectra-cluster-cli.svg?branch=master)](https://travis-ci.org/spectra-cluster/spectra-cluster-cli)
 
 This is a stand-alone implementation of the new updated 
 [PRIDE Cluster](https://www.ebi.ac.uk/pride/cluster) algorithm. 
