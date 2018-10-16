@@ -48,7 +48,7 @@ public class BinaryFileBinnerTest {
         Assert.assertEquals(2, references.size());
 
         List<BinaryClusterFileReference> rebinned = BinaryFileRebinner.rebinBinaryFiles(references, outputDir, 2.0);
-        Assert.assertEquals(3, rebinned.size());
+        Assert.assertEquals(2, rebinned.size());
         // next file always has to start 1 precursor tolerance lower
         Assert.assertTrue(references.get(0).getMaxMz() - 2.0 >= rebinned.get(0).getMaxMz());
         Assert.assertTrue(references.get(1).getMaxMz() - 2.0 >= rebinned.get(1).getMaxMz());
