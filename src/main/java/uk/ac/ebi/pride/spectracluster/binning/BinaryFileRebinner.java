@@ -71,11 +71,14 @@ public class BinaryFileRebinner {
                     outputFiles.add(new BinaryClusterFileReference(outputFile, outputMinMz, outputMaxMz, nCluster));
 
                     // set the next max m/z
-                    if (i < inputFiles.size() - 1) {
+                    if (i < inputFiles.size() - 2) {
                         // use the next file's maximum but at least the current window size
                         maxMz = Math.max(maxMz + windowSize, inputFiles.get(i + 1).getMaxMz() - windowSize);
+                    } else if (i == inputFiles.size() - 2) {
+                        // if there is only one file left, use this file's max
+                        maxMz = inputFiles.get(i + 1).getMaxMz();
                     } else {
-                        // simply use this file's
+                        // if this is the last file, use this file's max
                         maxMz = clusterFileReference.getMaxMz();
                     }
 

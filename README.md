@@ -14,6 +14,11 @@ __WARNING__: This software is still in beta phase. We do expect it to still have
 
 ## Changelog
 
+### Version 1.1.2
+
+* Fixed a bug that caused a crash when re-binning very small datasets
+  with scarce m/z regions.
+
 ### Version 1.1.1
 
 * Fixed a bug when running on systems with non-english locale
