@@ -51,8 +51,7 @@ public class BinaryFileBinnerTest {
         Assert.assertEquals(2, rebinned.size());
         // next file always has to start 1 precursor tolerance lower
         Assert.assertTrue(references.get(0).getMaxMz() - 2.0 >= rebinned.get(0).getMaxMz());
-        Assert.assertTrue(references.get(1).getMaxMz() - 2.0 >= rebinned.get(1).getMaxMz());
-        Assert.assertTrue(references.get(1).getMaxMz() - 2.0 <= rebinned.get(2).getMinMz());
+        Assert.assertTrue(references.get(0).getMaxMz() - 2.0 <= rebinned.get(1).getMinMz());
 
         // make sure the number of spectra stayed the same
         int specIn = references.stream().mapToInt(BinaryClusterFileReference::getnSpectra).sum();
